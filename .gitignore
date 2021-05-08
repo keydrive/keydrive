@@ -1,0 +1,12 @@
+## IDE ##
+.idea/
+
+## BUILD ARTIFACTS ##
+build/
+node_modules/
+coverage/
+
+## MISC ##
+*.log
+*.css
+.DS_Store
