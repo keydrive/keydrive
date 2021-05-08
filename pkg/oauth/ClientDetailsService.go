@@ -3,7 +3,7 @@ package oauth
 import "context"
 
 type ClientDetailsService interface {
-	GetClient(ctx context.Context, clientId string)
+	GetClient(ctx context.Context, clientId string) ClientDetails
 }
 
 type ClientDetails interface {
