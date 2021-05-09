@@ -6,7 +6,7 @@ import (
 
 type TokenService interface {
 	CreateToken(ctx context.Context, token string) Token
-	GetToken(ctx context.Context, token string)
+	GetToken(ctx context.Context, token string) Token
 }
 
 type Token interface {

@@ -18,7 +18,15 @@ func main() {
 	oauthServer := oauth.Server{
 		PasswordEncoder:      &oauth.BcryptEncoder{},
 		ClientDetailsService: &model.ClientDetailsService{},
-		UserDetailsService:   nil,
+		UserDetailsService: &model.UserDetailsService{HardcodedUser: model.User{
+			FirstName:      "Super",
+			LastName:       "Admin",
+			Username:       "admin",
+			HashedPassword: "$2y$12$3fvGYrtMSKiow6gvb.K0Q.c4AMhItCQcv5MU7pYNypZii/R.li2o2",
+		}},
+		TokenService: &model.TokenService{
+			Tokens: make(map[string]*model.OAuth2Token),
+		},
 	}
 
 	routes := http.NewServeMux()

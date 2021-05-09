@@ -31,7 +31,7 @@ func (s *Server) TokenEndpoint() http.Handler {
 
 type TokenError struct {
 	ErrorType        string `json:"error"`
-	ErrorDescription string `json:"error_description"`
+	ErrorDescription string `json:"error_description,omitempty"`
 	Code             int    `json:"-"`
 }
 
@@ -56,8 +56,6 @@ func (s *Server) createToken(request *http.Request) (*TokenResponse, error) {
 	if bUser, _, ok := request.BasicAuth(); ok {
 		clientId = bUser
 	}
-
-	log.Info("%s %s %s %s %s", clientId, grantType, username, password)
 
 	if clientId == "" {
 		return nil, TokenError{
