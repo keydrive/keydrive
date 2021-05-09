@@ -8,20 +8,6 @@ type ClientDetailsService interface {
 
 type ClientDetails interface {
 	GetID() string
-	GetHashedSecret() string
-}
-
-type BasicClient struct {
-	ID           string
-	HashedSecret string
-}
-
-func (c *BasicClient) GetID() string {
-	return c.ID
-}
-
-func (c *BasicClient) GetHashedSecret() string {
-	return c.HashedSecret
 }
 
 func GetClient(ctx context.Context) ClientDetails {

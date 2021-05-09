@@ -1,13 +1,16 @@
 package oauth
 
-import "context"
+import (
+	"context"
+)
 
 type TokenService interface {
-	CreateToken(ctx context.Context, token string)
+	CreateToken(ctx context.Context, token string) Token
 	GetToken(ctx context.Context, token string)
 }
 
 type Token interface {
 	GetAccessToken() string
-	GetRefreshToken() string
+	GetClient() ClientDetails
+	GetUser() UserDetails
 }
