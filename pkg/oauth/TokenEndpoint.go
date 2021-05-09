@@ -114,6 +114,13 @@ func (s *Server) createToken(request *http.Request) (*TokenResponse, error) {
 			Code:             http.StatusBadRequest,
 		}
 	}
+	if !s.PasswordEncoder.Compare(password, user.GetHashedPassword()) {
+		return nil, TokenError{
+			ErrorType:        "invalid_grant",
+			ErrorDescription: "",
+			Code:             http.StatusBadRequest,
+		}
+	}
 	ctx = context.WithValue(ctx, contextKeyUser, user)
 
 	modelToken := s.TokenService.CreateToken(ctx, uuid.NewString())

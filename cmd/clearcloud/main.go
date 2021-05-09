@@ -1,6 +1,7 @@
 package main
 
 import (
+	"clearcloud/internal/model"
 	"clearcloud/pkg/logger"
 	"clearcloud/pkg/oauth"
 	"flag"
@@ -15,7 +16,8 @@ func main() {
 	log.Info("initializing server...")
 
 	oauthServer := oauth.Server{
-		ClientDetailsService: nil,
+		PasswordEncoder:      &oauth.BcryptEncoder{},
+		ClientDetailsService: &model.ClientDetailsService{},
 		UserDetailsService:   nil,
 	}
 
