@@ -5,6 +5,7 @@ import (
 	"clearcloud/pkg/logger"
 	"clearcloud/pkg/oauth"
 	"flag"
+	"fmt"
 	"net/http"
 )
 
@@ -15,7 +16,7 @@ func main() {
 	flag.Parse()
 	log.Info("initializing server...")
 
-	oauthServer := oauth.Server{
+	oauthServer := &oauth.Server{
 		PasswordEncoder:      &oauth.BcryptEncoder{},
 		ClientDetailsService: &model.ClientDetailsService{},
 		UserDetailsService: &model.UserDetailsService{HardcodedUser: model.User{
@@ -31,6 +32,10 @@ func main() {
 
 	routes := http.NewServeMux()
 	routes.Handle("/oauth2/token", oauthServer.TokenEndpoint())
+	routes.Handle("/api/test", oauth.RequireAuthentication(oauthServer)(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		user := oauth.GetUser(request.Context())
+		_, _ = fmt.Fprintf(writer, "Hello %s", user.GetUsername())
+	})))
 
 	log.Info("listening on %s", *listenAddr)
 	if err := http.ListenAndServe(*listenAddr, routes); err != http.ErrServerClosed {
