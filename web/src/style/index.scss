@@ -16,5 +16,6 @@ $transition-duration: 0.2s;
 // Component styles.
 #root {
   @import '../components/Button';
+  @import '../pages/HomePage';
   @import '../pages/LoginPage';
 }

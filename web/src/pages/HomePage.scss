@@ -1,0 +1,82 @@
+.home-page {
+  display: flex;
+
+  .sidebar {
+    height: 100vh;
+    flex: 0 0 240px;
+    background-color: var(--gray-4);
+    padding: 12px;
+    overflow-y: auto;
+
+    h1 {
+      margin-bottom: 12px;
+    }
+
+    .library {
+      font-weight: 600;
+      margin-bottom: 12px;
+
+      .icon {
+        margin-right: 8px;
+        color: var(--blue);
+      }
+    }
+  }
+
+  .files-wrapper {
+    flex: 1 1 auto;
+
+    .top-bar {
+      height: 48px;
+      background-color: var(--gray-5);
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+
+      .profile {
+        $profile-size: 36px;
+        flex: 0 0 $profile-size;
+        height: $profile-size;
+        border-radius: $profile-size / 2;
+        margin-right: 8px;
+        background-color: var(--gray-4);
+        cursor: pointer;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .profile-menu {
+        position: absolute;
+        top: 42px;
+        right: 8px;
+
+        .point-wrapper {
+          display: flex;
+          justify-content: flex-end;
+
+          .point {
+            width: 24px;
+            height: 12px;
+            background-color: var(--gray-4);
+            margin-right: 6px;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+          }
+        }
+
+        .entry {
+          background-color: var(--gray-4);
+          display: block;
+          cursor: pointer;
+          text-decoration: none;
+          padding: 8px 12px;
+
+          .icon {
+            margin-right: 12px;
+          }
+        }
+      }
+    }
+  }
+}
