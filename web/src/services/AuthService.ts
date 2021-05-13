@@ -4,10 +4,9 @@ export interface TokenResponse {
 }
 
 export class AuthService {
-  public async login(
-    username: string,
-    password: string
-  ): Promise<TokenResponse> {
+  public static readonly NAME = 'AuthService';
+
+  public async login(username: string, password: string): Promise<TokenResponse> {
     const response = await fetch('/oauth2/token', {
       method: 'POST',
       body: new URLSearchParams({

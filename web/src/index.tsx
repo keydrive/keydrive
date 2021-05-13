@@ -2,13 +2,24 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './style/index.scss';
 import { App } from './App';
-import reportWebVitals from './reportWebVitals';
+import { reportWebVitals } from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { initializeStore } from './store';
+import { Injector } from './services/Injector';
+import { InjectionProvider } from './hooks/useService';
+
+const injector = new Injector();
+const store = injector.resolve(initializeStore);
 
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <InjectionProvider value={injector}>
+        <Provider store={store}>
+          <App />
+        </Provider>
+      </InjectionProvider>
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')

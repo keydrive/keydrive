@@ -2,15 +2,21 @@ import React, { useState } from 'react';
 import { TextInput } from '../components/input/TextInput';
 import { Button } from '../components/Button';
 import { Icon } from '../components/Icon';
-import { AuthService } from '../services/AuthService';
 import { Form } from '../components/input/Form';
+import { userStore } from '../store/user';
+import { useAppDispatch } from '../store';
+import { useService } from '../hooks/useService';
 
 export const LoginPage: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const {
+    actions: { loginAsync },
+  } = useService(userStore);
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(false);
-  const authService = new AuthService();
 
   return (
     <div className="login-page">
@@ -19,20 +25,15 @@ export const LoginPage: React.FC = () => {
         <Form
           onSubmit={async () => {
             setError(false);
-            return authService
-              .login(username, password)
-              .then(console.log)
-              .catch(() => setError(true));
+            const result = await dispatch(loginAsync({ username, password }));
+            if (result.type !== loginAsync.fulfilled.type) {
+              setError(true);
+            }
           }}
           submitLabel="Log in"
         >
           <div className="input-row">
-            <TextInput
-              value={username}
-              onChange={setUsername}
-              placeholder="Username"
-              autoFocus
-            />
+            <TextInput value={username} onChange={setUsername} placeholder="Username" autoFocus />
           </div>
           <div className="input-row password">
             <TextInput
