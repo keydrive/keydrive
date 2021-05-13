@@ -4,3 +4,22 @@
   font-family: sans-serif;
   box-sizing: border-box;
 }
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+input {
+  padding: 4px 8px;
+  border: 1px inset $gray-4;
+  border-radius: 4px;
+  font-size: 1rem;
+  outline: none;
+
+  &:focus {
+    border: 2px inset $blue;
+  }
+}
