@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { TextInput } from '../components/input/TextInput';
 import { Button } from '../components/Button';
 import { Icon } from '../components/Icon';
+import { AuthService } from '../services/AuthService';
 
 export const LoginPage: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const authService = new AuthService();
 
   return (
     <div className="login-page">
@@ -30,7 +32,13 @@ export const LoginPage: React.FC = () => {
             <Icon icon={showPassword ? 'eye-slash' : 'eye'} />
           </Button>
         </div>
-        <Button onClick={() => console.log('TODO: log in')}>Log in</Button>
+        <Button
+          onClick={() => {
+            authService.login(username, password).then(console.log);
+          }}
+        >
+          Log in
+        </Button>
       </div>
     </div>
   );
