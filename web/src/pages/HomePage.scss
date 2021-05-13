@@ -39,12 +39,22 @@
         height: $profile-size;
         border-radius: $profile-size / 2;
         margin-right: 8px;
-        background-color: var(--gray-4);
         cursor: pointer;
 
         display: flex;
         align-items: center;
         justify-content: center;
+
+        background-color: var(--gray-4);
+        transition: background-color $transition-duration;
+
+        &:hover {
+          background-color: var(--gray-3);
+        }
+
+        &:active {
+          background-color: var(--gray-2);
+        }
       }
 
       .profile-menu {
@@ -66,11 +76,21 @@
         }
 
         .entry {
-          background-color: var(--gray-4);
           display: block;
           cursor: pointer;
           text-decoration: none;
           padding: 8px 12px;
+
+          background-color: var(--gray-4);
+          transition: background-color $transition-duration;
+
+          &:hover {
+            background-color: var(--gray-3);
+          }
+
+          &:active {
+            background-color: var(--gray-2);
+          }
 
           .icon {
             margin-right: 12px;
