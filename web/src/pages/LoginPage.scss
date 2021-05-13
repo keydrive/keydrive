@@ -13,8 +13,22 @@
       margin-bottom: 24px;
     }
 
-    input {
+    .input-row {
       margin-bottom: 8px;
+      width: 240px;
+      display: flex;
+
+      &.password {
+        input {
+          border-top-right-radius: 0;
+          border-bottom-right-radius: 0;
+        }
+
+        .button {
+          border-top-left-radius: 0;
+          border-bottom-left-radius: 0;
+        }
+      }
     }
   }
 }

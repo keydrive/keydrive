@@ -5,6 +5,7 @@ export interface Props {
   onChange: (value: string) => void;
   type?: 'text' | 'password';
   placeholder?: string;
+  className?: string;
 }
 
 export const TextInput: React.FC<Props> = ({

@@ -3,6 +3,7 @@
   margin: 0;
   box-sizing: border-box;
   font-family: 'Open Sans', sans-serif;
+  color: black;
 }
 
 html,
@@ -19,6 +20,7 @@ input {
   border-radius: $input-border-radius;
   font-size: 1rem;
   outline: none;
+  width: 100%;
 
   &:focus {
     border: 2px inset $blue;
