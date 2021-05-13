@@ -10,7 +10,13 @@ $gray-4: rgb(209, 209, 214);
 $gray-5: rgb(229, 229, 234);
 $gray-6: rgb(242, 242, 247);
 
+// Standards for all input elements (including buttons).
+$input-height: 32px;
+$input-border-radius: 4px;
+
 @import 'reset';
+
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
 @import '~@fortawesome/fontawesome-free/css/all.min.css';
 
 #root {
