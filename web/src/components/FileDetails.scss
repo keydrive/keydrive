@@ -1,0 +1,23 @@
+.file-details {
+  display: grid;
+  grid-template-columns: 32px repeat(3, auto);
+
+  .header {
+    font-weight: 600;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--gray-4);
+    margin-bottom: 4px;
+  }
+
+  .cell {
+    height: 24px;
+
+    &.icon {
+      text-align: center;
+
+      .icon {
+        color: var(--teal);
+      }
+    }
+  }
+}

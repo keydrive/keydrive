@@ -4,8 +4,40 @@ import { useService } from '../hooks/useService';
 import { userStore } from '../store/user';
 import { Icon } from '../components/Icon';
 import { Link } from 'react-router-dom';
+import { FileDetails, FileInfo } from '../components/FileDetails';
 
 const libraries = ['Files', 'Photos', 'Movies', 'Music', 'Downloads', 'Personal'];
+
+const files: FileInfo[] = [
+  {
+    name: 'Downloads',
+    kind: 'folder',
+    lastModified: 'Yesterday',
+  },
+  {
+    name: 'Documents',
+    kind: 'folder',
+    lastModified: 'Yesterday',
+  },
+  {
+    name: 'Homework.docx',
+    kind: 'file',
+    lastModified: '23:32',
+    size: '5.2 MB',
+  },
+  {
+    name: 'Avatar.png',
+    kind: 'file',
+    lastModified: '7 Days ago',
+    size: '66 KB',
+  },
+  {
+    name: 'Linkin_Park_Numb.exe',
+    kind: 'file',
+    lastModified: '11:15',
+    size: '34 MB',
+  },
+];
 
 export const LibrariesPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -47,30 +79,7 @@ export const LibrariesPage: React.FC = () => {
             </div>
           )}
         </div>
-        <div className="files">
-          <table>
-            <thead>
-              <tr>
-                <th />
-                <th>Name</th>
-                <th>Date Modified</th>
-                <th>Size</th>
-              </tr>
-            </thead>
-            <tbody>
-              {libraries.map((name) => (
-                <tr key={name}>
-                  <td className="icon">
-                    <Icon icon="folder" />
-                  </td>
-                  <td>{name}</td>
-                  <td>Not too long ago</td>
-                  <td>Chonky</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <FileDetails files={files} />
       </div>
     </div>
   );

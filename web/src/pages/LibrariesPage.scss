@@ -82,43 +82,5 @@
         }
       }
     }
-
-    .files {
-      table {
-        width: 100%;
-        text-align: left;
-        border-collapse: collapse;
-
-        thead {
-          border-bottom: 1px solid var(--gray-5);
-
-          th {
-            font-weight: 600;
-            padding: 6px 0;
-          }
-        }
-
-        tbody {
-          tr {
-            &:nth-child(2n) {
-              background-color: var(--gray-5);
-            }
-
-            td {
-              padding: 2px 0;
-
-              &.icon {
-                text-align: right;
-                padding-right: 6px;
-
-                .icon {
-                  color: var(--teal);
-                }
-              }
-            }
-          }
-        }
-      }
-    }
   }
 }
