@@ -1,26 +1,28 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Redirect, Route, Switch } from 'react-router-dom';
+import { LoginPage } from './pages/LoginPage';
+import { useAppSelector } from './store';
+import { useService } from './hooks/useService';
+import { userStore } from './store/user';
+import { HomePage } from './pages/HomePage';
 
-function App() {
+export const App: React.FC = () => {
+  const user = useService(userStore);
+  const isLoggedIn = useAppSelector(user.selectors.isLoggedIn);
+
+  if (!isLoggedIn) {
+    return (
+      <Switch>
+        <Route exact path="/auth/login" component={LoginPage} />
+        <Redirect to="/auth/login" />
+      </Switch>
+    );
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Switch>
+      <Route exact path="/" component={HomePage} />
+      <Redirect to="/" />
+    </Switch>
   );
-}
-
-export default App;
+};

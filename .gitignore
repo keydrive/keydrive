@@ -5,6 +5,7 @@
 build/
 node_modules/
 coverage/
+clearcloud
 
 ## MISC ##
 *.log
