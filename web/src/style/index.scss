@@ -5,9 +5,9 @@ $input-border-radius: 4px;
 // Global variables.
 $transition-duration: 0.2s;
 
-// Color scheme, CSS reset.
 @import 'colors';
 @import 'reset';
+@import 'mixins';
 
 // Fonts and icons.
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
@@ -16,6 +16,6 @@ $transition-duration: 0.2s;
 // Component styles.
 #root {
   @import '../components/Button';
-  @import '../pages/HomePage';
+  @import '../pages/LibrariesPage';
   @import '../pages/LoginPage';
 }

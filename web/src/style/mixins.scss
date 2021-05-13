@@ -1,0 +1,12 @@
+@mixin clickable($bg-hover, $bg-active) {
+  transition: background-color $transition-duration;
+
+  &:hover,
+  &:focus {
+    background-color: $bg-hover;
+  }
+
+  &:active {
+    background-color: $bg-active;
+  }
+}

@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 
 const libraries = ['Files', 'Photos', 'Movies', 'Music', 'Downloads', 'Personal'];
 
-export const HomePage: React.FC = () => {
+export const LibrariesPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const {
     actions: { logout },
@@ -16,7 +16,7 @@ export const HomePage: React.FC = () => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   return (
-    <div className="home-page">
+    <div className="libraries-page">
       <div className="sidebar">
         <h1>ClearCloud</h1>
         {libraries.map((name) => (
@@ -42,12 +42,35 @@ export const HomePage: React.FC = () => {
               </Link>
               <div onClick={() => dispatch(logout())} className="entry">
                 <Icon icon="power-off" />
-                Log out
+                Log Out
               </div>
             </div>
           )}
         </div>
-        <div></div>
+        <div className="files">
+          <table>
+            <thead>
+              <tr>
+                <th />
+                <th>Name</th>
+                <th>Date Modified</th>
+                <th>Size</th>
+              </tr>
+            </thead>
+            <tbody>
+              {libraries.map((name) => (
+                <tr key={name}>
+                  <td className="icon">
+                    <Icon icon="folder" />
+                  </td>
+                  <td>{name}</td>
+                  <td>Not too long ago</td>
+                  <td>Chonky</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

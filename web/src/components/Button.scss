@@ -14,14 +14,7 @@
   background-color: var(--gray-4);
 
   &:not(:disabled):not(.loading) {
-    &:hover,
-    &:focus {
-      background-color: var(--gray-3);
-    }
-
-    &:active {
-      background-color: var(--gray-2);
-    }
+    @include clickable(var(--gray-3), var(--gray-2));
   }
 
   &:disabled {

@@ -1,4 +1,4 @@
-.home-page {
+.libraries-page {
   display: flex;
 
   .sidebar {
@@ -46,15 +46,7 @@
         justify-content: center;
 
         background-color: var(--gray-4);
-        transition: background-color $transition-duration;
-
-        &:hover {
-          background-color: var(--gray-3);
-        }
-
-        &:active {
-          background-color: var(--gray-2);
-        }
+        @include clickable(var(--gray-3), var(--gray-2));
       }
 
       .profile-menu {
@@ -82,18 +74,48 @@
           padding: 8px 12px;
 
           background-color: var(--gray-4);
-          transition: background-color $transition-duration;
-
-          &:hover {
-            background-color: var(--gray-3);
-          }
-
-          &:active {
-            background-color: var(--gray-2);
-          }
+          @include clickable(var(--gray-3), var(--gray-2));
 
           .icon {
             margin-right: 12px;
+          }
+        }
+      }
+    }
+
+    .files {
+      table {
+        width: 100%;
+        text-align: left;
+        border-collapse: collapse;
+
+        thead {
+          border-bottom: 1px solid var(--gray-5);
+
+          th {
+            font-weight: 600;
+            padding: 6px 0;
+          }
+        }
+
+        tbody {
+          tr {
+            &:nth-child(2n) {
+              background-color: var(--gray-5);
+            }
+
+            td {
+              padding: 2px 0;
+
+              &.icon {
+                text-align: right;
+                padding-right: 6px;
+
+                .icon {
+                  color: var(--teal);
+                }
+              }
+            }
           }
         }
       }
