@@ -30,5 +30,14 @@
         }
       }
     }
+
+    button[type='submit'] {
+      width: 100%;
+    }
+
+    .error {
+      margin-top: 8px;
+      color: $red;
+    }
   }
 }
