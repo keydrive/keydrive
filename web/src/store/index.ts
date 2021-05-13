@@ -1,8 +1,9 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useSelector } from 'react-redux';
 import { userStore } from './user';
 import { Injector } from '../services/Injector';
 import { useService } from '../hooks/useService';
+import { FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const initializeStore = (injector: Injector) =>
@@ -10,6 +11,11 @@ export const initializeStore = (injector: Injector) =>
     reducer: {
       user: injector.resolve(userStore).reducer,
     },
+    middleware: getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
   });
 
 type Store = ReturnType<typeof initializeStore>;

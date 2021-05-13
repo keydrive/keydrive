@@ -1,6 +1,9 @@
 import { createAsyncThunk, createSlice, Draft } from '@reduxjs/toolkit';
+import { persistReducer } from 'redux-persist';
 import { AuthService } from '../services/AuthService';
 import { Injector } from '../services/Injector';
+import { PersistConfig } from 'redux-persist/es/types';
+import storage from 'redux-persist/lib/storage';
 
 export interface State {
   token?: string;
@@ -16,6 +19,13 @@ interface ThunkApiConfig {
   state: RootState;
   rejectValue: unknown;
 }
+
+const persistConfig: PersistConfig<State> = {
+  key: 'user',
+  version: 1,
+  storage,
+  whitelist: ['token'],
+};
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const userStore = (injector: Injector) => {
@@ -58,7 +68,7 @@ export const userStore = (injector: Injector) => {
       ...userSlice.actions,
       loginAsync,
     },
-    reducer: userSlice.reducer,
+    reducer: persistReducer(persistConfig, userSlice.reducer),
     selectors: {
       isLoggedIn: (state: RootState) => !!state.user.token,
     },
