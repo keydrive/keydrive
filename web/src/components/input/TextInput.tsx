@@ -1,10 +1,10 @@
-import React, { InputHTMLAttributes } from 'react';
+import React from 'react';
 
-export interface Props
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
+export interface Props {
   value: string;
   onChange: (value: string) => void;
   type?: 'text' | 'password';
+  placeholder?: string;
 }
 
 export const TextInput: React.FC<Props> = ({
