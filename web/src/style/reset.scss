@@ -3,7 +3,7 @@
   margin: 0;
   box-sizing: border-box;
   font-family: 'Open Sans', sans-serif;
-  color: black;
+  color: var(--text);
 }
 
 html,
@@ -11,18 +11,21 @@ body,
 #root {
   width: 100%;
   height: 100%;
+  background-color: var(--gray-6);
 }
 
 input {
   padding: 0 8px;
-  border: 1px inset $gray-4;
+  border: 1px inset var(--gray-4);
   height: $input-height;
   border-radius: $input-border-radius;
   font-size: 1rem;
   outline: none;
   width: 100%;
+  background-color: var(--input-bg);
 
   &:focus {
-    border: 2px inset $blue;
+    padding: 0 7px;
+    border: 2px inset var(--blue);
   }
 }

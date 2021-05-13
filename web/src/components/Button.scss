@@ -10,23 +10,23 @@
   align-items: center;
   justify-content: center;
 
-  transition: background-color 0.2s;
-  background-color: $gray-4;
+  transition: background-color $transition-duration;
+  background-color: var(--gray-4);
 
   &:not(:disabled):not(.loading) {
     &:hover,
     &:focus {
-      background-color: $gray-3;
+      background-color: var(--gray-3);
     }
 
     &:active {
-      background-color: $gray-2;
+      background-color: var(--gray-2);
     }
   }
 
   &:disabled {
     cursor: not-allowed;
-    background-color: $gray-6;
+    background-color: var(--gray-6);
   }
 
   &.loading {

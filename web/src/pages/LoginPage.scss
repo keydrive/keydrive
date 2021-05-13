@@ -37,7 +37,7 @@
 
     .error {
       margin-top: 8px;
-      color: $red;
+      color: var(--red);
       min-height: 64px;
     }
   }

@@ -1,0 +1,37 @@
+// Apple colors:
+// https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/color
+
+:root {
+  --blue: rgb(0, 122, 255);
+  --red: rgb(255, 59, 48);
+  --teal: rgb(90, 200, 250);
+
+  --gray: rgb(142, 142, 147);
+  --gray-2: rgb(174, 174, 178);
+  --gray-3: rgb(199, 199, 204);
+  --gray-4: rgb(209, 209, 214);
+  --gray-5: rgb(229, 229, 234);
+  --gray-6: rgb(242, 242, 247);
+
+  --text-dark: rgb(28, 28, 30);
+  --text-light: rgb(242, 242, 247);
+
+  --text: var(--text-dark);
+  --input-bg: var(--gray-5);
+
+  @media (prefers-color-scheme: dark) {
+    --blue: rgb(10, 132, 255);
+    --red: rgb(255, 69, 58);
+    --teal: rgb(100, 210, 255);
+
+    --gray: rgb(142, 142, 147);
+    --gray-2: rgb(99, 99, 102);
+    --gray-3: rgb(72, 72, 74);
+    --gray-4: rgb(58, 58, 60);
+    --gray-5: rgb(44, 44, 46);
+    --gray-6: rgb(28, 28, 30);
+
+    --text: var(--text-light);
+    --input-bg: var(--gray-3);
+  }
+}
