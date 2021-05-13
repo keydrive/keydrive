@@ -6,10 +6,14 @@ export interface State {
   token?: string;
 }
 
+interface RootState {
+  user: State;
+}
+
 const initialState: State = {};
 
 interface ThunkApiConfig {
-  state: { user: State };
+  state: RootState;
   rejectValue: unknown;
 }
 
@@ -56,7 +60,7 @@ export const userStore = (injector: Injector) => {
     },
     reducer: userSlice.reducer,
     selectors: {
-      selectIsLoggedIn: (state: State) => !!state.token,
+      isLoggedIn: (state: RootState) => !!state.user.token,
     },
   };
 };

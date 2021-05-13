@@ -1,12 +1,28 @@
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { LoginPage } from './pages/LoginPage';
+import { useAppSelector } from './store';
+import { useService } from './hooks/useService';
+import { userStore } from './store/user';
+import { HomePage } from './pages/HomePage';
 
 export const App: React.FC = () => {
+  const user = useService(userStore);
+  const isLoggedIn = useAppSelector(user.selectors.isLoggedIn);
+
+  if (!isLoggedIn) {
+    return (
+      <Switch>
+        <Route exact path="/auth/login" component={LoginPage} />
+        <Redirect to="/auth/login" />
+      </Switch>
+    );
+  }
+
   return (
     <Switch>
-      <Route exact path="/auth/login" component={LoginPage} />
-      <Redirect to="/auth/login" />
+      <Route exact path="/" component={HomePage} />
+      <Redirect to="/" />
     </Switch>
   );
 };
