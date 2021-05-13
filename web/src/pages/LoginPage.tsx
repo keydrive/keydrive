@@ -31,6 +31,7 @@ export const LoginPage: React.FC = () => {
               value={username}
               onChange={setUsername}
               placeholder="Username"
+              autoFocus
             />
           </div>
           <div className="input-row password">
@@ -45,7 +46,7 @@ export const LoginPage: React.FC = () => {
             </Button>
           </div>
         </Form>
-        {error && <p className="error">Invalid username or password.</p>}
+        <div className="error">{error && 'Invalid username or password.'}</div>
       </div>
     </div>
   );

@@ -26,7 +26,9 @@ export const Form: React.FC<Props> = ({ children, onSubmit, submitLabel }) => {
       }}
     >
       {children}
-      <Button type="submit">{submitLabel}</Button>
+      <Button type="submit" loading={loading}>
+        {submitLabel}
+      </Button>
     </form>
   );
 };

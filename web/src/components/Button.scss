@@ -6,17 +6,39 @@
   cursor: pointer;
   font-size: 1rem;
   outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   transition: background-color 0.2s;
   background-color: $gray-4;
 
-  &:hover,
-  &:focus {
-    background-color: $gray-3;
+  &:not(:disabled):not(.loading) {
+    &:hover,
+    &:focus {
+      background-color: $gray-3;
+    }
+
+    &:active {
+      background-color: $gray-2;
+    }
   }
 
-  &:active {
-    background-color: $gray-2;
+  &:disabled {
+    cursor: not-allowed;
+    background-color: $gray-6;
+  }
+
+  &.loading {
+    cursor: progress;
+
+    > .content {
+      visibility: hidden;
+    }
+
+    > .loader {
+      position: absolute;
+    }
   }
 
   &.square {

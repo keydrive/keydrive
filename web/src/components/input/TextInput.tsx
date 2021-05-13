@@ -6,6 +6,7 @@ export interface Props {
   type?: 'text' | 'password';
   placeholder?: string;
   className?: string;
+  autoFocus?: boolean;
 }
 
 export const TextInput: React.FC<Props> = ({

@@ -8,6 +8,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 240px;
 
     .title {
       margin-bottom: 24px;
@@ -15,7 +16,6 @@
 
     .input-row {
       margin-bottom: 8px;
-      width: 240px;
       display: flex;
 
       &.password {
@@ -38,6 +38,7 @@
     .error {
       margin-top: 8px;
       color: $red;
+      min-height: 64px;
     }
   }
 }
