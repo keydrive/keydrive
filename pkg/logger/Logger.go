@@ -97,3 +97,7 @@ func (l *Logger) Warn(message string, params ...interface{}) {
 func (l *Logger) Error(message string, params ...interface{}) {
 	l.log(LevelError, l.error, message, params...)
 }
+
+func (l *Logger) Printf(message string, params ...interface{}) {
+	l.Info(message, params...)
+}
