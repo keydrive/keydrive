@@ -122,6 +122,13 @@ func (s *Server) createToken(request *http.Request) (*TokenResponse, error) {
 	ctx = context.WithValue(ctx, contextKeyUser, user)
 
 	modelToken := s.TokenService.CreateToken(ctx, uuid.NewString())
+	if modelToken == nil {
+		return nil, TokenError{
+			ErrorType:        "invalid_grant",
+			ErrorDescription: "",
+			Code:             http.StatusBadRequest,
+		}
+	}
 	tokenResponse := &TokenResponse{
 		AccessToken: modelToken.GetAccessToken(),
 		TokenType:   "bearer",
