@@ -29,17 +29,18 @@ type UserPage struct {
 }
 
 type UserSummary struct {
-	ID        uint   `json:"id"`
+	ID        int    `json:"id"`
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 	Username  string `json:"username"`
+	IsAdmin   bool   `json:"isAdmin"`
 }
 
 func listUsers(db *gorm.DB, users *service.User) http.Handler {
 	return jsonEndpoint(http.StatusOK, func(writer http.ResponseWriter, request *http.Request) (data interface{}, err error) {
 		var page UserPage
 		err = db.Transaction(func(tx *gorm.DB) error {
-			return toPage(request, users.GetUsers(tx), &page.TotalElements, &page.Elements)
+			return toPage(request, users.GetUsers(tx).Order("id"), &page.TotalElements, &page.Elements)
 		})
 		data = page
 		return
@@ -106,7 +107,7 @@ func getUser(db *gorm.DB, users *service.User) http.Handler {
 
 		var user model.User
 		err = db.Transaction(func(tx *gorm.DB) error {
-			result := users.GetUsers(tx).First(&user, userId)
+			result := users.GetUsers(tx).Take(&user, userId)
 			return result.Error
 		})
 
@@ -116,7 +117,7 @@ func getUser(db *gorm.DB, users *service.User) http.Handler {
 }
 
 func updateUser(db *gorm.DB, users *service.User, pwdEnc oauth.PasswordEncoder) http.Handler {
-	return jsonEndpoint(http.StatusOK, func(writer http.ResponseWriter, request *http.Request) (data interface{}, err error) {
+	return requireAdmin(jsonEndpoint(http.StatusOK, func(writer http.ResponseWriter, request *http.Request) (data interface{}, err error) {
 		// /api/users/:userId
 		userId := pathParamInt(request, 2)
 		var update UpdateUserDTO
@@ -124,7 +125,7 @@ func updateUser(db *gorm.DB, users *service.User, pwdEnc oauth.PasswordEncoder) 
 
 			var user model.User
 			err = db.Transaction(func(tx *gorm.DB) error {
-				result := users.GetUsers(tx).First(&user, userId)
+				result := users.GetUsers(tx).Take(&user, userId)
 				if result.Error != nil {
 					return result.Error
 				}
@@ -148,13 +149,18 @@ func updateUser(db *gorm.DB, users *service.User, pwdEnc oauth.PasswordEncoder) 
 			data = user
 			return
 		})
-	})
+	}))
 }
 
 func deleteUser(db *gorm.DB, users *service.User) http.Handler {
-	return jsonEndpoint(http.StatusOK, func(writer http.ResponseWriter, request *http.Request) (data interface{}, err error) {
+	return requireAdmin(jsonEndpoint(http.StatusOK, func(writer http.ResponseWriter, request *http.Request) (data interface{}, err error) {
 		// /api/users/:userId
 		userId := pathParamInt(request, 2)
+
+		if userId == 1 {
+			// you shall nog delete admin!
+			return nil, ApiError{Status: http.StatusForbidden}
+		}
 
 		err = db.Transaction(func(tx *gorm.DB) error {
 			result := users.GetUsers(tx).Delete(&model.User{
@@ -163,5 +169,5 @@ func deleteUser(db *gorm.DB, users *service.User) http.Handler {
 			return result.Error
 		})
 		return
-	})
+	}))
 }

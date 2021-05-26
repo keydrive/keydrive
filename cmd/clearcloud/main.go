@@ -6,6 +6,7 @@ import (
 	"clearcloud/internal/service"
 	"clearcloud/pkg/logger"
 	"clearcloud/pkg/oauth"
+	"errors"
 	"flag"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -41,22 +42,38 @@ func main() {
 		os.Exit(1)
 	}
 
-	log.Info("initializing server...")
-
-	userService := &service.User{}
-	passwordEncoder := &oauth.BcryptEncoder{}
-	oauthServer := &oauth.Server{
-		PasswordEncoder:      passwordEncoder,
-		ClientDetailsService: &model.ClientDetailsService{},
-		UserDetailsService: &model.UserDetailsService{HardcodedUser: model.User{
+	log.Info("preloading admin user...")
+	var admin model.User
+	result := db.Model(&model.User{}).Take(&admin, 1)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		log.Info("username: admin")
+		log.Info("password: admin")
+		db.Save(&model.User{
+			ID:             1,
 			FirstName:      "Super",
 			LastName:       "Admin",
 			Username:       "admin",
 			HashedPassword: "$2y$12$3fvGYrtMSKiow6gvb.K0Q.c4AMhItCQcv5MU7pYNypZii/R.li2o2",
-		}},
-		TokenService: &model.TokenService{
-			Tokens: make(map[string]*model.OAuth2Token),
-		},
+		})
+		db.Exec("SELECT setval('users_id_seq', 500, true)")
+	} else {
+		log.Info("admin account already exists")
+	}
+
+	log.Info("initializing server...")
+
+	userService := &service.User{
+		DB: db,
+	}
+	tokenService := &service.Token{
+		DB: db,
+	}
+	passwordEncoder := &oauth.BcryptEncoder{}
+	oauthServer := &oauth.Server{
+		PasswordEncoder:      passwordEncoder,
+		ClientDetailsService: &model.ClientDetailsService{},
+		UserDetailsService:   userService,
+		TokenService:         tokenService,
 	}
 
 	routes := http.NewServeMux()
