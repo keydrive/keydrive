@@ -6,7 +6,8 @@ import (
 )
 
 type OAuth2Token struct {
-	AccessToken string
+	AccessToken string `gorm:"primaryKey"`
+	UserID      int    `gorm:"not null"`
 	User        User
 }
 

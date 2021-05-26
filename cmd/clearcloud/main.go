@@ -34,7 +34,8 @@ func main() {
 	log.Info("connected")
 	log.Info("starting automigration...")
 
-	err = db.AutoMigrate(&model.User{})
+	db.Exec("CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public")
+	err = db.AutoMigrate(&model.User{}, &model.OAuth2Token{})
 	if err != nil {
 		log.Error("migration failed: %s", err)
 		os.Exit(1)
@@ -43,9 +44,9 @@ func main() {
 	log.Info("initializing server...")
 
 	userService := &service.User{}
-
+	passwordEncoder := &oauth.BcryptEncoder{}
 	oauthServer := &oauth.Server{
-		PasswordEncoder:      &oauth.BcryptEncoder{},
+		PasswordEncoder:      passwordEncoder,
 		ClientDetailsService: &model.ClientDetailsService{},
 		UserDetailsService: &model.UserDetailsService{HardcodedUser: model.User{
 			FirstName:      "Super",
@@ -62,7 +63,8 @@ func main() {
 	routes.Handle("/oauth2/token", oauthServer.TokenEndpoint())
 
 	authenticated := oauth.RequireAuthentication(oauthServer)
-	routes.Handle("/api/users", authenticated(controller.UsersController(db, userService)))
+	routes.Handle("/api/users", authenticated(controller.UsersCollection(db, userService, passwordEncoder)))
+	routes.Handle("/api/users/", authenticated(controller.UserResource(db, userService, passwordEncoder)))
 
 	routes.Handle("/", controller.NotFound())
 

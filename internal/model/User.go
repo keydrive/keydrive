@@ -7,11 +7,11 @@ import (
 )
 
 type User struct {
-	ID             uint
-	FirstName      string
-	LastName       string
-	Username       string
-	HashedPassword string
+	ID             int    `json:"id"`
+	Username       string `json:"username" gorm:"not null;unique;type:citext"`
+	FirstName      string `json:"firstName" gorm:"not null"`
+	LastName       string `json:"lastName" gorm:"not null"`
+	HashedPassword string `json:"-" gorm:"not null"`
 }
 
 func (u User) GetUsername() string {
