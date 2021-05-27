@@ -10,6 +10,7 @@ export const ProfilePage: React.FC = () => {
 
   return (
     <SettingsLayout className="profile-page">
+      <h2 className="title">Profile</h2>
       <Form onSubmit={() => undefined} submitLabel="Save">
         <div className="columns">
           <div>

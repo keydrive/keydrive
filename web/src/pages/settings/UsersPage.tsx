@@ -3,6 +3,7 @@ import { SettingsLayout } from '../../components/layout/SettingsLayout';
 import { useService } from '../../hooks/useService';
 import { User, UserService } from '../../services/UserService';
 import { Icon } from '../../components/Icon';
+import { Button } from '../../components/Button';
 
 export const UsersPage: React.FC = () => {
   const userService = useService(UserService);
@@ -23,6 +24,12 @@ export const UsersPage: React.FC = () => {
 
   return (
     <SettingsLayout className="users-page">
+      <div className="title">
+        <h2>Users</h2>
+        <Button square>
+          <Icon icon="plus" />
+        </Button>
+      </div>
       <div className="headers">
         <div className="icon" />
         <div>Username</div>

@@ -45,6 +45,16 @@
         text-align: center;
         margin-top: 24px;
       }
+
+      .title {
+        display: flex;
+        align-items: center;
+        margin-bottom: 24px;
+
+        h2 {
+          margin-right: 24px;
+        }
+      }
     }
   }
 }
