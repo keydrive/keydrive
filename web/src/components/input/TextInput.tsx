@@ -7,16 +7,9 @@ export interface Props {
   placeholder?: string;
   className?: string;
   autoFocus?: boolean;
+  id?: string;
 }
 
-export const TextInput: React.FC<Props> = ({
-  type = 'text',
-  onChange,
-  ...props
-}) => (
-  <input
-    type={type}
-    onChange={(e) => onChange(e.currentTarget.value)}
-    {...props}
-  />
+export const TextInput: React.FC<Props> = ({ type = 'text', onChange, ...props }) => (
+  <input type={type} onChange={(e) => onChange(e.currentTarget.value)} {...props} />
 );

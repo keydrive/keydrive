@@ -1,0 +1,34 @@
+.users-page {
+  main {
+    padding: 24px;
+  }
+
+  .headers {
+    font-weight: 600;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--gray-4);
+    margin-bottom: 6px;
+
+    > div {
+      display: inline-block;
+      width: 320px;
+
+      &.icon {
+        width: 32px;
+      }
+    }
+  }
+
+  .users-list {
+    .user {
+      > div {
+        display: inline-block;
+        width: 320px;
+
+        &.icon {
+          width: 32px;
+        }
+      }
+    }
+  }
+}

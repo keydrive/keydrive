@@ -1,0 +1,29 @@
+.profile-page {
+  main {
+    padding: 24px;
+  }
+
+  form {
+    .columns {
+      display: flex;
+      margin-bottom: 12px;
+
+      > div {
+        &.inputs {
+          flex: 0 0 320px;
+        }
+
+        > :not(:last-child) {
+          margin-bottom: 6px;
+        }
+
+        label {
+          display: flex;
+          align-items: center;
+          margin-right: 24px;
+          height: $input-height;
+        }
+      }
+    }
+  }
+}

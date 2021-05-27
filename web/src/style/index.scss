@@ -18,6 +18,8 @@ $transition-duration: 0.2s;
   @import '../components/layout/SettingsLayout';
   @import '../components/Button';
   @import '../components/ProfileMenu';
+  @import '../pages/settings/ProfilePage';
+  @import '../pages/settings/UsersPage';
   @import '../pages/LibrariesPage';
   @import '../pages/LoginPage';
 }

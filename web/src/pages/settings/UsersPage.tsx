@@ -22,11 +22,18 @@ export const UsersPage: React.FC = () => {
   }, [userService, users]);
 
   return (
-    <SettingsLayout>
+    <SettingsLayout className="users-page">
+      <div className="headers">
+        <div className="icon" />
+        <div>Username</div>
+        <div>Full Name</div>
+      </div>
       <div className="users-list">
         {users ? (
           users.map((user) => (
             <div key={user.id} className="user">
+              <div className="icon">{user.isAdmin && <Icon icon="user-shield" />}</div>
+              <div>{user.username}</div>
               <div>
                 {user.firstName} {user.lastName}
               </div>

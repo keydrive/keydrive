@@ -2,9 +2,14 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '../Icon';
 import { ProfileMenu } from '../ProfileMenu';
+import { classNames } from '../../utils/classNames';
 
-export const SettingsLayout: React.FC = ({ children }) => (
-  <div className="settings-layout">
+export interface Props {
+  className?: string;
+}
+
+export const SettingsLayout: React.FC<Props> = ({ children, className }) => (
+  <div className={classNames('settings-layout', className)}>
     <div className="sidebar">
       <Link to="/">
         <h1>ClearCloud</h1>
