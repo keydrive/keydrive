@@ -32,55 +32,6 @@
       display: flex;
       justify-content: flex-end;
       align-items: center;
-
-      .profile {
-        $profile-size: 36px;
-        flex: 0 0 $profile-size;
-        height: $profile-size;
-        border-radius: $profile-size / 2;
-        margin-right: 8px;
-        cursor: pointer;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        background-color: var(--gray-4);
-        @include clickable(var(--gray-3), var(--gray-2));
-      }
-
-      .profile-menu {
-        position: absolute;
-        top: 42px;
-        right: 8px;
-
-        .point-wrapper {
-          display: flex;
-          justify-content: flex-end;
-
-          .point {
-            width: 24px;
-            height: 12px;
-            background-color: var(--gray-4);
-            margin-right: 6px;
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-          }
-        }
-
-        .entry {
-          display: block;
-          cursor: pointer;
-          text-decoration: none;
-          padding: 8px 12px;
-
-          background-color: var(--gray-4);
-          @include clickable(var(--gray-3), var(--gray-2));
-
-          .icon {
-            margin-right: 12px;
-          }
-        }
-      }
     }
   }
 }

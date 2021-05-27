@@ -1,20 +1,10 @@
-import React, { useState } from 'react';
-import { useAppDispatch } from '../store';
-import { useService } from '../hooks/useService';
-import { userStore } from '../store/user';
+import React from 'react';
 import { Icon } from '../components/Icon';
-import { Link } from 'react-router-dom';
+import { ProfileMenu } from '../components/ProfileMenu';
 
 const libraries = ['Libraries go here!', 'Files', 'Photos', 'Movies', 'Music', 'Downloads', 'Personal'];
 
 export const LibrariesPage: React.FC = () => {
-  const dispatch = useAppDispatch();
-  const {
-    actions: { logout },
-  } = useService(userStore);
-
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
-
   return (
     <div className="libraries-page">
       <div className="sidebar">
@@ -28,24 +18,7 @@ export const LibrariesPage: React.FC = () => {
       </div>
       <div className="files-wrapper">
         <div className="top-bar">
-          <div className="profile" onClick={() => setShowProfileMenu(!showProfileMenu)}>
-            <Icon icon="user" />
-          </div>
-          {showProfileMenu && (
-            <div className="profile-menu">
-              <div className="point-wrapper">
-                <div className="point" />
-              </div>
-              <Link to="/settings" className="entry">
-                <Icon icon="cog" />
-                Settings
-              </Link>
-              <div onClick={() => dispatch(logout())} className="entry">
-                <Icon icon="power-off" />
-                Log Out
-              </div>
-            </div>
-          )}
+          <ProfileMenu />
         </div>
         Files go here!
       </div>
