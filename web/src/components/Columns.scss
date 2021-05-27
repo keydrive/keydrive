@@ -1,0 +1,20 @@
+.columns {
+  display: flex;
+  margin-bottom: 12px;
+
+  > div {
+    &:not(:last-child) {
+      margin-right: 24px;
+    }
+
+    > * {
+      display: flex;
+      align-items: center;
+      height: $input-height;
+
+      &:not(:last-child) {
+        margin-bottom: 6px;
+      }
+    }
+  }
+}

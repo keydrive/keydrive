@@ -17,7 +17,9 @@ $transition-duration: 0.2s;
 #root {
   @import '../components/layout/SettingsLayout';
   @import '../components/Button';
+  @import '../components/Columns';
   @import '../components/ProfileMenu';
+  @import '../pages/settings/NewUserPage';
   @import '../pages/settings/ProfilePage';
   @import '../pages/settings/UsersPage';
   @import '../pages/LibrariesPage';

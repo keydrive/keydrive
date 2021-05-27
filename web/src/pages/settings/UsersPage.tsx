@@ -3,7 +3,7 @@ import { SettingsLayout } from '../../components/layout/SettingsLayout';
 import { useService } from '../../hooks/useService';
 import { User, UserService } from '../../services/UserService';
 import { Icon } from '../../components/Icon';
-import { Button } from '../../components/Button';
+import { Link } from 'react-router-dom';
 
 export const UsersPage: React.FC = () => {
   const userService = useService(UserService);
@@ -26,9 +26,9 @@ export const UsersPage: React.FC = () => {
     <SettingsLayout className="users-page">
       <div className="title">
         <h2>Users</h2>
-        <Button square>
+        <Link to="/settings/users/new" className="button square">
           <Icon icon="plus" />
-        </Button>
+        </Link>
       </div>
       <div className="headers">
         <div className="icon" />
