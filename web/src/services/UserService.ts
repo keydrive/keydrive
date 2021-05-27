@@ -9,6 +9,13 @@ export interface User {
   isAdmin: boolean;
 }
 
+export interface CreateUser {
+  username: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+}
+
 export class UserService {
   public static readonly NAME = 'UserService';
 
@@ -18,7 +25,11 @@ export class UserService {
     this.api = injector.resolve(ApiService);
   }
 
-  public async listUsers(): Promise<User[]> {
+  public listUsers(): Promise<User[]> {
     return this.api.getAllPages('/users');
+  }
+
+  public createUser(user: CreateUser): Promise<void> {
+    return this.api.jsonPost('/users', user);
   }
 }

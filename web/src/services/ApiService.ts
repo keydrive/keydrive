@@ -21,6 +21,10 @@ export class ApiService {
     return this.jsonRequest('GET', path, undefined, params);
   }
 
+  public jsonPost<B, T>(path: string, body: B): Promise<T> {
+    return this.jsonRequest('POST', path, body);
+  }
+
   public async getAllPages<T>(path: string): Promise<T[]> {
     const firstPage = await this.jsonGet<Page<T>>(path, {
       limit: MAX_LIMIT.toString(),
@@ -41,7 +45,7 @@ export class ApiService {
   }
 
   private async jsonRequest<T>(
-    method: 'GET',
+    method: 'GET' | 'POST',
     path: string,
     body?: unknown,
     params?: Record<string, string>
@@ -60,6 +64,7 @@ export class ApiService {
     const response = await fetch(`/api${path}${paramString}`, {
       method,
       headers,
+      body: body ? JSON.stringify(body) : undefined,
     });
     const responseBody = response.status === 204 ? undefined : await response.json();
 

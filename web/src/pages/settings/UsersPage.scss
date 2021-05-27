@@ -17,12 +17,20 @@
 
   .users-list {
     .user {
+      border-radius: $border-radius;
+      padding: 2px;
+
+      &:nth-child(2n) {
+        background-color: var(--gray-5);
+      }
+
       > div {
         display: inline-block;
         width: 320px;
 
         &.icon {
           width: 32px;
+          text-align: center;
         }
       }
     }

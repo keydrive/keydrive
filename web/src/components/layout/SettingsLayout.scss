@@ -16,7 +16,7 @@
       font-weight: 600;
       display: block;
       padding: 6px;
-      border-radius: $input-border-radius;
+      border-radius: $border-radius;
 
       @include clickable(var(--gray-3), var(--gray-2));
 
