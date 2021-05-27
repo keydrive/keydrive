@@ -4,7 +4,7 @@ import { LoginPage } from './pages/LoginPage';
 import { useAppSelector } from './store';
 import { useService } from './hooks/useService';
 import { userStore } from './store/user';
-import { HomePage } from './pages/HomePage';
+import { LibrariesPage } from './pages/LibrariesPage';
 
 export const App: React.FC = () => {
   const user = useService(userStore);
@@ -21,7 +21,7 @@ export const App: React.FC = () => {
 
   return (
     <Switch>
-      <Route exact path="/" component={HomePage} />
+      <Route exact path="/" component={LibrariesPage} />
       <Redirect to="/" />
     </Switch>
   );

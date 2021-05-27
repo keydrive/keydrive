@@ -30,7 +30,7 @@ export const LoginPage: React.FC = () => {
               setError(true);
             }
           }}
-          submitLabel="Log in"
+          submitLabel="Log In"
         >
           <div className="input-row">
             <TextInput value={username} onChange={setUsername} placeholder="Username" autoFocus />
