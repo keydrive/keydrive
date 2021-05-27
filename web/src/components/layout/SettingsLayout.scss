@@ -1,4 +1,4 @@
-.settings-page {
+.settings-layout {
   display: flex;
 
   .sidebar {
@@ -18,18 +18,18 @@
       padding: 6px;
       border-radius: $input-border-radius;
 
+      @include clickable(var(--gray-3), var(--gray-2));
+
       .icon {
         margin-right: 8px;
         color: var(--blue);
         width: 24px;
         text-align: center;
       }
-
-      @include clickable(var(--gray-3), var(--gray-2));
     }
   }
 
-  .files-wrapper {
+  .content-wrapper {
     flex: 1 1 auto;
 
     .top-bar {
