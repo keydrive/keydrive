@@ -39,5 +39,12 @@
       justify-content: flex-end;
       align-items: center;
     }
+
+    main {
+      .loader {
+        text-align: center;
+        margin-top: 24px;
+      }
+    }
   }
 }

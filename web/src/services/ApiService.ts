@@ -1,0 +1,80 @@
+import { Injector } from './Injector';
+import { initializeStore, Store } from '../store';
+
+export interface Page<T> {
+  totalElements: number;
+  elements: T[];
+}
+
+const MAX_LIMIT = 100;
+
+export class ApiService {
+  public static readonly NAME = 'ApiService';
+
+  private readonly store: Store;
+
+  public constructor(injector: Injector) {
+    this.store = injector.resolve(initializeStore);
+  }
+
+  public jsonGet<T>(path: string, params?: Record<string, string>): Promise<T> {
+    return this.jsonRequest('GET', path, undefined, params);
+  }
+
+  public async getAllPages<T>(path: string): Promise<T[]> {
+    const firstPage = await this.jsonGet<Page<T>>(path, {
+      limit: MAX_LIMIT.toString(),
+    });
+    const totalElements = firstPage.totalElements;
+    const totalPages = Math.ceil(totalElements / MAX_LIMIT);
+
+    const result = firstPage.elements;
+    for (let page = 2; page <= totalPages; page++) {
+      const nextPage = await this.jsonGet<Page<T>>(path, {
+        page: page.toString(),
+        limit: MAX_LIMIT.toString(),
+      });
+      result.push(...nextPage.elements);
+    }
+
+    return result;
+  }
+
+  private async jsonRequest<T>(
+    method: 'GET',
+    path: string,
+    body?: unknown,
+    params?: Record<string, string>
+  ): Promise<T> {
+    const headers: HeadersInit = {
+      Authorization: `Bearer ${this.getToken()}`,
+      Accept: 'application/json',
+    };
+
+    if (body) {
+      headers['Content-Type'] = 'application/json';
+    }
+
+    const paramString = params ? `?${new URLSearchParams(params)}` : '';
+
+    const response = await fetch(`/api${path}${paramString}`, {
+      method,
+      headers,
+    });
+    const responseBody = response.status === 204 ? undefined : await response.json();
+
+    if (response.status >= 400) {
+      throw responseBody;
+    }
+
+    return responseBody;
+  }
+
+  private getToken(): string {
+    const token = this.store.getState().user.token;
+    if (!token) {
+      throw new Error('User is not logged in.');
+    }
+    return token;
+  }
+}

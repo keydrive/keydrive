@@ -18,9 +18,9 @@ export const initializeStore = (injector: Injector) =>
     }),
   });
 
-type Store = ReturnType<typeof initializeStore>;
-type RootState = ReturnType<Store['getState']>;
-type AppDispatch = Store['dispatch'];
+export type Store = ReturnType<typeof initializeStore>;
+export type RootState = ReturnType<Store['getState']>;
+export type AppDispatch = Store['dispatch'];
 
 export const useAppDispatch = (): AppDispatch => useService(initializeStore).dispatch;
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;

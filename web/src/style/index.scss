@@ -21,3 +21,7 @@ $transition-duration: 0.2s;
   @import '../pages/LibrariesPage';
   @import '../pages/LoginPage';
 }
+
+.error {
+  color: var(--red);
+}
