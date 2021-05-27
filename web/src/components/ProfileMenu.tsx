@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Icon } from './Icon';
 import { Link } from 'react-router-dom';
 import { useAppDispatch } from '../store';
 import { useService } from '../hooks/useService';
 import { userStore } from '../store/user';
+import { useClickOutside } from '../hooks/useClickOutside';
 
 export const ProfileMenu: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -12,9 +13,11 @@ export const ProfileMenu: React.FC = () => {
   } = useService(userStore);
 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useClickOutside(ref, () => setShowProfileMenu(false));
 
   return (
-    <>
+    <div className="profile-menu-wrapper" ref={ref}>
       <div className="profile" onClick={() => setShowProfileMenu(!showProfileMenu)}>
         <Icon icon="user" />
       </div>
@@ -33,6 +36,6 @@ export const ProfileMenu: React.FC = () => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
