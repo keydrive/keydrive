@@ -1,0 +1,43 @@
+.settings-page {
+  display: flex;
+
+  .sidebar {
+    height: 100vh;
+    flex: 0 0 240px;
+    background-color: var(--gray-4);
+    padding: 12px;
+    overflow-y: auto;
+
+    h1 {
+      margin-bottom: 12px;
+    }
+
+    .entry {
+      font-weight: 600;
+      display: block;
+      padding: 6px;
+      border-radius: $input-border-radius;
+
+      .icon {
+        margin-right: 8px;
+        color: var(--blue);
+        width: 24px;
+        text-align: center;
+      }
+
+      @include clickable(var(--gray-3), var(--gray-2));
+    }
+  }
+
+  .files-wrapper {
+    flex: 1 1 auto;
+
+    .top-bar {
+      height: 48px;
+      background-color: var(--gray-5);
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+  }
+}
