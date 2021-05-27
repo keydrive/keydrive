@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Icon } from '../Icon';
 import { ProfileMenu } from '../ProfileMenu';
 
@@ -9,14 +9,18 @@ export const SettingsLayout: React.FC = ({ children }) => (
       <Link to="/">
         <h1>ClearCloud</h1>
       </Link>
-      <NavLink to="/settings/profile" className="entry">
+      <Link to="/" className="entry">
+        <Icon icon="arrow-left" />
+        Libraries
+      </Link>
+      <Link to="/settings/profile" className="entry">
         <Icon icon="address-card" />
         Profile
-      </NavLink>
-      <NavLink to="/settings/users" className="entry">
+      </Link>
+      <Link to="/settings/users" className="entry">
         <Icon icon="users" />
         Users
-      </NavLink>
+      </Link>
     </div>
     <div className="content-wrapper">
       <div className="top-bar">
