@@ -1,43 +1,38 @@
 package oauth
 
 import (
-	"context"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
 )
 
-func Authenticate(server *Server) func(next http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-			authHeader := request.Header.Get("authorization")
-			if strings.HasPrefix(strings.ToLower(authHeader), "bearer ") {
-				// this is a token!
-				startOfToken := strings.LastIndex(authHeader, " ")
-				accessToken := authHeader[startOfToken+1:]
-				token := server.TokenService.GetToken(request.Context(), accessToken)
-				if token != nil {
-					client := token.GetClient()
-					ctx := context.WithValue(request.Context(), contextKeyClient, client)
-					user := token.GetUser()
-					ctx = context.WithValue(request.Context(), contextKeyUser, user)
-					request = request.WithContext(ctx)
-				}
+func Authenticate(server *Server) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authHeader := c.GetHeader("authorization")
+		if strings.HasPrefix(strings.ToLower(authHeader), "bearer ") {
+			// this is a token!
+			startOfToken := strings.LastIndex(authHeader, " ")
+			accessToken := authHeader[startOfToken+1:]
+			token := server.TokenService.GetToken(c, accessToken)
+			if token != nil {
+				client := token.GetClient()
+				c.Set(contextKeyClient, client)
+				user := token.GetUser()
+				c.Set(contextKeyUser, user)
 			}
-			next.ServeHTTP(writer, request)
-		})
+		}
+		c.Next()
 	}
 }
 
-func RequireAuthentication(server *Server) func(next http.Handler) http.Handler {
-	auth := Authenticate(server)
-	return func(next http.Handler) http.Handler {
-		return auth(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-			user := GetUser(request.Context())
-			if user == nil {
-				http.Error(writer, "", http.StatusUnauthorized)
-			} else {
-				next.ServeHTTP(writer, request)
-			}
-		}))
+func RequireAuthentication() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		user := GetUser(c)
+		if user == nil {
+			c.JSON(http.StatusUnauthorized, nil)
+			c.Abort()
+			return
+		}
+		c.Next()
 	}
 }

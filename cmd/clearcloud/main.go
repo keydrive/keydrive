@@ -1,6 +1,7 @@
 package main
 
 import (
+	"clearcloud/internal/controller"
 	"clearcloud/internal/model"
 	"clearcloud/internal/service"
 	"clearcloud/pkg/logger"
@@ -82,11 +83,17 @@ func main() {
 		oauth2.POST("/token", oauthServer.TokenEndpoint())
 	}
 
-	//authenticated := oauth.RequireAuthentication(oauthServer)
-	//routes.Handle("/api/users", authenticated(controller.UsersCollection(db, userService, passwordEncoder)))
-	//routes.Handle("/api/users/", authenticated(controller.UserResource(db, userService, passwordEncoder)))
-	//
-	//routes.Handle("/", controller.NotFound())
+	api := router.Group("/api", oauth.Authenticate(oauthServer))
+	{
+		users := api.Group("/users", oauth.RequireAuthentication())
+		{
+			users.GET("/", controller.ListUsers(db, userService))
+			users.POST("/", controller.RequireAdmin(), controller.CreateUser(db, passwordEncoder))
+			users.GET("/:userId", controller.GetUser(db, userService))
+			users.PATCH("/:userId", controller.RequireAdmin(), controller.UpdateUser(db, userService, passwordEncoder))
+			users.DELETE("/:userId", controller.RequireAdmin(), controller.DeleteUser(db, userService))
+		}
+	}
 
 	log.Info("listening on %s", *listenAddr)
 	if err := router.Run(*listenAddr); err != http.ErrServerClosed {

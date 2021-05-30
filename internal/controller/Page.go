@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
 	"strconv"
@@ -11,10 +12,9 @@ type Page struct {
 	Elements      interface{} `json:"elements"`
 }
 
-func toPage(request *http.Request, query *gorm.DB, count *int64, elements interface{}) error {
-	qParam := request.URL.Query()
+func returnPage(c *gin.Context, query *gorm.DB, body interface{}, count *int64, elements interface{}) {
 	limit := 20
-	limitQuery := qParam.Get("limit")
+	limitQuery := c.DefaultQuery("limit", "20")
 	if limitQuery != "" {
 		if limitValue, err := strconv.Atoi(limitQuery); err == nil && limitValue >= 0 {
 			limit = limitValue
@@ -22,7 +22,7 @@ func toPage(request *http.Request, query *gorm.DB, count *int64, elements interf
 	}
 
 	page := 1
-	pageQuery := qParam.Get("page")
+	pageQuery := c.DefaultQuery("page", "1")
 	if pageQuery != "" {
 		if pageValue, err := strconv.Atoi(pageQuery); err == nil && pageValue >= 0 {
 			page = pageValue
@@ -35,11 +35,15 @@ func toPage(request *http.Request, query *gorm.DB, count *int64, elements interf
 
 	result := query.Offset((page - 1) * limit).Limit(limit).Find(elements)
 	if result.Error != nil {
-		return result.Error
+		log.Warn("failed to build page: %s", result.Error)
+		c.JSON(http.StatusInternalServerError, nil)
+		return
 	}
 	result = query.Count(count)
 	if result.Error != nil {
-		return result.Error
+		log.Warn("failed to build page: %s", result.Error)
+		c.JSON(http.StatusInternalServerError, nil)
+		return
 	}
-	return nil
+	c.JSON(http.StatusOK, body)
 }

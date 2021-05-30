@@ -3,19 +3,21 @@ package controller
 import (
 	"clearcloud/internal/model"
 	"clearcloud/pkg/oauth"
+	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-func requireAdmin(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		userValue := oauth.GetUser(request.Context())
+func RequireAdmin() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userValue := oauth.GetUser(c)
 		if userValue != nil {
 			user, ok := userValue.(model.User)
 			if ok && user.IsAdmin {
-				next.ServeHTTP(writer, request)
+				c.Next()
 				return
 			}
 		}
-		simpleError(writer, http.StatusForbidden)
-	})
+		simpleError(c, http.StatusForbidden)
+		c.Abort()
+	}
 }
