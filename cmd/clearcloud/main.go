@@ -1,13 +1,13 @@
 package main
 
 import (
-	"clearcloud/internal/controller"
 	"clearcloud/internal/model"
 	"clearcloud/internal/service"
 	"clearcloud/pkg/logger"
 	"clearcloud/pkg/oauth"
 	"errors"
 	"flag"
+	"github.com/gin-gonic/gin"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	glog "gorm.io/gorm/logger"
@@ -76,17 +76,20 @@ func main() {
 		TokenService:         tokenService,
 	}
 
-	routes := http.NewServeMux()
-	routes.Handle("/oauth2/token", oauthServer.TokenEndpoint())
+	router := gin.Default()
+	oauth2 := router.Group("/oauth2")
+	{
+		oauth2.POST("/token", oauthServer.TokenEndpoint())
+	}
 
-	authenticated := oauth.RequireAuthentication(oauthServer)
-	routes.Handle("/api/users", authenticated(controller.UsersCollection(db, userService, passwordEncoder)))
-	routes.Handle("/api/users/", authenticated(controller.UserResource(db, userService, passwordEncoder)))
-
-	routes.Handle("/", controller.NotFound())
+	//authenticated := oauth.RequireAuthentication(oauthServer)
+	//routes.Handle("/api/users", authenticated(controller.UsersCollection(db, userService, passwordEncoder)))
+	//routes.Handle("/api/users/", authenticated(controller.UserResource(db, userService, passwordEncoder)))
+	//
+	//routes.Handle("/", controller.NotFound())
 
 	log.Info("listening on %s", *listenAddr)
-	if err := http.ListenAndServe(*listenAddr, routes); err != http.ErrServerClosed {
+	if err := router.Run(*listenAddr); err != http.ErrServerClosed {
 		panic(err)
 	}
 }
