@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "clearcloud/docs"
 	"clearcloud/internal/controller"
 	"clearcloud/internal/model"
 	"clearcloud/internal/service"
@@ -9,6 +10,8 @@ import (
 	"errors"
 	"flag"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	glog "gorm.io/gorm/logger"
@@ -20,6 +23,15 @@ var listenAddr = flag.String("listen", ":5555", "The address on which to listen 
 var postgresDsn = flag.String("postgres-dsn", "host=localhost user=postgres password=postgres dbname=postgres port=5432 sslmode=disable", "The connection string to connect to the postgres database.")
 var log = logger.NewConsole(logger.LevelDebug, "MAIN")
 
+// @title ClearCloud API
+// @version development
+
+// @contact.name ClearCloud Team
+// @contact.url https://github.com/ChappIO/clearcloud/issues
+// @contact.email thomas.biesaart@protonmail.com
+
+// @securitydefinitions.oauth2.password OAuth2
+// @tokenUrl /oauth2/token
 func main() {
 	flag.Parse()
 
@@ -94,6 +106,9 @@ func main() {
 			users.DELETE("/:userId", controller.RequireAdmin(), controller.DeleteUser(db, userService))
 		}
 	}
+
+	url := ginSwagger.URL("/docs/doc.json")
+	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
 	log.Info("listening on %s", *listenAddr)
 	if err := router.Run(*listenAddr); err != http.ErrServerClosed {

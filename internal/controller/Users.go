@@ -22,6 +22,15 @@ type UserPage struct {
 	Elements      []UserSummary `json:"elements"`
 }
 
+// ListUsers
+// @Tags Authentication
+// @Router /api/users [get]
+// @Summary Search the collection of users
+// @Security OAuth2
+// @Produce  json
+// @Success 200 {object} UserPage
+// @Param page query int false "The page number to fetch" default(1)
+// @Param limit query int false "The maximum number of elements to return" default(20)
 func ListUsers(db *gorm.DB, users *service.User) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var page UserPage
@@ -36,6 +45,15 @@ type CreateUserDTO struct {
 	Password  string `json:"password" binding:"required"`
 }
 
+// CreateUser
+// @Tags Authentication
+// @Router /api/users [post]
+// @Summary Add a new user
+// @Security OAuth2
+// @Produce  json
+// @Param body body CreateUserDTO true "The new user"
+// @Success 201 {object} model.User
+// @Failure 409 {object} ApiError "This username is already taken"
 func CreateUser(db *gorm.DB, pwdEnc oauth.PasswordEncoder) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var create CreateUserDTO
@@ -57,18 +75,19 @@ func CreateUser(db *gorm.DB, pwdEnc oauth.PasswordEncoder) gin.HandlerFunc {
 	}
 }
 
-type UpdateUserDTO struct {
-	Username  string `json:"username" binding:""`
-	FirstName string `json:"firstName" binding:""`
-	LastName  string `json:"lastName" binding:""`
-	Password  string `json:"password" binding:""`
-}
-
+// GetUser
+// @Tags Authentication
+// @Router /api/users/{userId} [get]
+// @Summary Get user details
+// @Security OAuth2
+// @Produce  json
+// @Param userId path int true "The user id"
+// @Success 200 {object} model.User
 func GetUser(db *gorm.DB, users *service.User) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userId, ok := intParam(c, "userId")
 		if !ok {
-			c.JSON(http.StatusNotFound, nil)
+			simpleError(c, http.StatusNotFound)
 			return
 		}
 		var user model.User
@@ -80,11 +99,27 @@ func GetUser(db *gorm.DB, users *service.User) gin.HandlerFunc {
 	}
 }
 
+type UpdateUserDTO struct {
+	Username  string `json:"username" binding:""`
+	FirstName string `json:"firstName" binding:""`
+	LastName  string `json:"lastName" binding:""`
+	Password  string `json:"password" binding:""`
+}
+
+// UpdateUser
+// @Tags Authentication
+// @Router /api/users/{userId} [patch]
+// @Summary Update an existing user
+// @Security OAuth2
+// @Produce  json
+// @Param body body UpdateUserDTO true "The changes"
+// @Param userId path int true "The user id"
+// @Success 200 {object} model.User
 func UpdateUser(db *gorm.DB, users *service.User, pwdEnc oauth.PasswordEncoder) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userId, ok := intParam(c, "userId")
 		if !ok {
-			c.JSON(http.StatusNotFound, nil)
+			simpleError(c, http.StatusNotFound)
 			return
 		}
 
@@ -114,6 +149,7 @@ func UpdateUser(db *gorm.DB, users *service.User, pwdEnc oauth.PasswordEncoder) 
 				return result.Error
 			}
 
+			c.JSON(http.StatusOK, user)
 			return nil
 		})
 		if err != nil {
@@ -123,6 +159,14 @@ func UpdateUser(db *gorm.DB, users *service.User, pwdEnc oauth.PasswordEncoder) 
 	}
 }
 
+// DeleteUser
+// @Tags Authentication
+// @Router /api/users/{userId} [delete]
+// @Summary Delete a user
+// @Security OAuth2
+// @Produce  json
+// @Param userId path int true "The user id"
+// @Success 204
 func DeleteUser(db *gorm.DB, users *service.User) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userId, ok := intParam(c, "userId")

@@ -36,13 +36,13 @@ func returnPage(c *gin.Context, query *gorm.DB, body interface{}, count *int64, 
 	result := query.Offset((page - 1) * limit).Limit(limit).Find(elements)
 	if result.Error != nil {
 		log.Warn("failed to build page: %s", result.Error)
-		c.JSON(http.StatusInternalServerError, nil)
+		simpleError(c, http.StatusInternalServerError)
 		return
 	}
 	result = query.Count(count)
 	if result.Error != nil {
 		log.Warn("failed to build page: %s", result.Error)
-		c.JSON(http.StatusInternalServerError, nil)
+		simpleError(c, http.StatusInternalServerError)
 		return
 	}
 	c.JSON(http.StatusOK, body)

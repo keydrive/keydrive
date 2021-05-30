@@ -29,7 +29,7 @@ func RequireAuthentication() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := GetUser(c)
 		if user == nil {
-			c.JSON(http.StatusUnauthorized, nil)
+			c.Status(http.StatusUnauthorized)
 			c.Abort()
 			return
 		}
