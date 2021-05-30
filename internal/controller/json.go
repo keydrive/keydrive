@@ -4,7 +4,7 @@ import (
 	"clearcloud/pkg/logger"
 	"errors"
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator"
+	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
 	"net/http"
 	"strings"
@@ -78,7 +78,14 @@ func writeError(c *gin.Context, err error) {
 		writeJsonError(c, apiError)
 		return
 	}
-
+	if validationErrors, ok := err.(validator.ValidationErrors); ok {
+		writeJsonError(c, ApiError{
+			Status:      http.StatusBadRequest,
+			Description: "validation failure",
+			Details:     mapErrors(validationErrors),
+		})
+		return
+	}
 	if sqlError, ok := err.(SQLError); ok {
 		if sqlError.SQLState() == "23505" {
 			// unique constraint violation

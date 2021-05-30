@@ -30,10 +30,10 @@ func ListUsers(db *gorm.DB, users *service.User) gin.HandlerFunc {
 }
 
 type CreateUserDTO struct {
-	Username  string `json:"username" validate:"required"`
-	FirstName string `json:"firstName" validate:"required"`
-	LastName  string `json:"lastName" validate:"required"`
-	Password  string `json:"password" validate:"required"`
+	Username  string `json:"username" binding:"required"`
+	FirstName string `json:"firstName" binding:"required"`
+	LastName  string `json:"lastName" binding:"required"`
+	Password  string `json:"password" binding:"required"`
 }
 
 func CreateUser(db *gorm.DB, pwdEnc oauth.PasswordEncoder) gin.HandlerFunc {
@@ -58,10 +58,10 @@ func CreateUser(db *gorm.DB, pwdEnc oauth.PasswordEncoder) gin.HandlerFunc {
 }
 
 type UpdateUserDTO struct {
-	Username  string `json:"username" validate:""`
-	FirstName string `json:"firstName" validate:""`
-	LastName  string `json:"lastName" validate:""`
-	Password  string `json:"password" validate:""`
+	Username  string `json:"username" binding:""`
+	FirstName string `json:"firstName" binding:""`
+	LastName  string `json:"lastName" binding:""`
+	Password  string `json:"password" binding:""`
 }
 
 func GetUser(db *gorm.DB, users *service.User) gin.HandlerFunc {
