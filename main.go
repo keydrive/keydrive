@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "clearcloud/docs"
 	"clearcloud/internal/controller"
 	"clearcloud/internal/model"
 	"clearcloud/internal/service"
@@ -8,6 +9,9 @@ import (
 	"clearcloud/pkg/oauth"
 	"errors"
 	"flag"
+	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	glog "gorm.io/gorm/logger"
@@ -19,6 +23,15 @@ var listenAddr = flag.String("listen", ":5555", "The address on which to listen 
 var postgresDsn = flag.String("postgres-dsn", "host=localhost user=postgres password=postgres dbname=postgres port=5432 sslmode=disable", "The connection string to connect to the postgres database.")
 var log = logger.NewConsole(logger.LevelDebug, "MAIN")
 
+// @title ClearCloud API
+// @version development
+
+// @contact.name ClearCloud Team
+// @contact.url https://github.com/ChappIO/clearcloud/issues
+// @contact.email thomas.biesaart@protonmail.com
+
+// @securitydefinitions.oauth2.password OAuth2
+// @tokenUrl /oauth2/token
 func main() {
 	flag.Parse()
 
@@ -76,17 +89,29 @@ func main() {
 		TokenService:         tokenService,
 	}
 
-	routes := http.NewServeMux()
-	routes.Handle("/oauth2/token", oauthServer.TokenEndpoint())
+	router := gin.Default()
+	oauth2 := router.Group("/oauth2")
+	{
+		oauth2.POST("/token", oauthServer.TokenEndpoint())
+	}
 
-	authenticated := oauth.RequireAuthentication(oauthServer)
-	routes.Handle("/api/users", authenticated(controller.UsersCollection(db, userService, passwordEncoder)))
-	routes.Handle("/api/users/", authenticated(controller.UserResource(db, userService, passwordEncoder)))
+	api := router.Group("/api", oauth.Authenticate(oauthServer))
+	{
+		users := api.Group("/users", oauth.RequireAuthentication())
+		{
+			users.GET("/", controller.ListUsers(db, userService))
+			users.POST("/", controller.RequireAdmin(), controller.CreateUser(db, passwordEncoder))
+			users.GET("/:userId", controller.GetUser(db, userService))
+			users.PATCH("/:userId", controller.RequireAdmin(), controller.UpdateUser(db, userService, passwordEncoder))
+			users.DELETE("/:userId", controller.RequireAdmin(), controller.DeleteUser(db, userService))
+		}
+	}
 
-	routes.Handle("/", controller.NotFound())
+	url := ginSwagger.URL("/docs/doc.json")
+	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
 	log.Info("listening on %s", *listenAddr)
-	if err := http.ListenAndServe(*listenAddr, routes); err != http.ErrServerClosed {
+	if err := router.Run(*listenAddr); err != http.ErrServerClosed {
 		panic(err)
 	}
 }

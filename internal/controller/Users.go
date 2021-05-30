@@ -4,29 +4,10 @@ import (
 	"clearcloud/internal/model"
 	"clearcloud/internal/service"
 	"clearcloud/pkg/oauth"
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
 )
-
-func UsersCollection(db *gorm.DB, users *service.User, pwdEnc oauth.PasswordEncoder) http.Handler {
-	list := listUsers(db, users)
-	create := createUser(db, users, pwdEnc)
-	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		switch request.Method {
-		case http.MethodGet:
-			list.ServeHTTP(writer, request)
-		case http.MethodPost:
-			create.ServeHTTP(writer, request)
-		default:
-			simpleError(writer, http.StatusMethodNotAllowed)
-		}
-	})
-}
-
-type UserPage struct {
-	TotalElements int64         `json:"totalElements"`
-	Elements      []UserSummary `json:"elements"`
-}
 
 type UserSummary struct {
 	ID        int    `json:"id"`
@@ -36,138 +17,178 @@ type UserSummary struct {
 	IsAdmin   bool   `json:"isAdmin"`
 }
 
-func listUsers(db *gorm.DB, users *service.User) http.Handler {
-	return jsonEndpoint(http.StatusOK, func(writer http.ResponseWriter, request *http.Request) (data interface{}, err error) {
+type UserPage struct {
+	TotalElements int64         `json:"totalElements"`
+	Elements      []UserSummary `json:"elements"`
+}
+
+// ListUsers
+// @Tags Authentication
+// @Router /api/users [get]
+// @Summary Search the collection of users
+// @Security OAuth2
+// @Produce  json
+// @Success 200 {object} UserPage
+// @Param page query int false "The page number to fetch" default(1)
+// @Param limit query int false "The maximum number of elements to return" default(20)
+func ListUsers(db *gorm.DB, users *service.User) gin.HandlerFunc {
+	return func(c *gin.Context) {
 		var page UserPage
-		err = db.Transaction(func(tx *gorm.DB) error {
-			return toPage(request, users.GetUsers(tx).Order("id"), &page.TotalElements, &page.Elements)
-		})
-		data = page
-		return
-	})
+		returnPage(c, users.GetUsers(db).Order("id"), &page, &page.TotalElements, &page.Elements)
+	}
 }
 
 type CreateUserDTO struct {
-	Username  string `json:"username" validate:"required"`
-	FirstName string `json:"firstName" validate:"required"`
-	LastName  string `json:"lastName" validate:"required"`
-	Password  string `json:"password" validate:"required"`
+	Username  string `json:"username" binding:"required"`
+	FirstName string `json:"firstName" binding:"required"`
+	LastName  string `json:"lastName" binding:"required"`
+	Password  string `json:"password" binding:"required"`
 }
 
-func createUser(db *gorm.DB, users *service.User, pwdEnc oauth.PasswordEncoder) http.Handler {
-	return jsonEndpoint(http.StatusCreated, func(writer http.ResponseWriter, request *http.Request) (interface{}, error) {
+// CreateUser
+// @Tags Authentication
+// @Router /api/users [post]
+// @Summary Add a new user
+// @Security OAuth2
+// @Produce  json
+// @Param body body CreateUserDTO true "The new user"
+// @Success 201 {object} model.User
+// @Failure 409 {object} ApiError "This username is already taken"
+func CreateUser(db *gorm.DB, pwdEnc oauth.PasswordEncoder) gin.HandlerFunc {
+	return func(c *gin.Context) {
 		var create CreateUserDTO
-		return withValidJsonBody(writer, request, &create, func(writer http.ResponseWriter, request *http.Request) (data interface{}, err error) {
-			newUser := model.User{
-				FirstName:      create.FirstName,
-				LastName:       create.LastName,
-				Username:       create.Username,
-				HashedPassword: pwdEnc.Encode(create.Password),
-			}
-
-			err = db.Transaction(func(tx *gorm.DB) error {
-				result := tx.Save(&newUser)
-				return result.Error
-			})
-			data = newUser
+		if err := c.ShouldBindJSON(&create); err != nil {
+			writeError(c, err)
 			return
-		})
-	})
+		}
+		newUser := model.User{
+			FirstName:      create.FirstName,
+			LastName:       create.LastName,
+			Username:       create.Username,
+			HashedPassword: pwdEnc.Encode(create.Password),
+		}
+		if result := db.Save(&newUser); result.Error != nil {
+			writeError(c, result.Error)
+			return
+		}
+		c.JSON(http.StatusCreated, newUser)
+	}
 }
 
-func UserResource(db *gorm.DB, users *service.User, pwdEnc oauth.PasswordEncoder) http.Handler {
-	get := getUser(db, users)
-	del := deleteUser(db, users)
-	update := updateUser(db, users, pwdEnc)
-	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		switch request.Method {
-		case http.MethodGet:
-			get.ServeHTTP(writer, request)
-		case http.MethodPatch:
-			update.ServeHTTP(writer, request)
-		case http.MethodDelete:
-			del.ServeHTTP(writer, request)
-		default:
-			simpleError(writer, http.StatusMethodNotAllowed)
+// GetUser
+// @Tags Authentication
+// @Router /api/users/{userId} [get]
+// @Summary Get user details
+// @Security OAuth2
+// @Produce  json
+// @Param userId path int true "The user id"
+// @Success 200 {object} model.User
+func GetUser(db *gorm.DB, users *service.User) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userId, ok := intParam(c, "userId")
+		if !ok {
+			simpleError(c, http.StatusNotFound)
+			return
 		}
-	})
+		var user model.User
+		if result := users.GetUsers(db).Take(&user, userId); result.Error != nil {
+			writeError(c, result.Error)
+			return
+		}
+		c.JSON(http.StatusOK, user)
+	}
 }
 
 type UpdateUserDTO struct {
-	Username  string `json:"username" validate:""`
-	FirstName string `json:"firstName" validate:""`
-	LastName  string `json:"lastName" validate:""`
-	Password  string `json:"password" validate:""`
+	Username  string `json:"username" binding:""`
+	FirstName string `json:"firstName" binding:""`
+	LastName  string `json:"lastName" binding:""`
+	Password  string `json:"password" binding:""`
 }
 
-func getUser(db *gorm.DB, users *service.User) http.Handler {
-	return jsonEndpoint(http.StatusOK, func(writer http.ResponseWriter, request *http.Request) (data interface{}, err error) {
-		// /api/users/:userId
-		userId := pathParamInt(request, 2)
-
-		var user model.User
-		err = db.Transaction(func(tx *gorm.DB) error {
-			result := users.GetUsers(tx).Take(&user, userId)
-			return result.Error
-		})
-
-		data = user
-		return
-	})
-}
-
-func updateUser(db *gorm.DB, users *service.User, pwdEnc oauth.PasswordEncoder) http.Handler {
-	return requireAdmin(jsonEndpoint(http.StatusOK, func(writer http.ResponseWriter, request *http.Request) (data interface{}, err error) {
-		// /api/users/:userId
-		userId := pathParamInt(request, 2)
-		var update UpdateUserDTO
-		return withValidJsonBody(writer, request, &update, func(writer http.ResponseWriter, request *http.Request) (data interface{}, err error) {
-
-			var user model.User
-			err = db.Transaction(func(tx *gorm.DB) error {
-				result := users.GetUsers(tx).Take(&user, userId)
-				if result.Error != nil {
-					return result.Error
-				}
-
-				if update.Username != "" {
-					user.Username = update.Username
-				}
-				if update.FirstName != "" {
-					user.FirstName = update.FirstName
-				}
-				if update.LastName != "" {
-					user.LastName = update.LastName
-				}
-				if update.Password != "" {
-					user.HashedPassword = pwdEnc.Encode(update.Password)
-				}
-				result = tx.Save(&user)
-				return result.Error
-			})
-
-			data = user
+// UpdateUser
+// @Tags Authentication
+// @Router /api/users/{userId} [patch]
+// @Summary Update an existing user
+// @Security OAuth2
+// @Produce  json
+// @Param body body UpdateUserDTO true "The changes"
+// @Param userId path int true "The user id"
+// @Success 200 {object} model.User
+func UpdateUser(db *gorm.DB, users *service.User, pwdEnc oauth.PasswordEncoder) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userId, ok := intParam(c, "userId")
+		if !ok {
+			simpleError(c, http.StatusNotFound)
 			return
-		})
-	}))
-}
-
-func deleteUser(db *gorm.DB, users *service.User) http.Handler {
-	return requireAdmin(jsonEndpoint(http.StatusOK, func(writer http.ResponseWriter, request *http.Request) (data interface{}, err error) {
-		// /api/users/:userId
-		userId := pathParamInt(request, 2)
-
-		if userId == 1 {
-			// you shall nog delete admin!
-			return nil, ApiError{Status: http.StatusForbidden}
 		}
 
-		err = db.Transaction(func(tx *gorm.DB) error {
-			result := users.GetUsers(tx).Delete(&model.User{
-				ID: userId,
-			})
-			return result.Error
+		var update UpdateUserDTO
+		if err := c.ShouldBindJSON(&update); err != nil {
+			writeError(c, err)
+			return
+		}
+		err := db.Transaction(func(tx *gorm.DB) error {
+			var user model.User
+			if result := users.GetUsers(tx).Take(&user, userId); result.Error != nil {
+				return result.Error
+			}
+			if update.Username != "" {
+				user.Username = update.Username
+			}
+			if update.FirstName != "" {
+				user.FirstName = update.FirstName
+			}
+			if update.LastName != "" {
+				user.LastName = update.LastName
+			}
+			if update.Password != "" {
+				user.HashedPassword = pwdEnc.Encode(update.Password)
+			}
+			if result := tx.Save(&user); result.Error != nil {
+				return result.Error
+			}
+
+			c.JSON(http.StatusOK, user)
+			return nil
 		})
-		return
-	}))
+		if err != nil {
+			writeError(c, err)
+			return
+		}
+	}
+}
+
+// DeleteUser
+// @Tags Authentication
+// @Router /api/users/{userId} [delete]
+// @Summary Delete a user
+// @Security OAuth2
+// @Produce  json
+// @Param userId path int true "The user id"
+// @Success 204
+func DeleteUser(db *gorm.DB, users *service.User) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userId, ok := intParam(c, "userId")
+		if !ok {
+			c.JSON(http.StatusNotFound, nil)
+			return
+		}
+		if userId == 1 {
+			writeJsonError(c, ApiError{
+				Status:      http.StatusConflict,
+				Description: "Deleting the admin would be a bad idea",
+			})
+			return
+		}
+
+		if result := users.GetUsers(db).Delete(&model.User{
+			ID: userId,
+		}); result.Error != nil {
+			writeError(c, result.Error)
+			return
+		} else {
+			c.JSON(http.StatusNoContent, nil)
+		}
+	}
 }
