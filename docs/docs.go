@@ -102,6 +102,37 @@ var doc = `{
             }
         },
         "/api/libraries/{libraryId}": {
+            "get": {
+                "security": [
+                    {
+                        "OAuth2": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Get library details",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "The library id",
+                        "name": "libraryId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.LibraryDetails"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "security": [
                     {
@@ -472,6 +503,36 @@ var doc = `{
                 }
             }
         },
+        "controller.LibraryDetails": {
+            "type": "object",
+            "properties": {
+                "canAccess": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.CanAccessLibrary"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "rootFolder": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "generic",
+                        "books",
+                        "movies",
+                        "shows",
+                        "music"
+                    ]
+                }
+            }
+        },
         "controller.LibraryPage": {
             "type": "object",
             "properties": {
@@ -566,6 +627,17 @@ var doc = `{
                 },
                 "username": {
                     "type": "string"
+                }
+            }
+        },
+        "model.CanAccessLibrary": {
+            "type": "object",
+            "properties": {
+                "canWrite": {
+                    "type": "boolean"
+                },
+                "user": {
+                    "$ref": "#/definitions/model.User"
                 }
             }
         },

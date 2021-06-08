@@ -129,6 +129,41 @@ func UpdateLibrary(db *gorm.DB, libs *service.Library) gin.HandlerFunc {
 	}
 }
 
+type LibraryDetails struct {
+	model.Library
+	CanAccessLibrary []model.CanAccessLibrary `json:"canAccess" gorm:"foreignKey:LibraryID"`
+}
+
+// GetLibrary
+// @Tags Files
+// @Router /api/libraries/{libraryId} [get]
+// @Summary Get library details
+// @Security OAuth2
+// @Produce  json
+// @Param libraryId path int true "The library id"
+// @Success 200 {object} LibraryDetails
+func GetLibrary(db *gorm.DB, libs *service.Library) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		libraryId, ok := intParam(c, "libraryId")
+		if !ok {
+			simpleError(c, http.StatusNotFound)
+			return
+		}
+		user := oauth.GetUser(c).(model.User)
+		var library LibraryDetails
+		if result := libs.GetLibrariesForUser(user, db).Take(&library, libraryId); result.Error != nil {
+			writeError(c, result.Error)
+			return
+		}
+		if result := db.Preload("User").Find(&library.CanAccessLibrary, model.CanAccessLibrary{LibraryID: libraryId}); result.Error != nil {
+			writeError(c, result.Error)
+			return
+		}
+
+		c.JSON(http.StatusOK, library)
+	}
+}
+
 // DeleteLibrary
 // @Tags Files
 // @Router /api/libraries/{libraryId} [delete]

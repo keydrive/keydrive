@@ -41,6 +41,27 @@ definitions:
     - password
     - username
     type: object
+  controller.LibraryDetails:
+    properties:
+      canAccess:
+        items:
+          $ref: '#/definitions/model.CanAccessLibrary'
+        type: array
+      id:
+        type: integer
+      name:
+        type: string
+      rootFolder:
+        type: string
+      type:
+        enum:
+        - generic
+        - books
+        - movies
+        - shows
+        - music
+        type: string
+    type: object
   controller.LibraryPage:
     properties:
       elements:
@@ -104,6 +125,13 @@ definitions:
         type: string
       username:
         type: string
+    type: object
+  model.CanAccessLibrary:
+    properties:
+      canWrite:
+        type: boolean
+      user:
+        $ref: '#/definitions/model.User'
     type: object
   model.Library:
     properties:
@@ -205,6 +233,25 @@ paths:
       security:
       - OAuth2: []
       summary: Delete a library
+      tags:
+      - Files
+    get:
+      parameters:
+      - description: The library id
+        in: path
+        name: libraryId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.LibraryDetails'
+      security:
+      - OAuth2: []
+      summary: Get library details
       tags:
       - Files
     patch:

@@ -18,9 +18,9 @@ type Library struct {
 }
 
 type CanAccessLibrary struct {
-	UserID    int     `gorm:"primaryKey"`
-	User      User    `gorm:"primaryKey"`
-	LibraryID int     `gorm:"primaryKey"`
-	Library   Library `gorm:"primaryKey"`
-	CanWrite  bool    `gorm:"not null"`
+	UserID    int     `gorm:"primaryKey" json:"-"`
+	User      User    `gorm:"primaryKey" json:"user"`
+	LibraryID int     `gorm:"primaryKey" json:"-"`
+	Library   Library `gorm:"primaryKey" json:"-"`
+	CanWrite  bool    `gorm:"not null" json:"canWrite"`
 }
