@@ -131,7 +131,7 @@ func UpdateLibrary(db *gorm.DB, libs *service.Library) gin.HandlerFunc {
 
 type LibraryDetails struct {
 	model.Library
-	CanAccessLibrary []model.CanAccessLibrary `json:"canAccess" gorm:"foreignKey:LibraryID"`
+	SharedWith []model.CanAccessLibrary `json:"sharedWith" gorm:"foreignKey:LibraryID"`
 }
 
 // GetLibrary
@@ -155,7 +155,7 @@ func GetLibrary(db *gorm.DB, libs *service.Library) gin.HandlerFunc {
 			writeError(c, result.Error)
 			return
 		}
-		if result := db.Preload("User").Find(&library.CanAccessLibrary, model.CanAccessLibrary{LibraryID: libraryId}); result.Error != nil {
+		if result := db.Preload("User").Find(&library.SharedWith, model.CanAccessLibrary{LibraryID: libraryId}); result.Error != nil {
 			writeError(c, result.Error)
 			return
 		}
@@ -198,7 +198,95 @@ func DeleteLibrary(db *gorm.DB, libs *service.Library) gin.HandlerFunc {
 			writeError(c, err)
 			return
 		} else {
-			c.JSON(http.StatusNoContent, nil)
+			c.Status(http.StatusNoContent)
+		}
+	}
+}
+
+type ShareLibraryDTO struct {
+	UserID   int  `json:"userId"  binding:"required"`
+	CanWrite bool `json:"canWrite"  binding:""`
+}
+
+// ShareLibrary
+// @Tags Files
+// @Router /api/libraries/{libraryId}/shares [post]
+// @Summary Share a library with a user
+// @Security OAuth2
+// @Produce  json
+// @Param body body ShareLibraryDTO true "The rights to grant to a specific user"
+// @Param libraryId path int true "The library id"
+// @Success 204
+func ShareLibrary(db *gorm.DB, libs *service.Library, users *service.User) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		libraryId, ok := intParam(c, "libraryId")
+		if !ok {
+			c.JSON(http.StatusNotFound, nil)
+			return
+		}
+		var share ShareLibraryDTO
+		if err := c.ShouldBindJSON(&share); err != nil {
+			writeError(c, err)
+			return
+		}
+
+		user := oauth.GetUser(c).(model.User)
+		var targetUser model.User
+		var targetLibrary model.Library
+
+		err := db.Transaction(func(tx *gorm.DB) error {
+			result := users.GetUsers(tx).Take(&targetUser, share.UserID)
+			if result.Error != nil {
+				return result.Error
+			}
+			result = libs.GetLibrariesForUser(user, tx).Take(&targetLibrary, libraryId)
+			if result.Error != nil {
+				return result.Error
+			}
+
+			newShare := model.CanAccessLibrary{
+				LibraryID: libraryId,
+				UserID:    targetUser.ID,
+				CanWrite:  share.CanWrite,
+			}
+			result = tx.Save(&newShare)
+			return result.Error
+		})
+		if err != nil {
+			writeError(c, err)
+			return
+		}
+		c.Status(http.StatusNoContent)
+	}
+}
+
+// UnshareLibrary
+// @Tags Files
+// @Router /api/libraries/{libraryId}/shares/{userId} [delete]
+// @Summary Unshare a library
+// @Security OAuth2
+// @Produce  json
+// @Param libraryId path int true "The library id"
+// @Param userId path int true "The user id"
+// @Success 204
+func UnshareLibrary(db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		libraryId, ok := intParam(c, "libraryId")
+		if !ok {
+			c.JSON(http.StatusNotFound, nil)
+			return
+		}
+		userId, ok := intParam(c, "userId")
+		if !ok {
+			c.JSON(http.StatusNotFound, nil)
+			return
+		}
+		result := db.Delete(model.CanAccessLibrary{}, model.CanAccessLibrary{LibraryID: libraryId, UserID: userId})
+		if result.Error != nil {
+			writeError(c, result.Error)
+			return
+		} else {
+			c.Status(http.StatusNoContent)
 		}
 	}
 }

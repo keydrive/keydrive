@@ -185,6 +185,82 @@
                 }
             }
         },
+        "/api/libraries/{libraryId}/shares": {
+            "post": {
+                "security": [
+                    {
+                        "OAuth2": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Share a library with a user",
+                "parameters": [
+                    {
+                        "description": "The rights to grant to a specific user",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.ShareLibraryDTO"
+                        }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "The library id",
+                        "name": "libraryId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/libraries/{libraryId}/shares/{userId}": {
+            "delete": {
+                "security": [
+                    {
+                        "OAuth2": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Unshare a library",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "The library id",
+                        "name": "libraryId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "The user id",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/user": {
             "get": {
                 "security": [
@@ -488,12 +564,6 @@
         "controller.LibraryDetails": {
             "type": "object",
             "properties": {
-                "canAccess": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.CanAccessLibrary"
-                    }
-                },
                 "id": {
                     "type": "integer"
                 },
@@ -502,6 +572,12 @@
                 },
                 "rootFolder": {
                     "type": "string"
+                },
+                "sharedWith": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.CanAccessLibrary"
+                    }
                 },
                 "type": {
                     "type": "string",
@@ -550,6 +626,20 @@
                         "shows",
                         "music"
                     ]
+                }
+            }
+        },
+        "controller.ShareLibraryDTO": {
+            "type": "object",
+            "required": [
+                "userId"
+            ],
+            "properties": {
+                "canWrite": {
+                    "type": "boolean"
+                },
+                "userId": {
+                    "type": "integer"
                 }
             }
         },

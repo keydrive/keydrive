@@ -118,6 +118,8 @@ func main() {
 			libraries.GET("/:libraryId", controller.RequireAdmin(), controller.GetLibrary(db, libraryService))
 			libraries.PATCH("/:libraryId", controller.RequireAdmin(), controller.UpdateLibrary(db, libraryService))
 			libraries.DELETE("/:libraryId", controller.RequireAdmin(), controller.DeleteLibrary(db, libraryService))
+			libraries.POST("/:libraryId/shares", controller.RequireAdmin(), controller.ShareLibrary(db, libraryService, userService))
+			libraries.DELETE("/:libraryId/shares/:userId", controller.RequireAdmin(), controller.UnshareLibrary(db))
 		}
 	}
 

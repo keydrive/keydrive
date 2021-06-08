@@ -43,16 +43,16 @@ definitions:
     type: object
   controller.LibraryDetails:
     properties:
-      canAccess:
-        items:
-          $ref: '#/definitions/model.CanAccessLibrary'
-        type: array
       id:
         type: integer
       name:
         type: string
       rootFolder:
         type: string
+      sharedWith:
+        items:
+          $ref: '#/definitions/model.CanAccessLibrary'
+        type: array
       type:
         enum:
         - generic
@@ -87,6 +87,15 @@ definitions:
         - shows
         - music
         type: string
+    type: object
+  controller.ShareLibraryDTO:
+    properties:
+      canWrite:
+        type: boolean
+      userId:
+        type: integer
+    required:
+    - userId
     type: object
   controller.UpdateLibraryDTO:
     properties:
@@ -277,6 +286,53 @@ paths:
       security:
       - OAuth2: []
       summary: Update an existing library
+      tags:
+      - Files
+  /api/libraries/{libraryId}/shares:
+    post:
+      parameters:
+      - description: The rights to grant to a specific user
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.ShareLibraryDTO'
+      - description: The library id
+        in: path
+        name: libraryId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      security:
+      - OAuth2: []
+      summary: Share a library with a user
+      tags:
+      - Files
+  /api/libraries/{libraryId}/shares/{userId}:
+    delete:
+      parameters:
+      - description: The library id
+        in: path
+        name: libraryId
+        required: true
+        type: integer
+      - description: The user id
+        in: path
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      security:
+      - OAuth2: []
+      summary: Unshare a library
       tags:
       - Files
   /api/user:
