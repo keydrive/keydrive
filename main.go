@@ -78,6 +78,7 @@ func main() {
 	userService := &service.User{
 		DB: db,
 	}
+	libraryService := &service.Library{}
 	tokenService := &service.Token{
 		DB: db,
 	}
@@ -109,6 +110,10 @@ func main() {
 			users.GET("/:userId", controller.GetUser(db, userService))
 			users.PATCH("/:userId", controller.RequireAdmin(), controller.UpdateUser(db, userService, passwordEncoder))
 			users.DELETE("/:userId", controller.RequireAdmin(), controller.DeleteUser(db, userService))
+		}
+		libraries := api.Group("/libraries", oauth.RequireAuthentication())
+		{
+			libraries.GET("/", controller.ListLibraries(db, libraryService))
 		}
 	}
 
