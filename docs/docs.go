@@ -28,6 +28,257 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/libraries": {
+            "get": {
+                "security": [
+                    {
+                        "OAuth2": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Search the collection of libraries",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "The page number to fetch",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 20,
+                        "description": "The maximum number of elements to return",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.LibraryPage"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "OAuth2": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Add a new library",
+                "parameters": [
+                    {
+                        "description": "The new library",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.CreateLibraryDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/model.Library"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/libraries/{libraryId}": {
+            "get": {
+                "security": [
+                    {
+                        "OAuth2": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Get library details",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "The library id",
+                        "name": "libraryId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.LibraryDetails"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "OAuth2": []
+                    }
+                ],
+                "description": "This does not delete the files in the library from the disk",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Delete a library",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "The library id",
+                        "name": "libraryId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "OAuth2": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Update an existing library",
+                "parameters": [
+                    {
+                        "description": "The changes",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.UpdateLibraryDTO"
+                        }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "The library id",
+                        "name": "libraryId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Library"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/libraries/{libraryId}/shares": {
+            "post": {
+                "security": [
+                    {
+                        "OAuth2": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Share a library with a user",
+                "parameters": [
+                    {
+                        "description": "The rights to grant to a specific user",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.ShareLibraryDTO"
+                        }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "The library id",
+                        "name": "libraryId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/libraries/{libraryId}/shares/{userId}": {
+            "delete": {
+                "security": [
+                    {
+                        "OAuth2": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Unshare a library",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "The library id",
+                        "name": "libraryId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "The user id",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/user": {
             "get": {
                 "security": [
@@ -284,6 +535,27 @@ var doc = `{
                 }
             }
         },
+        "controller.CreateLibraryDTO": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "generic",
+                        "books",
+                        "movies",
+                        "shows",
+                        "music"
+                    ]
+                }
+            }
+        },
         "controller.CreateUserDTO": {
             "type": "object",
             "required": [
@@ -303,6 +575,96 @@ var doc = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.LibraryDetails": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "rootFolder": {
+                    "type": "string"
+                },
+                "sharedWith": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.CanAccessLibrary"
+                    }
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "generic",
+                        "books",
+                        "movies",
+                        "shows",
+                        "music"
+                    ]
+                }
+            }
+        },
+        "controller.LibraryPage": {
+            "type": "object",
+            "properties": {
+                "elements": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/controller.LibrarySummary"
+                    }
+                },
+                "totalElements": {
+                    "type": "integer"
+                }
+            }
+        },
+        "controller.LibrarySummary": {
+            "type": "object",
+            "properties": {
+                "canWrite": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "generic",
+                        "books",
+                        "movies",
+                        "shows",
+                        "music"
+                    ]
+                }
+            }
+        },
+        "controller.ShareLibraryDTO": {
+            "type": "object",
+            "required": [
+                "userId"
+            ],
+            "properties": {
+                "canWrite": {
+                    "type": "boolean"
+                },
+                "userId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "controller.UpdateLibraryDTO": {
+            "type": "object",
+            "properties": {
+                "name": {
                     "type": "string"
                 }
             }
@@ -355,6 +717,41 @@ var doc = `{
                 },
                 "username": {
                     "type": "string"
+                }
+            }
+        },
+        "model.CanAccessLibrary": {
+            "type": "object",
+            "properties": {
+                "canWrite": {
+                    "type": "boolean"
+                },
+                "user": {
+                    "$ref": "#/definitions/model.User"
+                }
+            }
+        },
+        "model.Library": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "rootFolder": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "generic",
+                        "books",
+                        "movies",
+                        "shows",
+                        "music"
+                    ]
                 }
             }
         },

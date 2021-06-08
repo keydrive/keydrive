@@ -49,7 +49,7 @@ func main() {
 	log.Info("starting automigration...")
 
 	db.Exec("CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public")
-	err = db.AutoMigrate(&model.User{}, &model.OAuth2Token{})
+	err = db.AutoMigrate(&model.User{}, &model.OAuth2Token{}, &model.Library{}, &model.CanAccessLibrary{})
 	if err != nil {
 		log.Error("migration failed: %s", err)
 		os.Exit(1)
@@ -78,6 +78,7 @@ func main() {
 	userService := &service.User{
 		DB: db,
 	}
+	libraryService := &service.Library{}
 	tokenService := &service.Token{
 		DB: db,
 	}
@@ -109,6 +110,16 @@ func main() {
 			users.GET("/:userId", controller.GetUser(db, userService))
 			users.PATCH("/:userId", controller.RequireAdmin(), controller.UpdateUser(db, userService, passwordEncoder))
 			users.DELETE("/:userId", controller.RequireAdmin(), controller.DeleteUser(db, userService))
+		}
+		libraries := api.Group("/libraries", oauth.RequireAuthentication())
+		{
+			libraries.GET("/", controller.ListLibraries(db, libraryService))
+			libraries.POST("/", controller.RequireAdmin(), controller.CreateLibrary(db))
+			libraries.GET("/:libraryId", controller.RequireAdmin(), controller.GetLibrary(db, libraryService))
+			libraries.PATCH("/:libraryId", controller.RequireAdmin(), controller.UpdateLibrary(db, libraryService))
+			libraries.DELETE("/:libraryId", controller.RequireAdmin(), controller.DeleteLibrary(db, libraryService))
+			libraries.POST("/:libraryId/shares", controller.RequireAdmin(), controller.ShareLibrary(db, libraryService, userService))
+			libraries.DELETE("/:libraryId/shares/:userId", controller.RequireAdmin(), controller.UnshareLibrary(db))
 		}
 	}
 
