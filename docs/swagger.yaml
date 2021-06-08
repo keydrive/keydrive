@@ -80,6 +80,40 @@ info:
   title: ClearCloud API
   version: development
 paths:
+  /api/user:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+      security:
+      - OAuth2: []
+      summary: Get the currently authenticated user information
+      tags:
+      - Authentication
+    patch:
+      parameters:
+      - description: The changes
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.UpdateUserDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+      security:
+      - OAuth2: []
+      summary: Update the currently authenticated user
+      tags:
+      - Authentication
   /api/users:
     get:
       parameters:

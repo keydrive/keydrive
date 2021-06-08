@@ -97,6 +97,11 @@ func main() {
 
 	api := router.Group("/api", oauth.Authenticate(oauthServer))
 	{
+		user := api.Group("/user", oauth.RequireAuthentication())
+		{
+			user.GET("/", controller.GetAuthenticatedUser())
+			user.PATCH("/", controller.UpdateAuthenticatedUser(db, passwordEncoder))
+		}
 		users := api.Group("/users", oauth.RequireAuthentication())
 		{
 			users.GET("/", controller.ListUsers(db, userService))
