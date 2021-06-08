@@ -114,6 +114,7 @@ func main() {
 		libraries := api.Group("/libraries", oauth.RequireAuthentication())
 		{
 			libraries.GET("/", controller.ListLibraries(db, libraryService))
+			libraries.POST("/", controller.RequireAdmin(), controller.CreateLibrary(db))
 		}
 	}
 

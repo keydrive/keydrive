@@ -6,6 +6,7 @@ import (
 	"clearcloud/pkg/oauth"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"net/http"
 )
 
 type LibrarySummary struct {
@@ -34,8 +35,47 @@ func ListLibraries(db *gorm.DB, libs *service.Library) gin.HandlerFunc {
 		var page LibraryPage
 		user := oauth.GetUser(c).(model.User)
 		query := libs.GetLibrariesForUser(user, db).
-			Select("*, can_access_libraries.can_write as can_write").
 			Order("id")
+		if user.IsAdmin {
+			query.Select("*, TRUE as can_write")
+		} else {
+			query = query.Select("*, can_access_libraries.can_write as can_write")
+		}
 		returnPage(c, query, &page, &page.TotalElements, &page.Elements)
+	}
+}
+
+type CreateLibraryDTO struct {
+	Type model.LibraryType `json:"type" binding:"oneof='' generic books movies shows music"`
+	Name string            `json:"name"  binding:"required"`
+}
+
+// CreateLibrary
+// @Tags Files
+// @Router /api/libraries [post]
+// @Summary Add a new library
+// @Security OAuth2
+// @Produce  json
+// @Param body body CreateLibraryDTO true "The new library"
+// @Success 201 {object} model.Library
+func CreateLibrary(db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var create CreateLibraryDTO
+		if err := c.ShouldBindJSON(&create); err != nil {
+			writeError(c, err)
+			return
+		}
+		if create.Type == "" {
+			create.Type = model.TypeGeneric
+		}
+		newLibrary := model.Library{
+			Type: create.Type,
+			Name: create.Name,
+		}
+		if result := db.Save(&newLibrary); result.Error != nil {
+			writeError(c, result.Error)
+			return
+		}
+		c.JSON(http.StatusCreated, newLibrary)
 	}
 }

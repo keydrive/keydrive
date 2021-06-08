@@ -10,6 +10,15 @@ definitions:
       status:
         type: integer
     type: object
+  controller.CreateLibraryDTO:
+    properties:
+      name:
+        type: string
+      type:
+        type: string
+    required:
+    - name
+    type: object
   controller.CreateUserDTO:
     properties:
       firstName:
@@ -79,6 +88,17 @@ definitions:
       username:
         type: string
     type: object
+  model.Library:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      rootFolder:
+        type: string
+      type:
+        type: string
+    type: object
   model.User:
     properties:
       firstName:
@@ -123,6 +143,26 @@ paths:
       security:
       - OAuth2: []
       summary: Search the collection of libraries
+      tags:
+      - Files
+    post:
+      parameters:
+      - description: The new library
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.CreateLibraryDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Library'
+      security:
+      - OAuth2: []
+      summary: Add a new library
       tags:
       - Files
   /api/user:

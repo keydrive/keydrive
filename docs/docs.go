@@ -66,6 +66,39 @@ var doc = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "security": [
+                    {
+                        "OAuth2": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Add a new library",
+                "parameters": [
+                    {
+                        "description": "The new library",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.CreateLibraryDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/model.Library"
+                        }
+                    }
+                }
             }
         },
         "/api/user": {
@@ -324,6 +357,20 @@ var doc = `{
                 }
             }
         },
+        "controller.CreateLibraryDTO": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
         "controller.CreateUserDTO": {
             "type": "object",
             "required": [
@@ -425,6 +472,23 @@ var doc = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Library": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "rootFolder": {
+                    "type": "string"
+                },
+                "type": {
                     "type": "string"
                 }
             }
