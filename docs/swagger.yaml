@@ -15,6 +15,12 @@ definitions:
       name:
         type: string
       type:
+        enum:
+        - generic
+        - books
+        - movies
+        - shows
+        - music
         type: string
     required:
     - name
@@ -53,6 +59,17 @@ definitions:
       name:
         type: string
       type:
+        enum:
+        - generic
+        - books
+        - movies
+        - shows
+        - music
+        type: string
+    type: object
+  controller.UpdateLibraryDTO:
+    properties:
+      name:
         type: string
     type: object
   controller.UpdateUserDTO:
@@ -97,6 +114,12 @@ definitions:
       rootFolder:
         type: string
       type:
+        enum:
+        - generic
+        - books
+        - movies
+        - shows
+        - music
         type: string
     type: object
   model.User:
@@ -163,6 +186,50 @@ paths:
       security:
       - OAuth2: []
       summary: Add a new library
+      tags:
+      - Files
+  /api/libraries/{libraryId}:
+    delete:
+      description: This does not delete the files in the library from the disk
+      parameters:
+      - description: The library id
+        in: path
+        name: libraryId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      security:
+      - OAuth2: []
+      summary: Delete a library
+      tags:
+      - Files
+    patch:
+      parameters:
+      - description: The changes
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.UpdateLibraryDTO'
+      - description: The library id
+        in: path
+        name: libraryId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Library'
+      security:
+      - OAuth2: []
+      summary: Update an existing library
       tags:
       - Files
   /api/user:

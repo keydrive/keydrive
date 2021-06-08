@@ -12,7 +12,7 @@ const (
 
 type Library struct {
 	ID         int         `json:"id"`
-	Type       LibraryType `json:"type" gorm:"not null"`
+	Type       LibraryType `json:"type" gorm:"not null" enums:"generic,books,movies,shows,music"`
 	Name       string      `json:"name" gorm:"not null"`
 	RootFolder string      `json:"rootFolder" gorm:"not null"`
 }

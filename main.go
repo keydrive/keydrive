@@ -115,6 +115,8 @@ func main() {
 		{
 			libraries.GET("/", controller.ListLibraries(db, libraryService))
 			libraries.POST("/", controller.RequireAdmin(), controller.CreateLibrary(db))
+			libraries.PATCH("/:libraryId", controller.RequireAdmin(), controller.UpdateLibrary(db, libraryService))
+			libraries.DELETE("/:libraryId", controller.RequireAdmin(), controller.DeleteLibrary(db, libraryService))
 		}
 	}
 

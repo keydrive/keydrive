@@ -101,6 +101,77 @@ var doc = `{
                 }
             }
         },
+        "/api/libraries/{libraryId}": {
+            "delete": {
+                "security": [
+                    {
+                        "OAuth2": []
+                    }
+                ],
+                "description": "This does not delete the files in the library from the disk",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Delete a library",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "The library id",
+                        "name": "libraryId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "OAuth2": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Update an existing library",
+                "parameters": [
+                    {
+                        "description": "The changes",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.UpdateLibraryDTO"
+                        }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "The library id",
+                        "name": "libraryId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Library"
+                        }
+                    }
+                }
+            }
+        },
         "/api/user": {
             "get": {
                 "security": [
@@ -367,7 +438,14 @@ var doc = `{
                     "type": "string"
                 },
                 "type": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "generic",
+                        "books",
+                        "movies",
+                        "shows",
+                        "music"
+                    ]
                 }
             }
         },
@@ -421,6 +499,21 @@ var doc = `{
                     "type": "string"
                 },
                 "type": {
+                    "type": "string",
+                    "enum": [
+                        "generic",
+                        "books",
+                        "movies",
+                        "shows",
+                        "music"
+                    ]
+                }
+            }
+        },
+        "controller.UpdateLibraryDTO": {
+            "type": "object",
+            "properties": {
+                "name": {
                     "type": "string"
                 }
             }
@@ -489,7 +582,14 @@ var doc = `{
                     "type": "string"
                 },
                 "type": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "generic",
+                        "books",
+                        "movies",
+                        "shows",
+                        "music"
+                    ]
                 }
             }
         },

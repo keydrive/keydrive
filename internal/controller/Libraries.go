@@ -11,7 +11,7 @@ import (
 
 type LibrarySummary struct {
 	ID       int               `json:"id"`
-	Type     model.LibraryType `json:"type"`
+	Type     model.LibraryType `json:"type" enums:"generic,books,movies,shows,music"`
 	Name     string            `json:"name"`
 	CanWrite bool              `json:"canWrite"`
 }
@@ -46,7 +46,7 @@ func ListLibraries(db *gorm.DB, libs *service.Library) gin.HandlerFunc {
 }
 
 type CreateLibraryDTO struct {
-	Type model.LibraryType `json:"type" binding:"oneof='' generic books movies shows music"`
+	Type model.LibraryType `json:"type" binding:"oneof='' generic books movies shows music" enums:"generic,books,movies,shows,music"`
 	Name string            `json:"name"  binding:"required"`
 }
 
@@ -77,5 +77,93 @@ func CreateLibrary(db *gorm.DB) gin.HandlerFunc {
 			return
 		}
 		c.JSON(http.StatusCreated, newLibrary)
+	}
+}
+
+type UpdateLibraryDTO struct {
+	Name string `json:"name" binding:""`
+}
+
+// UpdateLibrary
+// @Tags Files
+// @Router /api/libraries/{libraryId} [patch]
+// @Summary Update an existing library
+// @Security OAuth2
+// @Produce  json
+// @Param body body UpdateLibraryDTO true "The changes"
+// @Param libraryId path int true "The library id"
+// @Success 200 {object} model.Library
+func UpdateLibrary(db *gorm.DB, libs *service.Library) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		libraryId, ok := intParam(c, "libraryId")
+		if !ok {
+			simpleError(c, http.StatusNotFound)
+			return
+		}
+		user := oauth.GetUser(c).(model.User)
+
+		var update UpdateLibraryDTO
+		if err := c.ShouldBindJSON(&update); err != nil {
+			writeError(c, err)
+			return
+		}
+		err := db.Transaction(func(tx *gorm.DB) error {
+			var library model.Library
+			if result := libs.GetLibrariesForUser(user, tx).Take(&user, libraryId); result.Error != nil {
+				return result.Error
+			}
+			if update.Name != "" {
+				library.Name = update.Name
+			}
+			if result := tx.Save(&library); result.Error != nil {
+				return result.Error
+			}
+
+			c.JSON(http.StatusOK, library)
+			return nil
+		})
+		if err != nil {
+			writeError(c, err)
+			return
+		}
+	}
+}
+
+// DeleteLibrary
+// @Tags Files
+// @Router /api/libraries/{libraryId} [delete]
+// @Summary Delete a library
+// @Description This does not delete the files in the library from the disk
+// @Security OAuth2
+// @Produce  json
+// @Param libraryId path int true "The library id"
+// @Success 204
+func DeleteLibrary(db *gorm.DB, libs *service.Library) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		libraryId, ok := intParam(c, "libraryId")
+		if !ok {
+			c.JSON(http.StatusNotFound, nil)
+			return
+		}
+		user := oauth.GetUser(c).(model.User)
+
+		err := db.Transaction(func(tx *gorm.DB) error {
+			result := db.Where("library_id = ?", libraryId).Delete(model.CanAccessLibrary{})
+			if result.Error != nil {
+				return result.Error
+			}
+
+			result = libs.GetLibrariesForUser(user, db).Delete(&model.Library{
+				ID: libraryId,
+			})
+
+			return result.Error
+		})
+		if err != nil {
+			writeError(c, err)
+			return
+		} else {
+			c.JSON(http.StatusNoContent, nil)
+		}
 	}
 }
