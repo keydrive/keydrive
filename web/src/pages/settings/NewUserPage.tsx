@@ -20,7 +20,7 @@ export const NewUserPage: React.FC = () => {
 
   return (
     <SettingsLayout className="new-user-page">
-      <h2 className="title">New User</h2>
+      <h2 className="title">Users / New User</h2>
       <Form
         onSubmit={() => {
           setError(false);
