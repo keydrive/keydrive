@@ -32,4 +32,8 @@ export class UserService {
   public createUser(user: CreateUser): Promise<void> {
     return this.api.jsonPost('/users', user);
   }
+
+  public getCurrentUser(): Promise<User> {
+    return this.api.jsonGet('/user');
+  }
 }

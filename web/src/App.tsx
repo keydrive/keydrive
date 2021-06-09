@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { LoginPage } from './pages/LoginPage';
 import { useAppSelector } from './store';
@@ -8,17 +8,38 @@ import { LibrariesPage } from './pages/LibrariesPage';
 import { UsersPage } from './pages/settings/UsersPage';
 import { ProfilePage } from './pages/settings/ProfilePage';
 import { NewUserPage } from './pages/settings/NewUserPage';
+import { useDispatch } from 'react-redux';
+import { Icon } from './components/Icon';
 
 export const App: React.FC = () => {
-  const user = useService(userStore);
-  const isLoggedIn = useAppSelector(user.selectors.isLoggedIn);
+  const {
+    selectors,
+    actions: { getCurrentUserAsync },
+  } = useService(userStore);
+  const token = useAppSelector(selectors.token);
+  const currentUser = useAppSelector(selectors.currentUser);
+  const dispatch = useDispatch();
 
-  if (!isLoggedIn) {
+  useEffect(() => {
+    if (token) {
+      dispatch(getCurrentUserAsync());
+    }
+  }, [dispatch, token, getCurrentUserAsync]);
+
+  if (!token) {
     return (
       <Switch>
         <Route exact path="/auth/login" component={LoginPage} />
         <Redirect to="/auth/login" />
       </Switch>
+    );
+  }
+
+  if (!currentUser) {
+    return (
+      <div className="app-loader">
+        <Icon icon="spinner" size={2} pulse />
+      </div>
     );
   }
 

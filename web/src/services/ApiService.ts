@@ -11,11 +11,9 @@ const MAX_LIMIT = 100;
 export class ApiService {
   public static readonly NAME = 'ApiService';
 
-  private readonly store: Store;
+  private store?: Store;
 
-  public constructor(injector: Injector) {
-    this.store = injector.resolve(initializeStore);
-  }
+  public constructor(private readonly injector: Injector) {}
 
   public jsonGet<T>(path: string, params?: Record<string, string>): Promise<T> {
     return this.jsonRequest('GET', path, undefined, params);
@@ -76,10 +74,17 @@ export class ApiService {
   }
 
   private getToken(): string {
-    const token = this.store.getState().user.token;
+    const token = this.getStore().getState().user.token;
     if (!token) {
       throw new Error('User is not logged in.');
     }
     return token;
+  }
+
+  private getStore(): Store {
+    if (!this.store) {
+      this.store = this.injector.resolve(initializeStore);
+    }
+    return this.store;
   }
 }

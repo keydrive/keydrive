@@ -2,11 +2,16 @@ import React, { useState } from 'react';
 import { SettingsLayout } from '../../components/layout/SettingsLayout';
 import { Form } from '../../components/input/Form';
 import { TextInput } from '../../components/input/TextInput';
+import { useAppSelector } from '../../store';
+import { useService } from '../../hooks/useService';
+import { userStore } from '../../store/user';
 
 export const ProfilePage: React.FC = () => {
-  const [username, setUsername] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const user = useService(userStore);
+  const currentUser = useAppSelector(user.selectors.assertCurrentUser);
+  const [username, setUsername] = useState(currentUser.username);
+  const [firstName, setFirstName] = useState(currentUser.firstName);
+  const [lastName, setLastName] = useState(currentUser.lastName);
 
   return (
     <SettingsLayout className="profile-page">
