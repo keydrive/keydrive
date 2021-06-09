@@ -25,8 +25,8 @@ export const ProfilePage: React.FC = () => {
           </div>
           <div className="inputs">
             <TextInput id="username" value={username} onChange={setUsername} placeholder="Username" />
-            <TextInput id="firstName" value={lastName} onChange={setLastName} placeholder="First Name" />
-            <TextInput id="lastName" value={firstName} onChange={setFirstName} placeholder="Last Name" />
+            <TextInput id="firstName" value={firstName} onChange={setFirstName} placeholder="First Name" />
+            <TextInput id="lastName" value={lastName} onChange={setLastName} placeholder="Last Name" />
           </div>
         </div>
       </Form>
