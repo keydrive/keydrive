@@ -1,27 +1,18 @@
 package controller
 
 import (
-	"net/http"
+	"github.com/gin-gonic/gin"
 	"strconv"
-	"strings"
 )
 
-func pathParamInt(req *http.Request, index int) int {
-	param := pathParamString(req, index)
-	if param == "" {
-		return -1
+func intParam(c *gin.Context, name string) (int, bool) {
+	stringParam := c.Param(name)
+	if stringParam == "" {
+		return 0, false
 	}
-	if result, err := strconv.Atoi(param); err == nil {
-		return result
+	if intParam, err := strconv.Atoi(stringParam); err == nil {
+		return intParam, true
 	} else {
-		return -1
+		return 0, false
 	}
-}
-
-func pathParamString(req *http.Request, index int) string {
-	pathParts := strings.Split(strings.Trim(req.URL.Path, "/"), "/")
-	if len(pathParts) <= index {
-		return ""
-	}
-	return pathParts[index]
 }

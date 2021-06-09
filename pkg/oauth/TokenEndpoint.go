@@ -1,38 +1,130 @@
 package oauth
 
 import (
-	"context"
-	"encoding/json"
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"net/http"
 )
 
-func (s *Server) TokenEndpoint() http.Handler {
-	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		switch request.Method {
-		case http.MethodPost:
-			token, err := s.createToken(request)
-			writer.Header().Set("Content-Type", "application/json")
-			if err != nil {
-				if tokenError, ok := err.(TokenError); ok {
-					writer.WriteHeader(tokenError.Code)
-					_ = json.NewEncoder(writer).Encode(tokenError)
-				} else {
-					http.Error(writer, err.Error(), http.StatusInternalServerError)
-				}
-			} else {
-				_ = json.NewEncoder(writer).Encode(token)
-			}
-		default:
-			http.Error(writer, "", http.StatusMethodNotAllowed)
+func (s *Server) TokenEndpoint() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		clientId := c.PostForm("client_id")
+		grantType := c.PostForm("grant_type")
+		username := c.PostForm("username")
+		password := c.PostForm("password")
+		if bUser, _, ok := c.Request.BasicAuth(); ok {
+			clientId = bUser
 		}
-	})
+		if clientId == "" {
+			c.JSON(
+				http.StatusBadRequest,
+				TokenError{
+					ErrorType:        "invalid_request",
+					ErrorDescription: "Missing required parameter client_id",
+				},
+			)
+			return
+		}
+		if grantType == "" {
+			c.JSON(
+				http.StatusBadRequest,
+				TokenError{
+					ErrorType:        "invalid_request",
+					ErrorDescription: "Missing required parameter grant_type",
+				},
+			)
+			return
+		}
+		if username == "" {
+			c.JSON(
+				http.StatusBadRequest,
+				TokenError{
+					ErrorType:        "invalid_request",
+					ErrorDescription: "Missing required parameter username",
+				},
+			)
+			return
+		}
+		if password == "" {
+			c.JSON(
+				http.StatusBadRequest,
+				TokenError{
+					ErrorType:        "invalid_request",
+					ErrorDescription: "Missing required parameter password",
+				},
+			)
+			return
+		}
+
+		if grantType != "password" {
+			c.JSON(
+				http.StatusBadRequest,
+				TokenError{
+					ErrorType:        "unsupported_grant_type",
+					ErrorDescription: "",
+				},
+			)
+			return
+		}
+
+		client := s.ClientDetailsService.GetClient(c, clientId)
+		if client == nil {
+			c.JSON(
+				http.StatusUnauthorized,
+				TokenError{
+					ErrorType:        "invalid_client",
+					ErrorDescription: "",
+				},
+			)
+			return
+		}
+		c.Set(contextKeyClient, client)
+
+		user := s.UserDetailsService.GetUser(c, username)
+		if user == nil {
+			c.JSON(
+				http.StatusBadRequest,
+				TokenError{
+					ErrorType:        "invalid_grant",
+					ErrorDescription: "",
+				},
+			)
+			return
+		}
+		if !s.PasswordEncoder.Compare(password, user.GetHashedPassword()) {
+			c.JSON(
+				http.StatusBadRequest,
+				TokenError{
+					ErrorType:        "invalid_grant",
+					ErrorDescription: "",
+				},
+			)
+			return
+		}
+		c.Set(contextKeyUser, user)
+
+		modelToken := s.TokenService.CreateToken(c, uuid.NewString())
+		if modelToken == nil {
+			c.JSON(
+				http.StatusBadRequest,
+				TokenError{
+					ErrorType:        "invalid_grant",
+					ErrorDescription: "",
+				},
+			)
+			return
+		}
+		tokenResponse := &TokenResponse{
+			AccessToken: modelToken.GetAccessToken(),
+			TokenType:   "bearer",
+		}
+		c.JSON(http.StatusOK, tokenResponse)
+	}
 }
 
 type TokenError struct {
 	ErrorType        string `json:"error"`
 	ErrorDescription string `json:"error_description,omitempty"`
-	Code             int    `json:"-"`
 }
 
 func (t TokenError) Error() string {
@@ -42,96 +134,4 @@ func (t TokenError) Error() string {
 type TokenResponse struct {
 	AccessToken string `json:"access_token"`
 	TokenType   string `json:"token_type"`
-}
-
-func (s *Server) createToken(request *http.Request) (*TokenResponse, error) {
-	err := request.ParseForm()
-	if err != nil {
-		return nil, err
-	}
-	clientId := request.FormValue("client_id")
-	grantType := request.FormValue("grant_type")
-	username := request.FormValue("username")
-	password := request.FormValue("password")
-	if bUser, _, ok := request.BasicAuth(); ok {
-		clientId = bUser
-	}
-
-	if clientId == "" {
-		return nil, TokenError{
-			ErrorType:        "invalid_request",
-			ErrorDescription: "Missing required parameter client_id",
-			Code:             http.StatusBadRequest,
-		}
-	}
-	if grantType == "" {
-		return nil, TokenError{
-			ErrorType:        "invalid_request",
-			ErrorDescription: "Missing required parameter grant_type",
-			Code:             http.StatusBadRequest,
-		}
-	}
-	if username == "" {
-		return nil, TokenError{
-			ErrorType:        "invalid_request",
-			ErrorDescription: "Missing required parameter username",
-			Code:             http.StatusBadRequest,
-		}
-	}
-	if password == "" {
-		return nil, TokenError{
-			ErrorType:        "invalid_request",
-			ErrorDescription: "Missing required parameter password",
-			Code:             http.StatusBadRequest,
-		}
-	}
-
-	if grantType != "password" {
-		return nil, TokenError{
-			ErrorType:        "unsupported_grant_type",
-			ErrorDescription: "",
-			Code:             http.StatusBadRequest,
-		}
-	}
-
-	client := s.ClientDetailsService.GetClient(request.Context(), clientId)
-	if client == nil {
-		return nil, TokenError{
-			ErrorType:        "invalid_client",
-			ErrorDescription: "",
-			Code:             http.StatusUnauthorized,
-		}
-	}
-	ctx := context.WithValue(request.Context(), contextKeyClient, client)
-
-	user := s.UserDetailsService.GetUser(ctx, username)
-	if user == nil {
-		return nil, TokenError{
-			ErrorType:        "invalid_grant",
-			ErrorDescription: "",
-			Code:             http.StatusBadRequest,
-		}
-	}
-	if !s.PasswordEncoder.Compare(password, user.GetHashedPassword()) {
-		return nil, TokenError{
-			ErrorType:        "invalid_grant",
-			ErrorDescription: "",
-			Code:             http.StatusBadRequest,
-		}
-	}
-	ctx = context.WithValue(ctx, contextKeyUser, user)
-
-	modelToken := s.TokenService.CreateToken(ctx, uuid.NewString())
-	if modelToken == nil {
-		return nil, TokenError{
-			ErrorType:        "invalid_grant",
-			ErrorDescription: "",
-			Code:             http.StatusBadRequest,
-		}
-	}
-	tokenResponse := &TokenResponse{
-		AccessToken: modelToken.GetAccessToken(),
-		TokenType:   "bearer",
-	}
-	return tokenResponse, nil
 }

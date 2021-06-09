@@ -2,9 +2,9 @@ package controller
 
 import (
 	"clearcloud/pkg/logger"
-	"encoding/json"
 	"errors"
-	"github.com/go-playground/validator"
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
 	"net/http"
 	"strings"
@@ -19,7 +19,9 @@ type ApiError struct {
 	Details     interface{} `json:"details,omitempty"`
 }
 
-var validate = validator.New()
+func (a ApiError) Error() string {
+	return strings.TrimSpace(a.ShortError + " " + a.Description)
+}
 
 type validationError struct {
 	Field      string   `json:"field"`
@@ -53,84 +55,48 @@ func mapErrors(validationErrors validator.ValidationErrors) []validationError {
 	return result
 }
 
-func withValidJsonBody(writer http.ResponseWriter, request *http.Request, target interface{}, handler jsonHandlerFunc) (interface{}, error) {
-	err := json.NewDecoder(request.Body).Decode(target)
-	if err != nil {
-		return nil, ApiError{
-			Status:      http.StatusBadRequest,
-			Description: "invalid json request: " + err.Error(),
-		}
-	}
-	err = validate.Struct(target)
-	if err != nil {
-		validationErrors := err.(validator.ValidationErrors)
-		return nil, ApiError{
-			Status:      http.StatusBadRequest,
-			Description: "validation failure",
-			Details:     mapErrors(validationErrors),
-		}
-	}
-	data, err := handler(writer, request)
-	return data, err
-}
-
-func (a ApiError) Error() string {
-	return strings.TrimSpace(a.ShortError + " " + a.Description)
-}
-
-func writeJsonError(writer http.ResponseWriter, apiError ApiError) {
+func writeJsonError(c *gin.Context, apiError ApiError) {
 	if apiError.ShortError == "" {
 		apiError.ShortError = http.StatusText(apiError.Status)
 	}
-	writeJson(writer, apiError.Status, apiError)
+	c.JSON(
+		apiError.Status,
+		apiError,
+	)
 }
 
-func simpleError(writer http.ResponseWriter, status int) {
-	writeJsonError(writer, ApiError{Status: status})
+func simpleError(c *gin.Context, status int) {
+	writeJsonError(c, ApiError{Status: status})
 }
-
-func writeJson(writer http.ResponseWriter, status int, body interface{}) {
-	if body == nil {
-		writer.WriteHeader(http.StatusNoContent)
-	} else {
-		writer.Header().Set("Content-Type", "application/json")
-		writer.WriteHeader(status)
-		json.NewEncoder(writer).Encode(&body)
-	}
-}
-
-type jsonHandlerFunc func(writer http.ResponseWriter, request *http.Request) (data interface{}, err error)
 
 type SQLError interface {
 	SQLState() string
 }
 
-func jsonEndpoint(status int, handler jsonHandlerFunc) http.Handler {
-	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-
-		data, err := handler(writer, request)
-		if err == nil {
-			writeJson(writer, status, data)
+func writeError(c *gin.Context, err error) {
+	if apiError, ok := err.(ApiError); ok {
+		writeJsonError(c, apiError)
+		return
+	}
+	if validationErrors, ok := err.(validator.ValidationErrors); ok {
+		writeJsonError(c, ApiError{
+			Status:      http.StatusBadRequest,
+			Description: "validation failure",
+			Details:     mapErrors(validationErrors),
+		})
+		return
+	}
+	if sqlError, ok := err.(SQLError); ok {
+		if sqlError.SQLState() == "23505" {
+			// unique constraint violation
+			simpleError(c, http.StatusConflict)
 			return
 		}
-
-		if apiError, ok := err.(ApiError); ok {
-			writeJsonError(writer, apiError)
-			return
-		}
-
-		if sqlError, ok := err.(SQLError); ok {
-			if sqlError.SQLState() == "23505" {
-				// unique constraint violation
-				simpleError(writer, http.StatusConflict)
-				return
-			}
-		}
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			simpleError(writer, http.StatusNotFound)
-			return
-		}
-		log.Error("Uncaught error in %s %s: %s", request.Method, request.URL.Path, err.Error())
-		simpleError(writer, http.StatusInternalServerError)
-	})
+	}
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		simpleError(c, http.StatusNotFound)
+		return
+	}
+	log.Error("Uncaught error in %s %s: %s", c.Request.Method, c.Request.URL.Path, err.Error())
+	simpleError(c, http.StatusInternalServerError)
 }

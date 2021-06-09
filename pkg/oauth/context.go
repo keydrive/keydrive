@@ -1,8 +1,4 @@
 package oauth
 
-type contextKey int
-
-const (
-	contextKeyClient contextKey = iota
-	contextKeyUser
-)
+const contextKeyClient = "context/oauth/client"
+const contextKeyUser = "context/oauth/user"

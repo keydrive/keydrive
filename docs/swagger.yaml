@@ -1,0 +1,488 @@
+definitions:
+  controller.ApiError:
+    properties:
+      description:
+        type: string
+      details:
+        type: object
+      error:
+        type: string
+      status:
+        type: integer
+    type: object
+  controller.CreateLibraryDTO:
+    properties:
+      name:
+        type: string
+      type:
+        enum:
+        - generic
+        - books
+        - movies
+        - shows
+        - music
+        type: string
+    required:
+    - name
+    type: object
+  controller.CreateUserDTO:
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - firstName
+    - lastName
+    - password
+    - username
+    type: object
+  controller.LibraryDetails:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      rootFolder:
+        type: string
+      sharedWith:
+        items:
+          $ref: '#/definitions/model.CanAccessLibrary'
+        type: array
+      type:
+        enum:
+        - generic
+        - books
+        - movies
+        - shows
+        - music
+        type: string
+    type: object
+  controller.LibraryPage:
+    properties:
+      elements:
+        items:
+          $ref: '#/definitions/controller.LibrarySummary'
+        type: array
+      totalElements:
+        type: integer
+    type: object
+  controller.LibrarySummary:
+    properties:
+      canWrite:
+        type: boolean
+      id:
+        type: integer
+      name:
+        type: string
+      type:
+        enum:
+        - generic
+        - books
+        - movies
+        - shows
+        - music
+        type: string
+    type: object
+  controller.ShareLibraryDTO:
+    properties:
+      canWrite:
+        type: boolean
+      userId:
+        type: integer
+    required:
+    - userId
+    type: object
+  controller.UpdateLibraryDTO:
+    properties:
+      name:
+        type: string
+    type: object
+  controller.UpdateUserDTO:
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  controller.UserPage:
+    properties:
+      elements:
+        items:
+          $ref: '#/definitions/controller.UserSummary'
+        type: array
+      totalElements:
+        type: integer
+    type: object
+  controller.UserSummary:
+    properties:
+      firstName:
+        type: string
+      id:
+        type: integer
+      isAdmin:
+        type: boolean
+      lastName:
+        type: string
+      username:
+        type: string
+    type: object
+  model.CanAccessLibrary:
+    properties:
+      canWrite:
+        type: boolean
+      user:
+        $ref: '#/definitions/model.User'
+    type: object
+  model.Library:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      rootFolder:
+        type: string
+      type:
+        enum:
+        - generic
+        - books
+        - movies
+        - shows
+        - music
+        type: string
+    type: object
+  model.User:
+    properties:
+      firstName:
+        type: string
+      id:
+        type: integer
+      isAdmin:
+        type: boolean
+      lastName:
+        type: string
+      username:
+        type: string
+    type: object
+info:
+  contact:
+    email: thomas.biesaart@protonmail.com
+    name: ClearCloud Team
+    url: https://github.com/ChappIO/clearcloud/issues
+  title: ClearCloud API
+  version: development
+paths:
+  /api/libraries:
+    get:
+      parameters:
+      - default: 1
+        description: The page number to fetch
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: The maximum number of elements to return
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.LibraryPage'
+      security:
+      - OAuth2: []
+      summary: Search the collection of libraries
+      tags:
+      - Files
+    post:
+      parameters:
+      - description: The new library
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.CreateLibraryDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Library'
+      security:
+      - OAuth2: []
+      summary: Add a new library
+      tags:
+      - Files
+  /api/libraries/{libraryId}:
+    delete:
+      description: This does not delete the files in the library from the disk
+      parameters:
+      - description: The library id
+        in: path
+        name: libraryId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      security:
+      - OAuth2: []
+      summary: Delete a library
+      tags:
+      - Files
+    get:
+      parameters:
+      - description: The library id
+        in: path
+        name: libraryId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.LibraryDetails'
+      security:
+      - OAuth2: []
+      summary: Get library details
+      tags:
+      - Files
+    patch:
+      parameters:
+      - description: The changes
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.UpdateLibraryDTO'
+      - description: The library id
+        in: path
+        name: libraryId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Library'
+      security:
+      - OAuth2: []
+      summary: Update an existing library
+      tags:
+      - Files
+  /api/libraries/{libraryId}/shares:
+    post:
+      parameters:
+      - description: The rights to grant to a specific user
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.ShareLibraryDTO'
+      - description: The library id
+        in: path
+        name: libraryId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      security:
+      - OAuth2: []
+      summary: Share a library with a user
+      tags:
+      - Files
+  /api/libraries/{libraryId}/shares/{userId}:
+    delete:
+      parameters:
+      - description: The library id
+        in: path
+        name: libraryId
+        required: true
+        type: integer
+      - description: The user id
+        in: path
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      security:
+      - OAuth2: []
+      summary: Unshare a library
+      tags:
+      - Files
+  /api/user:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+      security:
+      - OAuth2: []
+      summary: Get the currently authenticated user information
+      tags:
+      - Authentication
+    patch:
+      parameters:
+      - description: The changes
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.UpdateUserDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+      security:
+      - OAuth2: []
+      summary: Update the currently authenticated user
+      tags:
+      - Authentication
+  /api/users:
+    get:
+      parameters:
+      - default: 1
+        description: The page number to fetch
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: The maximum number of elements to return
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.UserPage'
+      security:
+      - OAuth2: []
+      summary: Search the collection of users
+      tags:
+      - Authentication
+    post:
+      parameters:
+      - description: The new user
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.CreateUserDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.User'
+        "409":
+          description: This username is already taken
+          schema:
+            $ref: '#/definitions/controller.ApiError'
+      security:
+      - OAuth2: []
+      summary: Add a new user
+      tags:
+      - Authentication
+  /api/users/{userId}:
+    delete:
+      parameters:
+      - description: The user id
+        in: path
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      security:
+      - OAuth2: []
+      summary: Delete a user
+      tags:
+      - Authentication
+    get:
+      parameters:
+      - description: The user id
+        in: path
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+      security:
+      - OAuth2: []
+      summary: Get user details
+      tags:
+      - Authentication
+    patch:
+      parameters:
+      - description: The changes
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.UpdateUserDTO'
+      - description: The user id
+        in: path
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+      security:
+      - OAuth2: []
+      summary: Update an existing user
+      tags:
+      - Authentication
+securityDefinitions:
+  OAuth2:
+    flow: password
+    tokenUrl: /oauth2/token
+    type: oauth2
+swagger: "2.0"
