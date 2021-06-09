@@ -4,7 +4,7 @@ import { AuthService } from '../services/AuthService';
 import { Injector } from '../services/Injector';
 import { PersistConfig } from 'redux-persist/es/types';
 import storage from 'redux-persist/lib/storage';
-import { User, UserService } from '../services/UserService';
+import { UpdateUser, User, UserService } from '../services/UserService';
 
 export interface State {
   token?: string;
@@ -56,6 +56,17 @@ export const userStore = (injector: Injector) => {
     }
   );
 
+  const updateCurrentUserAsync = createAsyncThunk<State['currentUser'], UpdateUser, ThunkApiConfig>(
+    'user/updateCurrentUser',
+    async (updates, { rejectWithValue }) => {
+      try {
+        return await userService.updateCurrentUser(updates);
+      } catch (e) {
+        return rejectWithValue(e);
+      }
+    }
+  );
+
   function reset(state: Draft<State>) {
     state.token = undefined;
     state.currentUser = undefined;
@@ -82,6 +93,9 @@ export const userStore = (injector: Injector) => {
       builder.addCase(getCurrentUserAsync.rejected, (state) => {
         reset(state);
       });
+      builder.addCase(updateCurrentUserAsync.fulfilled, (state, action) => {
+        state.currentUser = action.payload;
+      });
     },
   });
 
@@ -90,6 +104,7 @@ export const userStore = (injector: Injector) => {
       ...userSlice.actions,
       loginAsync,
       getCurrentUserAsync,
+      updateCurrentUserAsync,
     },
     reducer: persistReducer(persistConfig, userSlice.reducer),
     selectors: {

@@ -8,6 +8,7 @@ export interface Props {
   className?: string;
   autoFocus?: boolean;
   id?: string;
+  required?: boolean;
 }
 
 export const TextInput: React.FC<Props> = ({ type = 'text', onChange, ...props }) => (

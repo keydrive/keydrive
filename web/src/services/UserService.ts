@@ -16,6 +16,8 @@ export interface CreateUser {
   password: string;
 }
 
+export type UpdateUser = Partial<CreateUser>;
+
 export class UserService {
   public static readonly NAME = 'UserService';
 
@@ -35,5 +37,9 @@ export class UserService {
 
   public getCurrentUser(): Promise<User> {
     return this.api.jsonGet('/user');
+  }
+
+  public updateCurrentUser(updates: UpdateUser): Promise<User> {
+    return this.api.jsonPatch('/user', updates);
   }
 }

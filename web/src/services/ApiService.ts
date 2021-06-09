@@ -23,6 +23,10 @@ export class ApiService {
     return this.jsonRequest('POST', path, body);
   }
 
+  public jsonPatch<B, T>(path: string, body: B): Promise<T> {
+    return this.jsonRequest('PATCH', path, body);
+  }
+
   public async getAllPages<T>(path: string): Promise<T[]> {
     const firstPage = await this.jsonGet<Page<T>>(path, {
       limit: MAX_LIMIT.toString(),
@@ -43,7 +47,7 @@ export class ApiService {
   }
 
   private async jsonRequest<T>(
-    method: 'GET' | 'POST',
+    method: 'GET' | 'POST' | 'PATCH',
     path: string,
     body?: unknown,
     params?: Record<string, string>
