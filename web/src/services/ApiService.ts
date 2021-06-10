@@ -77,7 +77,7 @@ export class ApiService {
 
     const paramString = params ? `?${new URLSearchParams(params)}` : '';
 
-    const response = await fetch(`/api${path}${paramString}`, {
+    const response = await fetch(`/api${path}/${paramString}`, {
       method,
       headers,
       body: body ? JSON.stringify(body) : undefined,
