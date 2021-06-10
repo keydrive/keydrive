@@ -77,6 +77,7 @@ export class ApiService {
 
     const paramString = params ? `?${new URLSearchParams(params)}` : '';
 
+    // The path has a trailing slash to prevent the server from having to redirect us there.
     const response = await fetch(`/api${path}/${paramString}`, {
       method,
       headers,
