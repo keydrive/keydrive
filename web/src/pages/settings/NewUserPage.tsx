@@ -21,7 +21,7 @@ export const NewUserPage: React.FC = () => {
 
   return (
     <SettingsLayout className="new-user-page">
-      <h2>Users / New User</h2>
+      <h2 className="title">Users / New User</h2>
       <Form
         onSubmit={async () => {
           setError(undefined);
@@ -55,7 +55,7 @@ export const NewUserPage: React.FC = () => {
             <label htmlFor="password">Password</label>
             <label htmlFor="confirmPassword">Confirm Password</label>
           </div>
-          <div className="inputs">
+          <div>
             <TextInput
               id="username"
               value={username}

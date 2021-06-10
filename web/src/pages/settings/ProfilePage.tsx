@@ -39,7 +39,7 @@ export const ProfilePage: React.FC = () => {
             <label htmlFor="firstName">First Name</label>
             <label htmlFor="lastName">Last Name</label>
           </div>
-          <div className="inputs">
+          <div>
             <TextInput
               id="username"
               value={username}
