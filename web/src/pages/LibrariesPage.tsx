@@ -31,7 +31,7 @@ export const LibrariesPage: React.FC = () => {
         </Link>
         {libraries ? (
           libraries.map((library) => (
-            <div key={library.id} className="library">
+            <div key={library.id} className="entry">
               <Icon icon={libraryIcons[library.type]} />
               {library.name}
             </div>
