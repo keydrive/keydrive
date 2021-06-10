@@ -88,7 +88,6 @@ interface ModalProps {
 
 const CreateUserModal: React.FC<ModalProps> = ({ onClose, onDone }) => {
   const userService = useService(UserService);
-
   const [username, setUsername] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');

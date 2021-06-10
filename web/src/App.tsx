@@ -10,7 +10,6 @@ import { ProfilePage } from './pages/settings/ProfilePage';
 import { useDispatch } from 'react-redux';
 import { Icon } from './components/Icon';
 import { LibrariesSettingsPage } from './pages/settings/LibrariesSettingsPage';
-import { NewLibraryPage } from './pages/settings/NewLibraryPage';
 
 export const App: React.FC = () => {
   const {
@@ -51,7 +50,6 @@ export const App: React.FC = () => {
       <Route exact path="/settings/profile" component={ProfilePage} />
       <Route exact path="/settings/users" component={UsersPage} />
       <Route exact path="/settings/libraries" component={LibrariesSettingsPage} />
-      <Route exact path="/settings/libraries/new" component={NewLibraryPage} />
       <Redirect to="/" />
     </Switch>
   );
