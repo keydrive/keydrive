@@ -25,6 +25,15 @@ export const NewUserPage: React.FC = () => {
       <Form
         onSubmit={async () => {
           setError(undefined);
+
+          if (password !== confirmPassword) {
+            setError({
+              status: 0,
+              error: 'PasswordsDontMatch',
+            });
+            return;
+          }
+
           await userService
             .createUser({
               username,
@@ -61,8 +70,10 @@ export const NewUserPage: React.FC = () => {
       </Form>
       {error && (
         <p className="error">
-          {error.status === 409
+          {error.error === 'Conflict'
             ? 'A user with this username already exists.'
+            : error.error === 'PasswordsDontMatch'
+            ? 'The passwords do not match.'
             : 'Something went wrong while creating the user.'}
         </p>
       )}
