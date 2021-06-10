@@ -3,6 +3,7 @@ import { useService } from '../../hooks/useService';
 import { SettingsLayout } from '../../components/layout/SettingsLayout';
 import { Icon } from '../../components/Icon';
 import { LibrariesService, LibraryDetails } from '../../services/LibrariesService';
+import { Link } from 'react-router-dom';
 
 export const LibrariesSettingsPage: React.FC = () => {
   const librariesService = useService(LibrariesService);
@@ -25,6 +26,9 @@ export const LibrariesSettingsPage: React.FC = () => {
     <SettingsLayout className="libraries-settings-page">
       <div className="title">
         <h2>Libraries</h2>
+        <Link to="/settings/libraries/new" className="button square">
+          <Icon icon="plus" />
+        </Link>
       </div>
       {libraries ? (
         <table>

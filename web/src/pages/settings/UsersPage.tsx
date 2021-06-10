@@ -32,7 +32,9 @@ export const UsersPage: React.FC = () => {
       </div>
       {users ? (
         <table>
-          <col className="col-icon" />
+          <colgroup>
+            <col className="col-icon" />
+          </colgroup>
           <thead>
             <tr>
               <th />
