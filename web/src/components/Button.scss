@@ -2,7 +2,7 @@
   padding: 0 18px;
   border: none;
   height: $input-height;
-  border-radius: $input-border-radius;
+  border-radius: $border-radius;
   cursor: pointer;
   font-size: 1rem;
   outline: none;
@@ -29,8 +29,9 @@
       visibility: hidden;
     }
 
-    > .loader {
+    > i.loader {
       position: absolute;
+      margin: 0;
     }
   }
 

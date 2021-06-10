@@ -1,0 +1,10 @@
+.field {
+  width: 100%;
+
+  &.field-error {
+    input:not(:focus) {
+      padding: 0 7px;
+      border: 2px inset var(--red);
+    }
+  }
+}

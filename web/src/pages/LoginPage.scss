@@ -14,30 +14,11 @@
       margin-bottom: 24px;
     }
 
-    .input-row {
-      margin-bottom: 8px;
-      display: flex;
-
-      &.password {
-        input {
-          border-top-right-radius: 0;
-          border-bottom-right-radius: 0;
-        }
-
-        .button {
-          border-top-left-radius: 0;
-          border-bottom-left-radius: 0;
-        }
-      }
-    }
-
     button[type='submit'] {
       width: 100%;
     }
 
-    .error {
-      margin-top: 8px;
-      color: var(--red);
+    .error-message {
       min-height: 64px;
     }
   }

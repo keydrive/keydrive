@@ -5,9 +5,10 @@ import { Button } from '../Button';
 export interface Props {
   onSubmit: () => void | Promise<void>;
   submitLabel: ReactChild;
+  error?: string | false;
 }
 
-export const Form: React.FC<Props> = ({ children, onSubmit, submitLabel }) => {
+export const Form: React.FC<Props> = ({ children, onSubmit, submitLabel, error }) => {
   const [loading, setLoading] = useState(false);
   const mounted = useMountedState();
 
@@ -29,6 +30,7 @@ export const Form: React.FC<Props> = ({ children, onSubmit, submitLabel }) => {
       <Button type="submit" loading={loading}>
         {submitLabel}
       </Button>
+      <div className="error-message">{error}</div>
     </form>
   );
 };
