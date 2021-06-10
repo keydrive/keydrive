@@ -55,15 +55,28 @@ export const NewUserPage: React.FC = () => {
             <label htmlFor="confirmPassword">Confirm Password</label>
           </div>
           <div className="inputs">
-            <TextInput id="username" value={username} onChange={setUsername} placeholder="Username" />
-            <TextInput id="firstName" value={firstName} onChange={setFirstName} placeholder="First Name" />
-            <TextInput id="lastName" value={lastName} onChange={setLastName} placeholder="Last Name" />
-            <PasswordInput id="password" value={password} onChange={setPassword} />
+            <TextInput
+              id="username"
+              value={username}
+              onChange={setUsername}
+              placeholder="Username"
+              error={error?.error === 'Conflict' || error}
+            />
+            <TextInput
+              id="firstName"
+              value={firstName}
+              onChange={setFirstName}
+              placeholder="First Name"
+              error={error}
+            />
+            <TextInput id="lastName" value={lastName} onChange={setLastName} placeholder="Last Name" error={error} />
+            <PasswordInput id="password" value={password} onChange={setPassword} error={error} />
             <PasswordInput
               id="confirmPassword"
               value={confirmPassword}
               onChange={setConfirmPassword}
               placeholder="Confirm Password"
+              error={confirmPassword && password !== confirmPassword}
             />
           </div>
         </div>

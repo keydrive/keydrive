@@ -32,8 +32,8 @@ export const LoginPage: React.FC = () => {
         >
           <div className="columns">
             <div>
-              <TextInput value={username} onChange={setUsername} placeholder="Username" autoFocus />
-              <PasswordInput value={password} onChange={setPassword} />
+              <TextInput id="username" value={username} onChange={setUsername} placeholder="Username" autoFocus />
+              <PasswordInput id="password" value={password} onChange={setPassword} />
             </div>
           </div>
         </Form>
