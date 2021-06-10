@@ -15,4 +15,11 @@ module.exports = function (app) {
       changeOrigin: true,
     })
   );
+  app.use(
+    '/docs',
+    createProxyMiddleware({
+      target: 'http://localhost:5555',
+      changeOrigin: true,
+    })
+  );
 };
