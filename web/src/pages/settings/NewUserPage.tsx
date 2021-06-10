@@ -6,6 +6,7 @@ import { PasswordInput } from '../../components/input/PasswordInput';
 import { useService } from '../../hooks/useService';
 import { UserService } from '../../services/UserService';
 import { useHistory } from 'react-router-dom';
+import { ApiError } from '../../services/ApiService';
 
 export const NewUserPage: React.FC = () => {
   const userService = useService(UserService);
@@ -16,15 +17,15 @@ export const NewUserPage: React.FC = () => {
   const [lastName, setLastName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<ApiError>();
 
   return (
     <SettingsLayout className="new-user-page">
       <h2 className="title">Users / New User</h2>
       <Form
-        onSubmit={() => {
-          setError(false);
-          userService
+        onSubmit={async () => {
+          setError(undefined);
+          await userService
             .createUser({
               username,
               firstName,
@@ -32,7 +33,7 @@ export const NewUserPage: React.FC = () => {
               password,
             })
             .then(() => history.push('/settings/users'))
-            .catch(() => setError(true));
+            .catch(setError);
         }}
         submitLabel="Create"
       >
@@ -58,7 +59,13 @@ export const NewUserPage: React.FC = () => {
           </div>
         </div>
       </Form>
-      {error && <p className="error">Something went wrong while creating the user.</p>}
+      {error && (
+        <p className="error">
+          {error.status === 409
+            ? 'A user with this username already exists.'
+            : 'Something went wrong while creating the user.'}
+        </p>
+      )}
     </SettingsLayout>
   );
 };

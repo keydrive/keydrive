@@ -8,6 +8,20 @@ export interface Page<T> {
 
 const MAX_LIMIT = 100;
 
+export interface ApiError {
+  status: number;
+  error: string;
+  description?: string;
+  details?: ApiErrorDetails[];
+}
+
+export interface ApiErrorDetails {
+  field: string;
+  constraint: string;
+  param?: string;
+  codes: string[];
+}
+
 export class ApiService {
   public static readonly NAME = 'ApiService';
 
