@@ -30,29 +30,34 @@ export const UsersPage: React.FC = () => {
           <Icon icon="plus" />
         </Link>
       </div>
-      <div className="headers">
-        <div className="icon" />
-        <div>Username</div>
-        <div>Full Name</div>
-      </div>
-      <div className="users-list">
-        {users ? (
-          users.map((user) => (
-            <div key={user.id} className="user">
-              <div className="icon">{user.isAdmin && <Icon icon="user-shield" />}</div>
-              <div>{user.username}</div>
-              <div>
-                {user.firstName} {user.lastName}
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="loader">
-            <Icon icon="spinner" pulse size={2} />
-          </div>
-        )}
-        {error && <div className="error-message">Something went wrong. Please refresh the page and try again.</div>}
-      </div>
+      {users ? (
+        <table>
+          <col className="col-icon" />
+          <thead>
+            <tr>
+              <th />
+              <th>Username</th>
+              <th>Full Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((user) => (
+              <tr key={user.id}>
+                <td>{user.isAdmin && <Icon icon="user-shield" />}</td>
+                <td>{user.username}</td>
+                <td>
+                  {user.firstName} {user.lastName}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <div className="loader">
+          <Icon icon="spinner" pulse size={2} />
+        </div>
+      )}
+      {error && <div className="error-message">Something went wrong. Please refresh the page and try again.</div>}
     </SettingsLayout>
   );
 };
