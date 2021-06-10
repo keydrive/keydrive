@@ -51,7 +51,7 @@ export const UsersPage: React.FC = () => {
             <Icon icon="spinner" pulse size={2} />
           </div>
         )}
-        {error && <div className="error">Something went wrong. Please refresh the page and try again.</div>}
+        {error && <div className="error-message">Something went wrong. Please refresh the page and try again.</div>}
       </div>
     </SettingsLayout>
   );

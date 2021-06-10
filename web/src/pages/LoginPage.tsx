@@ -29,6 +29,7 @@ export const LoginPage: React.FC = () => {
             }
           }}
           submitLabel="Log In"
+          error={error && 'Invalid username or password.'}
         >
           <div className="columns">
             <div>
@@ -37,7 +38,6 @@ export const LoginPage: React.FC = () => {
             </div>
           </div>
         </Form>
-        <div className="error">{error && 'Invalid username or password.'}</div>
       </div>
     </div>
   );

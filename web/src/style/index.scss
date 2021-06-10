@@ -16,6 +16,7 @@ $transition-duration: 0.2s;
 // Component styles.
 #root {
   @import '../components/input/Field';
+  @import '../components/input/Form';
   @import '../components/input/PasswordInput';
   @import '../components/layout/SettingsLayout';
   @import '../components/Button';
@@ -28,9 +29,10 @@ $transition-duration: 0.2s;
   @import '../pages/LoginPage';
 }
 
-.error {
+.error-message {
   color: var(--red);
 }
+
 .app-loader {
   display: flex;
   align-items: center;

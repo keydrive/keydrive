@@ -45,6 +45,7 @@ export const NewUserPage: React.FC = () => {
             .catch(setError);
         }}
         submitLabel="Create"
+        error={getErrorMessage(error)}
       >
         <div className="columns">
           <div>
@@ -76,20 +77,25 @@ export const NewUserPage: React.FC = () => {
               value={confirmPassword}
               onChange={setConfirmPassword}
               placeholder="Confirm Password"
-              error={confirmPassword && password !== confirmPassword}
+              error={!!confirmPassword && password !== confirmPassword}
             />
           </div>
         </div>
       </Form>
-      {error && (
-        <p className="error">
-          {error.error === 'Conflict'
-            ? 'A user with this username already exists.'
-            : error.error === 'PasswordsDontMatch'
-            ? 'The passwords do not match.'
-            : 'Something went wrong while creating the user.'}
-        </p>
-      )}
     </SettingsLayout>
   );
 };
+
+function getErrorMessage(error?: ApiError): string | undefined {
+  if (!error) {
+    return;
+  }
+  switch (error.error) {
+    case 'Conflict':
+      return 'A user with this username already exists.';
+    case 'PasswordsDontMatch':
+      return 'The passwords do not match.';
+    default:
+      return 'Something went wrong while creating the user.';
+  }
+}

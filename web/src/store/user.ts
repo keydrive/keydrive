@@ -5,6 +5,7 @@ import { Injector } from '../services/Injector';
 import { PersistConfig } from 'redux-persist/es/types';
 import storage from 'redux-persist/lib/storage';
 import { UpdateUser, User, UserService } from '../services/UserService';
+import { ApiError } from '../services/ApiService';
 
 export interface State {
   token?: string;
@@ -19,7 +20,7 @@ const initialState: State = {};
 
 interface ThunkApiConfig {
   state: RootState;
-  rejectValue: unknown;
+  rejectValue: ApiError;
 }
 
 const persistConfig: PersistConfig<State> = {

@@ -5,7 +5,7 @@ import { classNames } from '../../utils/classNames';
 export interface Props {
   id: string;
   className?: string;
-  error?: unknown;
+  error?: boolean | ApiError;
 }
 
 export const Field: React.FC<Props> = ({ children, id, className, error }) => {
