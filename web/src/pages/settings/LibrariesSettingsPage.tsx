@@ -26,27 +26,31 @@ export const LibrariesSettingsPage: React.FC = () => {
       <div className="title">
         <h2>Libraries</h2>
       </div>
-      <div className="headers">
-        <div>Name</div>
-        <div>Type</div>
-        <div>Root Folder</div>
-      </div>
-      <div className="libraries-list">
-        {libraries ? (
-          libraries.map((library) => (
-            <div key={library.id} className="library">
-              <div>{library.name}</div>
-              <div>{library.type}</div>
-              <div>{library.rootFolder}</div>
-            </div>
-          ))
-        ) : (
-          <div className="loader">
-            <Icon icon="spinner" pulse size={2} />
-          </div>
-        )}
-        {error && <div className="error-message">Something went wrong. Please refresh the page and try again.</div>}
-      </div>
+      {libraries ? (
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Root Folder</th>
+            </tr>
+          </thead>
+          <tbody>
+            {libraries.map((library) => (
+              <tr key={library.id}>
+                <td>{library.name}</td>
+                <td>{library.type}</td>
+                <td>{library.rootFolder}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <div className="loader">
+          <Icon icon="spinner" pulse size={2} />
+        </div>
+      )}
+      {error && <div className="error-message">Something went wrong. Please refresh the page and try again.</div>}
     </SettingsLayout>
   );
 };
