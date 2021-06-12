@@ -137,6 +137,7 @@ const CreateUserModal: React.FC<ModalProps> = ({ onClose, onDone }) => {
               onChange={setUsername}
               placeholder="Username"
               error={error?.error === 'Conflict' || error}
+              autoFocus
             />
             <TextInput
               id="firstName"
