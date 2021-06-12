@@ -7,13 +7,16 @@ table {
     padding: 2px 6px;
   }
 
+  tr {
+    height: $input-height;
+  }
+
   thead {
     border-bottom: 1px solid var(--gray-4);
 
     th {
       font-weight: 600;
       text-align: left;
-      padding-bottom: 6px;
     }
   }
 
