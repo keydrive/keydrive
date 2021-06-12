@@ -29,15 +29,17 @@ export const SettingsLayout: React.FC<Props> = ({ children, className }) => {
           <Icon icon="address-card" />
           Profile
         </Link>
-        <Link to="/settings/users" className="entry">
-          <Icon icon="users" />
-          Users
-        </Link>
         {isAdmin && (
-          <Link to="/settings/libraries" className="entry">
-            <Icon icon="folder-open" />
-            Libraries
-          </Link>
+          <>
+            <Link to="/settings/users" className="entry">
+              <Icon icon="users" />
+              Users
+            </Link>
+            <Link to="/settings/libraries" className="entry">
+              <Icon icon="folder-open" />
+              Libraries
+            </Link>
+          </>
         )}
       </div>
       <div className="content-wrapper">
