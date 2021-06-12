@@ -14,6 +14,7 @@ export const LibrariesSettingsPage: React.FC = () => {
   const [libraries, setLibraries] = useState<LibraryDetails[]>();
   const [error, setError] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [editLibrary, setEditLibrary] = useState<LibraryDetails>();
 
   useEffect(() => {
     if (!libraries) {
@@ -38,6 +39,16 @@ export const LibrariesSettingsPage: React.FC = () => {
           }}
         />
       )}
+      {editLibrary && (
+        <EditLibraryModal
+          onClose={() => setEditLibrary(undefined)}
+          onDone={() => {
+            setEditLibrary(undefined);
+            setLibraries(undefined);
+          }}
+          library={editLibrary}
+        />
+      )}
       <SettingsLayout className="libraries-settings-page">
         <div className="title">
           <h2>Libraries</h2>
@@ -46,7 +57,7 @@ export const LibrariesSettingsPage: React.FC = () => {
           </Button>
         </div>
         {libraries ? (
-          <table>
+          <table className="clickable">
             <thead>
               <tr>
                 <th>Name</th>
@@ -56,7 +67,16 @@ export const LibrariesSettingsPage: React.FC = () => {
             </thead>
             <tbody>
               {libraries.map((library) => (
-                <tr key={library.id}>
+                <tr
+                  key={library.id}
+                  onClick={() => setEditLibrary(library)}
+                  tabIndex={0}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      setEditLibrary(library);
+                    }
+                  }}
+                >
                   <td>{library.name}</td>
                   <td>{library.type}</td>
                   <td>{library.rootFolder}</td>
@@ -117,6 +137,39 @@ const CreateLibraryModal: React.FC<ModalProps> = ({ onClose, onDone }) => {
               placeholder="/mnt/files"
               error={error}
             />
+          </div>
+        </div>
+      </Form>
+    </Modal>
+  );
+};
+
+const EditLibraryModal: React.FC<ModalProps & { library: LibraryDetails }> = ({ library, onClose, onDone }) => {
+  const librariesService = useService(LibrariesService);
+  const [name, setName] = useState(library.name);
+  const [error, setError] = useState<ApiError>();
+
+  return (
+    <Modal onClose={onClose} title={`Edit Library: ${library.name}`}>
+      <Form
+        onSubmit={async () => {
+          setError(undefined);
+          await librariesService
+            .updateLibrary(library.id, {
+              name,
+            })
+            .then(() => onDone())
+            .catch(setError);
+        }}
+        submitLabel="Save"
+        error={error && 'Something went wrong while updating the library.'}
+      >
+        <div className="columns">
+          <div>
+            <label htmlFor="name">Name</label>
+          </div>
+          <div>
+            <TextInput id="name" value={name} onChange={setName} placeholder="Name" error={error} autoFocus required />
           </div>
         </div>
       </Form>

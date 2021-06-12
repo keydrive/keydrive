@@ -27,6 +27,10 @@ export interface ShareDetails {
   user: User;
 }
 
+export interface UpdateLibrary {
+  name?: string;
+}
+
 export class LibrariesService {
   public static readonly NAME = 'LibrariesService';
 
@@ -42,6 +46,10 @@ export class LibrariesService {
 
   public createLibrary(library: CreateLibrary): Promise<Library> {
     return this.api.jsonPost('/libraries', library);
+  }
+
+  public updateLibrary(id: number, updates: UpdateLibrary): Promise<Library> {
+    return this.api.jsonPatch(`/libraries/${id}`, updates);
   }
 
   public getLibraryDetails(id: number): Promise<LibraryDetails> {
