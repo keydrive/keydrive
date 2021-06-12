@@ -42,4 +42,8 @@ export class UserService {
   public updateCurrentUser(updates: UpdateUser): Promise<User> {
     return this.api.jsonPatch('/user', updates);
   }
+
+  public updateUser(id: number, updates: UpdateUser): Promise<User> {
+    return this.api.jsonPatch(`/users/${id}`, updates);
+  }
 }

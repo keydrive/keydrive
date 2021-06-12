@@ -15,6 +15,7 @@ export const UsersPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>();
   const [error, setError] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [editUser, setEditUser] = useState<User>();
 
   useEffect(() => {
     if (!users) {
@@ -39,6 +40,16 @@ export const UsersPage: React.FC = () => {
           }}
         />
       )}
+      {editUser && (
+        <EditUserModal
+          onClose={() => setEditUser(undefined)}
+          onDone={() => {
+            setEditUser(undefined);
+            setUsers(undefined);
+          }}
+          user={editUser}
+        />
+      )}
       <SettingsLayout className="users-page">
         <div className="title">
           <h2>Users</h2>
@@ -47,7 +58,7 @@ export const UsersPage: React.FC = () => {
           </Button>
         </div>
         {users ? (
-          <table>
+          <table className="clickable">
             <colgroup>
               <col className="icon" />
             </colgroup>
@@ -60,7 +71,16 @@ export const UsersPage: React.FC = () => {
             </thead>
             <tbody>
               {users.map((user) => (
-                <tr key={user.id}>
+                <tr
+                  key={user.id}
+                  onClick={() => setEditUser(user)}
+                  tabIndex={0}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      setEditUser(user);
+                    }
+                  }}
+                >
                   <td>{user.isAdmin && <Icon icon="user-shield" />}</td>
                   <td>{user.username}</td>
                   <td>
@@ -155,6 +175,60 @@ const CreateUserModal: React.FC<ModalProps> = ({ onClose, onDone }) => {
               placeholder="Confirm Password"
               error={!!confirmPassword && password !== confirmPassword}
             />
+          </div>
+        </div>
+      </Form>
+    </Modal>
+  );
+};
+
+const EditUserModal: React.FC<ModalProps & { user: User }> = ({ user, onClose, onDone }) => {
+  const userService = useService(UserService);
+  const [username, setUsername] = useState(user.username);
+  const [firstName, setFirstName] = useState(user.firstName);
+  const [lastName, setLastName] = useState(user.lastName);
+  const [error, setError] = useState<ApiError>();
+
+  return (
+    <Modal onClose={onClose} title={`Edit User: ${user.username}`}>
+      <Form
+        onSubmit={async () => {
+          setError(undefined);
+          await userService
+            .updateUser(user.id, {
+              username,
+              firstName,
+              lastName,
+            })
+            .then(() => onDone())
+            .catch(setError);
+        }}
+        submitLabel="Save"
+        error={getErrorMessage(error)}
+      >
+        <div className="columns">
+          <div>
+            <label htmlFor="username">Username</label>
+            <label htmlFor="firstName">First Name</label>
+            <label htmlFor="lastName">Last Name</label>
+          </div>
+          <div>
+            <TextInput
+              id="username"
+              value={username}
+              onChange={setUsername}
+              placeholder="Username"
+              error={error?.error === 'Conflict' || error}
+              autoFocus
+            />
+            <TextInput
+              id="firstName"
+              value={firstName}
+              onChange={setFirstName}
+              placeholder="First Name"
+              error={error}
+            />
+            <TextInput id="lastName" value={lastName} onChange={setLastName} placeholder="Last Name" error={error} />
           </div>
         </div>
       </Form>

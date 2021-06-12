@@ -22,6 +22,8 @@ table {
 
   tbody {
     tr {
+      outline: none;
+
       &:nth-child(2n) {
         td {
           background-color: var(--gray-5);
@@ -29,6 +31,8 @@ table {
       }
 
       td {
+        transition: background-color $transition-duration;
+
         &:first-child {
           border-top-left-radius: $border-radius;
           border-bottom-left-radius: $border-radius;
@@ -37,6 +41,21 @@ table {
         &:last-child {
           border-top-right-radius: $border-radius;
           border-bottom-right-radius: $border-radius;
+        }
+      }
+    }
+  }
+
+  &.clickable {
+    tbody {
+      tr {
+        cursor: pointer;
+
+        &:hover,
+        &:focus {
+          td {
+            background-color: var(--gray-4);
+          }
         }
       }
     }
