@@ -109,7 +109,7 @@ const CreateLibraryModal: React.FC<ModalProps> = ({ onClose, onDone }) => {
             <label htmlFor="rootFolder">Root Folder</label>
           </div>
           <div>
-            <TextInput id="name" value={name} onChange={setName} placeholder="Name" error={error} autoFocus />
+            <TextInput id="name" value={name} onChange={setName} placeholder="Name" error={error} autoFocus required />
             <TextInput
               id="rootFolder"
               value={rootFolder}

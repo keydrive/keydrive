@@ -140,7 +140,7 @@ const CreateUserModal: React.FC<ModalProps> = ({ onClose, onDone }) => {
             .catch(setError);
         }}
         submitLabel="Create"
-        error={getErrorMessage(error)}
+        error={getErrorMessage('creating', error)}
       >
         <div className="columns">
           <div>
@@ -158,6 +158,7 @@ const CreateUserModal: React.FC<ModalProps> = ({ onClose, onDone }) => {
               placeholder="Username"
               error={error?.error === 'Conflict' || error}
               autoFocus
+              required
             />
             <TextInput
               id="firstName"
@@ -165,15 +166,24 @@ const CreateUserModal: React.FC<ModalProps> = ({ onClose, onDone }) => {
               onChange={setFirstName}
               placeholder="First Name"
               error={error}
+              required
             />
-            <TextInput id="lastName" value={lastName} onChange={setLastName} placeholder="Last Name" error={error} />
-            <PasswordInput id="password" value={password} onChange={setPassword} error={error} />
+            <TextInput
+              id="lastName"
+              value={lastName}
+              onChange={setLastName}
+              placeholder="Last Name"
+              error={error}
+              required
+            />
+            <PasswordInput id="password" value={password} onChange={setPassword} error={error} required />
             <PasswordInput
               id="confirmPassword"
               value={confirmPassword}
               onChange={setConfirmPassword}
               placeholder="Confirm Password"
               error={!!confirmPassword && password !== confirmPassword}
+              required
             />
           </div>
         </div>
@@ -204,7 +214,7 @@ const EditUserModal: React.FC<ModalProps & { user: User }> = ({ user, onClose, o
             .catch(setError);
         }}
         submitLabel="Save"
-        error={getErrorMessage(error)}
+        error={getErrorMessage('updating', error)}
       >
         <div className="columns">
           <div>
@@ -220,6 +230,7 @@ const EditUserModal: React.FC<ModalProps & { user: User }> = ({ user, onClose, o
               placeholder="Username"
               error={error?.error === 'Conflict' || error}
               autoFocus
+              required
             />
             <TextInput
               id="firstName"
@@ -227,8 +238,16 @@ const EditUserModal: React.FC<ModalProps & { user: User }> = ({ user, onClose, o
               onChange={setFirstName}
               placeholder="First Name"
               error={error}
+              required
             />
-            <TextInput id="lastName" value={lastName} onChange={setLastName} placeholder="Last Name" error={error} />
+            <TextInput
+              id="lastName"
+              value={lastName}
+              onChange={setLastName}
+              placeholder="Last Name"
+              error={error}
+              required
+            />
           </div>
         </div>
       </Form>
@@ -236,7 +255,7 @@ const EditUserModal: React.FC<ModalProps & { user: User }> = ({ user, onClose, o
   );
 };
 
-function getErrorMessage(error?: ApiError): string | undefined {
+function getErrorMessage(operation: 'creating' | 'updating', error?: ApiError): string | undefined {
   if (!error) {
     return;
   }
@@ -246,6 +265,6 @@ function getErrorMessage(error?: ApiError): string | undefined {
     case 'PasswordsDontMatch':
       return 'The passwords do not match.';
     default:
-      return 'Something went wrong while creating the user.';
+      return `Something went wrong while ${operation} the user.`;
   }
 }
