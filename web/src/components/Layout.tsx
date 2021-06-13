@@ -67,7 +67,7 @@ export const Layout: React.FC<Props> = ({ children, className }) => {
           </Link>
         </div>
       </div>
-      <main>{children}</main>
+      <div className="content-wrapper">{children}</div>
     </div>
   );
 };

@@ -5,7 +5,7 @@ export const FilesPage: React.FC = () => {
   return (
     <Layout className="files-page">
       <div className="top-bar" />
-      Files go here!
+      <main>Files go here!</main>
     </Layout>
   );
 };
