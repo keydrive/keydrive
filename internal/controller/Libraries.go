@@ -4,9 +4,12 @@ import (
 	"clearcloud/internal/model"
 	"clearcloud/internal/service"
 	"clearcloud/pkg/oauth"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
+	"os"
+	"path/filepath"
 )
 
 type LibrarySummary struct {
@@ -46,8 +49,9 @@ func ListLibraries(db *gorm.DB, libs *service.Library) gin.HandlerFunc {
 }
 
 type CreateLibraryDTO struct {
-	Type model.LibraryType `json:"type" binding:"oneof='' generic books movies shows music" enums:"generic,books,movies,shows,music"`
-	Name string            `json:"name"  binding:"required"`
+	Type       model.LibraryType `json:"type" binding:"oneof='' generic books movies shows music" enums:"generic,books,movies,shows,music"`
+	Name       string            `json:"name"  binding:"required"`
+	RootFolder string            `json:"rootFolder" binding:"required"`
 }
 
 // CreateLibrary
@@ -68,9 +72,18 @@ func CreateLibrary(db *gorm.DB) gin.HandlerFunc {
 		if create.Type == "" {
 			create.Type = model.TypeGeneric
 		}
+		cleanFolder := filepath.Clean(create.RootFolder)
+		if info, err := os.Stat(cleanFolder); err != nil {
+			writeJsonError(c, ApiError{Status: http.StatusBadRequest, Description: fmt.Sprintf("invalid root folder: %s", err)})
+			return
+		} else if !info.IsDir() {
+			writeJsonError(c, ApiError{Status: http.StatusBadRequest, Description: "root folder is not a directory"})
+			return
+		}
 		newLibrary := model.Library{
-			Type: create.Type,
-			Name: create.Name,
+			Type:       create.Type,
+			Name:       create.Name,
+			RootFolder: cleanFolder,
 		}
 		if result := db.Save(&newLibrary); result.Error != nil {
 			writeError(c, result.Error)
