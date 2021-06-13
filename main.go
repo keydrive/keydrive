@@ -127,6 +127,8 @@ func main() {
 			{
 				entries.GET("", controller.ListEntries(db, libraryService, fileSystemService))
 				entries.POST("", controller.CreateEntry(db, libraryService, fileSystemService))
+				entries.GET("/:path", controller.GetEntry(db, libraryService, fileSystemService))
+				entries.DELETE("/:path", controller.DeleteEntry(db, libraryService, fileSystemService))
 			}
 		}
 		system := api.Group("/system")

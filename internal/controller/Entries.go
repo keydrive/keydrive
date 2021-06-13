@@ -8,6 +8,7 @@ import (
 	"gorm.io/gorm"
 	"mime/multipart"
 	"net/http"
+	"net/url"
 )
 
 type LibraryAccess struct {
@@ -54,6 +55,44 @@ func ListEntries(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin
 			return
 		}
 		c.JSON(http.StatusOK, entries)
+	}
+}
+
+// GetEntry
+// @Tags Files
+// @Router /api/libraries/{libraryId}/entries/{path} [get]
+// @Summary Search the collection of files and folders
+// @Security OAuth2
+// @Produce  json
+// @Success 200 {object} service.FileInfo
+// @Param path path string true "The url encoded path"
+// @Param libraryId path int true "The library id"
+func GetEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		library, err := getAccessToLib(c, libs, false, db)
+		if err != nil {
+			writeError(c, err)
+			return
+		}
+		path := c.Param("path")
+		if path == "" {
+			simpleError(c, http.StatusBadRequest)
+			return
+		}
+		path, err = url.QueryUnescape(path)
+		if err != nil {
+			writeError(c, ApiError{
+				Status:      http.StatusBadRequest,
+				Description: "path parameter must be url encoded",
+			})
+			return
+		}
+		entry, err := fs.GetEntryMetadata(library, path)
+		if err != nil {
+			writeError(c, err)
+			return
+		}
+		c.JSON(http.StatusOK, entry)
 	}
 }
 
@@ -115,5 +154,43 @@ func CreateEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin
 		if err != nil {
 			writeError(c, err)
 		}
+	}
+}
+
+// DeleteEntry
+// @Tags Files
+// @Router /api/libraries/{libraryId}/entries/{path} [delete]
+// @Summary Delete a file or folder
+// @Security OAuth2
+// @Produce  json
+// @Success 204
+// @Param path path string true "The url encoded path"
+// @Param libraryId path int true "The library id"
+func DeleteEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		library, err := getAccessToLib(c, libs, false, db)
+		if err != nil {
+			writeError(c, err)
+			return
+		}
+		path := c.Param("path")
+		if path == "" {
+			simpleError(c, http.StatusBadRequest)
+			return
+		}
+		path, err = url.QueryUnescape(path)
+		if err != nil {
+			writeError(c, ApiError{
+				Status:      http.StatusBadRequest,
+				Description: "path parameter must be url encoded",
+			})
+			return
+		}
+		err = fs.DeleteEntryInLibrary(library, path)
+		if err != nil {
+			writeError(c, err)
+			return
+		}
+		c.Status(http.StatusNoContent)
 	}
 }

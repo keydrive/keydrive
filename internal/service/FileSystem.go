@@ -81,6 +81,19 @@ func (fs *FileSystem) GetEntriesForLibrary(library model.Library, parentPath str
 	return output, nil
 }
 
+func (fs *FileSystem) GetEntryMetadata(library model.Library, path string) (FileInfo, error) {
+	path = fs.cleanRelativePath(path)
+	parentPath := filepath.Dir(path)
+	target := fs.resolve(library, path)
+
+	file, err := os.Stat(target)
+	if err != nil {
+		return FileInfo{}, err
+	}
+
+	return fs.toInfo(file, parentPath, ""), nil
+}
+
 func (fs *FileSystem) CreateFolderInLibrary(library model.Library, name string, parentPath string) (FileInfo, error) {
 	parentPath = fs.cleanRelativePath(parentPath)
 	target := fs.resolve(library, parentPath, name)
@@ -125,6 +138,16 @@ func (fs *FileSystem) CreateFileInLibrary(library model.Library, name string, pa
 		return FileInfo{}, err
 	}
 	return fs.toInfo(file, parentPath, data.Header.Get("Content-Type")), nil
+}
+
+func (fs *FileSystem) DeleteEntryInLibrary(library model.Library, path string) error {
+	path = fs.cleanRelativePath(path)
+	target := fs.resolve(library, path)
+	err := os.RemoveAll(target)
+	if err != nil && !os.IsNotExist(err) {
+		return err
+	}
+	return nil
 }
 
 func (fs *FileSystem) toInfo(file os.FileInfo, parent string, mimeType string) FileInfo {

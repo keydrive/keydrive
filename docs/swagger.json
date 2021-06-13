@@ -279,6 +279,81 @@
                 }
             }
         },
+        "/api/libraries/{libraryId}/entries/{path}": {
+            "get": {
+                "security": [
+                    {
+                        "OAuth2": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Search the collection of files and folders",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The url encoded path",
+                        "name": "path",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "The library id",
+                        "name": "libraryId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/service.FileInfo"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "OAuth2": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Delete a file or folder",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The url encoded path",
+                        "name": "path",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "The library id",
+                        "name": "libraryId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/libraries/{libraryId}/shares": {
             "post": {
                 "security": [
