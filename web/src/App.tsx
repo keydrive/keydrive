@@ -4,7 +4,7 @@ import { LoginPage } from './pages/LoginPage';
 import { useAppSelector } from './store';
 import { useService } from './hooks/useService';
 import { userStore } from './store/user';
-import { LibrariesPage } from './pages/LibrariesPage';
+import { FilesPage } from './pages/FilesPage';
 import { UsersPage } from './pages/settings/UsersPage';
 import { ProfilePage } from './pages/settings/ProfilePage';
 import { useDispatch } from 'react-redux';
@@ -45,7 +45,7 @@ export const App: React.FC = () => {
 
   return (
     <Switch>
-      <Route exact path="/" component={LibrariesPage} />
+      <Route exact path="/" component={FilesPage} />
       <Redirect exact path="/settings" to="/settings/profile" />
       <Route exact path="/settings/profile" component={ProfilePage} />
       <Route exact path="/settings/users" component={UsersPage} />

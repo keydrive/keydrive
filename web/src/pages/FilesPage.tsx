@@ -4,16 +4,17 @@ import { ProfileMenu } from '../components/ProfileMenu';
 import { Link } from 'react-router-dom';
 import { LibrariesService, Library, LibraryType } from '../services/LibrariesService';
 import { useService } from '../hooks/useService';
+import logo from '../images/logo.png';
 
 const libraryIcons: Record<LibraryType, string> = {
-  generic: 'folder-open',
+  generic: 'folder',
   books: 'book',
   movies: 'video',
   music: 'music',
   shows: 'tv',
 };
 
-export const LibrariesPage: React.FC = () => {
+export const FilesPage: React.FC = () => {
   const librariesService = useService(LibrariesService);
   const [libraries, setLibraries] = useState<Library[]>();
 
@@ -24,10 +25,10 @@ export const LibrariesPage: React.FC = () => {
   }, [libraries, librariesService]);
 
   return (
-    <div className="libraries-page">
+    <div className="files-page">
       <div className="sidebar">
-        <Link to="/">
-          <h1>ClearCloud</h1>
+        <Link to="/" className="logo">
+          <img src={logo} alt="logo" />
         </Link>
         {libraries ? (
           libraries.map((library) => (

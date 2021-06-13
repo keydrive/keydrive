@@ -4,6 +4,7 @@ $border-radius: 4px;
 
 // Global variables.
 $transition-duration: 0.2s;
+$top-bar-height: 64px;
 
 @import 'colors';
 @import 'reset';
@@ -25,7 +26,7 @@ $transition-duration: 0.2s;
   @import '../components/Modal';
   @import '../components/ProfileMenu';
   @import '../pages/settings/UsersPage';
-  @import '../pages/LibrariesPage';
+  @import '../pages/FilesPage';
   @import '../pages/LoginPage';
 }
 

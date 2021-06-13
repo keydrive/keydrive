@@ -1,15 +1,18 @@
-.libraries-page {
+.files-page {
   display: flex;
 
   .sidebar {
     height: 100vh;
-    flex: 0 0 240px;
+    flex: 0 0 220px;
     background-color: var(--gray-4);
-    padding: 12px;
     overflow-y: auto;
 
-    h1 {
-      margin-bottom: 12px;
+    .logo {
+      height: $top-bar-height;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: var(--gray-5);
     }
 
     .entry {
@@ -22,7 +25,7 @@
 
       .icon {
         margin-right: 8px;
-        color: var(--blue);
+        color: var(--teal);
         width: 24px;
         text-align: center;
       }
@@ -37,7 +40,7 @@
     flex: 1 1 auto;
 
     .top-bar {
-      height: 48px;
+      height: $top-bar-height;
       background-color: var(--gray-5);
       display: flex;
       justify-content: flex-end;
