@@ -42,7 +42,6 @@ func HealthCheckController(db *gorm.DB) gin.HandlerFunc {
 			Name:    "psql",
 			Healthy: false,
 		}
-		result.Services = append(result.Services, dbHealth)
 		if sqlDb, err := db.DB(); err == nil {
 			err = sqlDb.Ping()
 			if err != nil {
@@ -52,6 +51,7 @@ func HealthCheckController(db *gorm.DB) gin.HandlerFunc {
 		} else {
 			log.Error("database error: %s", err)
 		}
+		result.Services = append(result.Services, dbHealth)
 
 		result.Healthy = true
 		for _, service := range result.Services {

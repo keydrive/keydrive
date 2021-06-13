@@ -25,7 +25,7 @@ func bitsToDrives(bitMap uint32) (drives []string) {
 
 	for i := range availableDrives {
 		if bitMap&1 == 1 {
-			drives = append(drives, availableDrives[i]+":/")
+			drives = append(drives, availableDrives[i]+":\\")
 		}
 		bitMap >>= 1
 	}

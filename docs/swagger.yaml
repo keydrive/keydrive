@@ -391,6 +391,22 @@ paths:
       summary: Browse the system storage to find paths
       tags:
       - System
+  /api/system/health:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.HealthCheckResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/controller.HealthCheckResponse'
+      summary: Run a simple healthcheck on all required systems
+      tags:
+      - System
   /api/user:
     get:
       produces:
@@ -536,22 +552,6 @@ paths:
       summary: Update an existing user
       tags:
       - Authentication
-  /system/health:
-    get:
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controller.HealthCheckResponse'
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/controller.HealthCheckResponse'
-      summary: Run a simple healthcheck on all required systems
-      tags:
-      - System
 securityDefinitions:
   OAuth2:
     flow: password
