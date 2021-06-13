@@ -10,6 +10,25 @@ definitions:
       status:
         type: integer
     type: object
+  controller.BrowseRequest:
+    properties:
+      path:
+        type: string
+    type: object
+  controller.BrowseResponse:
+    properties:
+      folders:
+        items:
+          $ref: '#/definitions/controller.BrowseResponseFolder'
+        type: array
+      path:
+        type: string
+    type: object
+  controller.BrowseResponseFolder:
+    properties:
+      path:
+        type: string
+    type: object
   controller.CreateLibraryDTO:
     properties:
       name:
@@ -40,6 +59,22 @@ definitions:
     - lastName
     - password
     - username
+    type: object
+  controller.HealthCheckResponse:
+    properties:
+      healthy:
+        type: boolean
+      services:
+        items:
+          $ref: '#/definitions/controller.HealthCheckService'
+        type: array
+    type: object
+  controller.HealthCheckService:
+    properties:
+      healthy:
+        type: boolean
+      name:
+        type: string
     type: object
   controller.LibraryDetails:
     properties:
@@ -335,6 +370,43 @@ paths:
       summary: Unshare a library
       tags:
       - Files
+  /api/system/browse:
+    post:
+      parameters:
+      - description: The request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.BrowseRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.BrowseResponse'
+      security:
+      - OAuth2: []
+      summary: Browse the system storage to find paths
+      tags:
+      - System
+  /api/system/health:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.HealthCheckResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/controller.HealthCheckResponse'
+      summary: Run a simple healthcheck on all required systems
+      tags:
+      - System
   /api/user:
     get:
       produces:

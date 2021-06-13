@@ -7,6 +7,7 @@ import (
 	"clearcloud/internal/service"
 	"clearcloud/pkg/logger"
 	"clearcloud/pkg/oauth"
+	"clearcloud/web/build"
 	"errors"
 	"flag"
 	"github.com/gin-gonic/gin"
@@ -121,7 +122,13 @@ func main() {
 			libraries.POST("/:libraryId/shares", controller.RequireAdmin(), controller.ShareLibrary(db, libraryService, userService))
 			libraries.DELETE("/:libraryId/shares/:userId", controller.RequireAdmin(), controller.UnshareLibrary(db))
 		}
+		system := api.Group("/system")
+		{
+			system.GET("/health", controller.HealthCheckController(db))
+			system.POST("/browse", controller.RequireAdmin(), controller.SystemBrowse())
+		}
 	}
+	router.NoRoute(controller.Static(http.FS(build.App)))
 
 	url := ginSwagger.URL("/docs/doc.json")
 	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))

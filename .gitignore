@@ -2,6 +2,7 @@
 .idea/
 
 ## BUILD ARTIFACTS ##
+!build/static.go
 build/
 node_modules/
 coverage/

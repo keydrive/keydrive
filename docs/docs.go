@@ -279,6 +279,66 @@ var doc = `{
                 }
             }
         },
+        "/api/system/browse": {
+            "post": {
+                "security": [
+                    {
+                        "OAuth2": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System"
+                ],
+                "summary": "Browse the system storage to find paths",
+                "parameters": [
+                    {
+                        "description": "The request",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.BrowseRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.BrowseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/system/health": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System"
+                ],
+                "summary": "Run a simple healthcheck on all required systems",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.HealthCheckResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/controller.HealthCheckResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/user": {
             "get": {
                 "security": [
@@ -535,6 +595,36 @@ var doc = `{
                 }
             }
         },
+        "controller.BrowseRequest": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.BrowseResponse": {
+            "type": "object",
+            "properties": {
+                "folders": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/controller.BrowseResponseFolder"
+                    }
+                },
+                "path": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.BrowseResponseFolder": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "string"
+                }
+            }
+        },
         "controller.CreateLibraryDTO": {
             "type": "object",
             "required": [
@@ -575,6 +665,31 @@ var doc = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.HealthCheckResponse": {
+            "type": "object",
+            "properties": {
+                "healthy": {
+                    "type": "boolean"
+                },
+                "services": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/controller.HealthCheckService"
+                    }
+                }
+            }
+        },
+        "controller.HealthCheckService": {
+            "type": "object",
+            "properties": {
+                "healthy": {
+                    "type": "boolean"
+                },
+                "name": {
                     "type": "string"
                 }
             }
