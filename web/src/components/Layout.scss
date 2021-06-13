@@ -1,0 +1,57 @@
+.layout {
+  display: flex;
+  height: 100%;
+
+  .sidebar {
+    flex: 0 0 220px;
+    height: 100%;
+    background-color: var(--gray-4);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 12px;
+
+    .logo {
+      height: $top-bar-height;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: var(--gray-5);
+      margin-bottom: 12px;
+    }
+
+    .libraries {
+      flex-grow: 1;
+
+      .loader {
+        text-align: center;
+      }
+    }
+
+    .entry {
+      font-weight: 600;
+      display: block;
+      padding: 6px;
+      border-radius: $border-radius;
+      margin: 0 12px;
+
+      @include clickable(var(--gray-3), var(--gray-2));
+
+      .icon {
+        margin-right: 8px;
+        color: var(--teal);
+        width: 24px;
+        text-align: center;
+      }
+    }
+  }
+
+  main {
+    flex: 1 1 auto;
+
+    .top-bar {
+      height: $top-bar-height;
+      background-color: var(--gray-5);
+    }
+  }
+}

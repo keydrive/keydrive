@@ -9,7 +9,8 @@ import { UsersPage } from './pages/settings/UsersPage';
 import { ProfilePage } from './pages/settings/ProfilePage';
 import { useDispatch } from 'react-redux';
 import { Icon } from './components/Icon';
-import { LibrariesSettingsPage } from './pages/settings/LibrariesSettingsPage';
+import { LibrariesPage } from './pages/settings/LibrariesPage';
+import { LogoutPage } from './pages/LogoutPage';
 
 export const App: React.FC = () => {
   const {
@@ -46,10 +47,11 @@ export const App: React.FC = () => {
   return (
     <Switch>
       <Route exact path="/" component={FilesPage} />
+      <Route exact path="/logout" component={LogoutPage} />
       <Redirect exact path="/settings" to="/settings/profile" />
       <Route exact path="/settings/profile" component={ProfilePage} />
       <Route exact path="/settings/users" component={UsersPage} />
-      <Route exact path="/settings/libraries" component={LibrariesSettingsPage} />
+      <Route exact path="/settings/libraries" component={LibrariesPage} />
       <Redirect to="/" />
     </Switch>
   );

@@ -9,7 +9,7 @@ import { TextInput } from '../../components/input/TextInput';
 import { Form } from '../../components/input/Form';
 import { Button } from '../../components/Button';
 
-export const LibrariesSettingsPage: React.FC = () => {
+export const LibrariesPage: React.FC = () => {
   const librariesService = useService(LibrariesService);
   const [libraries, setLibraries] = useState<LibraryDetails[]>();
   const [error, setError] = useState(false);
