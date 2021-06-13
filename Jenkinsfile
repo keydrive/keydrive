@@ -8,7 +8,7 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh 'docker build -t chappio/clearcloud:${env.BUILD_TAG} .'
+        sh "docker build -t chappio/clearcloud:${env.BUILD_TAG} ."
       }
     }
   }
