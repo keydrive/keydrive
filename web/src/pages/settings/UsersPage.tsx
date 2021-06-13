@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { SettingsLayout } from '../../components/layout/SettingsLayout';
 import { useService } from '../../hooks/useService';
 import { User, UserService } from '../../services/UserService';
 import { Icon } from '../../components/Icon';
@@ -9,6 +8,7 @@ import { TextInput } from '../../components/input/TextInput';
 import { PasswordInput } from '../../components/input/PasswordInput';
 import { ApiError } from '../../services/ApiService';
 import { Button } from '../../components/Button';
+import { Layout } from '../../components/Layout';
 
 export const UsersPage: React.FC = () => {
   const userService = useService(UserService);
@@ -50,53 +50,55 @@ export const UsersPage: React.FC = () => {
           user={editUser}
         />
       )}
-      <SettingsLayout className="users-page">
-        <div className="title">
+      <Layout className="users-page settings-page">
+        <div className="top-bar">
           <h2>Users</h2>
           <Button onClick={() => setShowCreateModal(true)} square>
             <Icon icon="plus" />
           </Button>
         </div>
-        {users ? (
-          <table className="clickable">
-            <colgroup>
-              <col className="icon" />
-            </colgroup>
-            <thead>
-              <tr>
-                <th />
-                <th>Username</th>
-                <th>Full Name</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr
-                  key={user.id}
-                  onClick={() => setEditUser(user)}
-                  tabIndex={0}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      setEditUser(user);
-                    }
-                  }}
-                >
-                  <td>{user.isAdmin && <Icon icon="user-shield" />}</td>
-                  <td>{user.username}</td>
-                  <td>
-                    {user.firstName} {user.lastName}
-                  </td>
+        <main>
+          {users ? (
+            <table className="clickable">
+              <colgroup>
+                <col className="icon" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th />
+                  <th>Username</th>
+                  <th>Full Name</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <div className="loader">
-            <Icon icon="spinner" pulse size={2} />
-          </div>
-        )}
-        {error && <div className="error-message">Something went wrong. Please refresh the page and try again.</div>}
-      </SettingsLayout>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr
+                    key={user.id}
+                    onClick={() => setEditUser(user)}
+                    tabIndex={0}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        setEditUser(user);
+                      }
+                    }}
+                  >
+                    <td>{user.isAdmin && <Icon icon="user-shield" />}</td>
+                    <td>{user.username}</td>
+                    <td>
+                      {user.firstName} {user.lastName}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="loader">
+              <Icon icon="spinner" pulse size={2} />
+            </div>
+          )}
+          {error && <div className="error-message">Something went wrong. Please refresh the page and try again.</div>}
+        </main>
+      </Layout>
     </>
   );
 };

@@ -20,7 +20,7 @@ export const ProfilePage: React.FC = () => {
   const [error, setError] = useState<ApiError>();
 
   return (
-    <Layout className="profile-page">
+    <Layout className="profile-page settings-page">
       <div className="top-bar">
         <h2 className="title">Profile</h2>
       </div>
