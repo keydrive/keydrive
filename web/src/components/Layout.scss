@@ -1,15 +1,31 @@
-.settings-layout {
+.layout {
   display: flex;
+  height: 100%;
 
   .sidebar {
-    height: 100vh;
-    flex: 0 0 240px;
+    flex: 0 0 220px;
+    height: 100%;
     background-color: var(--gray-4);
-    padding: 12px;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 12px;
 
-    h1 {
+    .logo {
+      height: $top-bar-height;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: var(--gray-5);
       margin-bottom: 12px;
+    }
+
+    .libraries {
+      flex-grow: 1;
+
+      .loader {
+        text-align: center;
+      }
     }
 
     .entry {
@@ -17,12 +33,13 @@
       display: block;
       padding: 6px;
       border-radius: $border-radius;
+      margin: 0 12px;
 
       @include clickable(var(--gray-3), var(--gray-2));
 
       .icon {
         margin-right: 8px;
-        color: var(--blue);
+        color: var(--teal);
         width: 24px;
         text-align: center;
       }
@@ -33,30 +50,15 @@
     flex: 1 1 auto;
 
     .top-bar {
-      height: 48px;
+      height: $top-bar-height;
       background-color: var(--gray-5);
       display: flex;
-      justify-content: flex-end;
       align-items: center;
+      padding: 0 12px;
     }
 
     main {
-      padding: 24px;
-
-      .loader {
-        text-align: center;
-        margin-top: 24px;
-      }
-
-      .title {
-        display: flex;
-        align-items: center;
-        margin-bottom: 24px;
-
-        h2 {
-          margin-right: 24px;
-        }
-      }
+      padding: 12px;
     }
   }
 }
