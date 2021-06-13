@@ -13,8 +13,8 @@ pipeline {
     stage('Build') {
       steps {
         // Build the frontend
-        sh 'yarn --cwd install --frozen-lockfile'
-        sh 'yarn --cwd build'
+        sh 'yarn --cwd web install --frozen-lockfile'
+        sh 'yarn --cwd web build'
         // Build the backend
         sh "mkdir -p build/output"
         sh "go build -o build/output/clearcloud-linux-x64 ./main.go"
