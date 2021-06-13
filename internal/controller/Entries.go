@@ -168,7 +168,7 @@ func CreateEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin
 // @Param libraryId path int true "The library id"
 func DeleteEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		library, err := getAccessToLib(c, libs, false, db)
+		library, err := getAccessToLib(c, libs, true, db)
 		if err != nil {
 			writeError(c, err)
 			return
