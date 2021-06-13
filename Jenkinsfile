@@ -6,9 +6,9 @@ pipeline {
     }
   }
   stages {
-    stage('Ping') {
+    stage('Build') {
       steps {
-        sh 'echo Ping'
+        sh 'docker build -t chappio/clearcloud:${env.BUILD_TAG} .'
       }
     }
   }
