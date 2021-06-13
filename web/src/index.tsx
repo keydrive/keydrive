@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './style/index.scss';
 import { App } from './App';
 import { reportWebVitals } from './reportWebVitals';
-import { BrowserRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { initializeStore } from './store';
 import { Injector } from './services/Injector';
@@ -17,7 +17,7 @@ const persistor = persistStore(store);
 
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
+    <HashRouter>
       <InjectionProvider value={injector}>
         <Provider store={store}>
           <PersistGate persistor={persistor}>
@@ -25,7 +25,7 @@ ReactDOM.render(
           </PersistGate>
         </Provider>
       </InjectionProvider>
-    </BrowserRouter>
+    </HashRouter>
   </React.StrictMode>,
   document.getElementById('root')
 );
