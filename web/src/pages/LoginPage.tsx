@@ -31,12 +31,8 @@ export const LoginPage: React.FC = () => {
           submitLabel="Log In"
           error={error && 'Invalid username or password.'}
         >
-          <div className="columns">
-            <div>
-              <TextInput id="username" value={username} onChange={setUsername} placeholder="Username" autoFocus />
-              <PasswordInput id="password" value={password} onChange={setPassword} />
-            </div>
-          </div>
+          <TextInput id="username" value={username} onChange={setUsername} placeholder="Username" autoFocus />
+          <PasswordInput id="password" value={password} onChange={setPassword} />
         </Form>
       </div>
     </div>

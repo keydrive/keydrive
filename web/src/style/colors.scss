@@ -18,6 +18,7 @@
 
   --text: var(--text-dark);
   --input-bg: var(--gray-5);
+  --overlay-bg: rgba(242, 242, 247, 0.5);
 
   @media (prefers-color-scheme: dark) {
     --blue: rgb(10, 132, 255);
@@ -33,5 +34,6 @@
 
     --text: var(--text-light);
     --input-bg: var(--gray-3);
+    --overlay-bg: rgba(28, 28, 30, 0.5);
   }
 }

@@ -121,7 +121,7 @@ func UpdateLibrary(db *gorm.DB, libs *service.Library) gin.HandlerFunc {
 		}
 		err := db.Transaction(func(tx *gorm.DB) error {
 			var library model.Library
-			if result := libs.GetLibrariesForUser(user, tx).Take(&user, libraryId); result.Error != nil {
+			if result := libs.GetLibrariesForUser(user, tx).Take(&library, libraryId); result.Error != nil {
 				return result.Error
 			}
 			if update.Name != "" {

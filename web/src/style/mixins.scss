@@ -1,5 +1,6 @@
 @mixin clickable($bg-hover, $bg-active) {
   transition: background-color $transition-duration;
+  outline: none;
 
   &:hover,
   &:focus {

@@ -15,15 +15,15 @@ $transition-duration: 0.2s;
 
 // Component styles.
 #root {
+  @import 'table';
   @import '../components/input/Field';
   @import '../components/input/Form';
   @import '../components/input/PasswordInput';
   @import '../components/layout/SettingsLayout';
   @import '../components/Button';
   @import '../components/Columns';
+  @import '../components/Modal';
   @import '../components/ProfileMenu';
-  @import '../pages/settings/NewUserPage';
-  @import '../pages/settings/ProfilePage';
   @import '../pages/settings/UsersPage';
   @import '../pages/LibrariesPage';
   @import '../pages/LoginPage';

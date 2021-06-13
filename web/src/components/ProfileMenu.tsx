@@ -18,7 +18,16 @@ export const ProfileMenu: React.FC = () => {
 
   return (
     <div className="profile-menu-wrapper" ref={ref}>
-      <div className="profile" onClick={() => setShowProfileMenu(!showProfileMenu)}>
+      <div
+        className="profile"
+        onClick={() => setShowProfileMenu(!showProfileMenu)}
+        tabIndex={0}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter') {
+            setShowProfileMenu(!showProfileMenu);
+          }
+        }}
+      >
         <Icon icon="user" />
       </div>
       {showProfileMenu && (
@@ -30,7 +39,16 @@ export const ProfileMenu: React.FC = () => {
             <Icon icon="cog" />
             Settings
           </Link>
-          <div onClick={() => dispatch(logout())} className="entry">
+          <div
+            onClick={() => dispatch(logout())}
+            className="entry"
+            tabIndex={0}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                dispatch(logout());
+              }
+            }}
+          >
             <Icon icon="power-off" />
             Log Out
           </div>

@@ -12,14 +12,24 @@
       margin-bottom: 12px;
     }
 
-    .library {
+    .entry {
       font-weight: 600;
-      margin-bottom: 12px;
+      display: block;
+      padding: 6px;
+      border-radius: $border-radius;
+
+      @include clickable(var(--gray-3), var(--gray-2));
 
       .icon {
         margin-right: 8px;
         color: var(--blue);
+        width: 24px;
+        text-align: center;
       }
+    }
+
+    .loader {
+      text-align: center;
     }
   }
 
