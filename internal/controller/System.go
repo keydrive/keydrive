@@ -3,7 +3,9 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"io/ioutil"
 	"net/http"
+	"path/filepath"
 )
 
 type HealthCheckService struct {
@@ -18,7 +20,7 @@ type HealthCheckResponse struct {
 
 // HealthCheckController
 // @Tags System
-// @Router /system/health [get]
+// @Router /api/system/health [get]
 // @Summary Run a simple healthcheck on all required systems
 // @Produce  json
 // @Success 200 {object} HealthCheckResponse
@@ -63,5 +65,75 @@ func HealthCheckController(db *gorm.DB) gin.HandlerFunc {
 		} else {
 			c.JSON(http.StatusServiceUnavailable, result)
 		}
+	}
+}
+
+type BrowseResponseFolder struct {
+	Path string `json:"path"`
+}
+
+type BrowseResponse struct {
+	Path    string                 `json:"path"`
+	Folders []BrowseResponseFolder `json:"folders"`
+}
+
+type BrowseRequest struct {
+	Path string `json:"path"`
+}
+
+// SystemBrowse
+// @Tags System
+// @Router /api/system/browse [post]
+// @Summary Browse the system storage to find paths
+// @Security OAuth2
+// @Produce  json
+// @Param body body BrowseRequest true "The request"
+// @Success 200 {object} BrowseResponse
+func SystemBrowse() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var request BrowseRequest
+		if err := c.ShouldBindJSON(&request); err != nil {
+			writeError(c, err)
+			return
+		}
+		normalizedPath := request.Path
+		folders := make([]string, 0)
+		if normalizedPath == "" {
+			folders = listDisks()
+		} else {
+			if !filepath.IsAbs(normalizedPath) {
+				writeJsonError(c, ApiError{
+					Status:      http.StatusBadRequest,
+					ShortError:  "invalid path",
+					Description: "path must be an absolute value",
+				})
+				return
+			}
+			if normalizedPath != "/" {
+				normalizedPath = filepath.Clean(normalizedPath)
+			}
+			children, err := ioutil.ReadDir(normalizedPath)
+			if err != nil {
+				log.Error("failed to get contents of [%s]: %s", request.Path, err)
+				c.Status(http.StatusNotFound)
+				return
+			}
+			for _, child := range children {
+				if child.IsDir() {
+					folders = append(folders, filepath.Join(normalizedPath, child.Name()))
+				}
+			}
+		}
+
+		response := BrowseResponse{
+			Path:    normalizedPath,
+			Folders: make([]BrowseResponseFolder, len(folders)),
+		}
+		for i, folder := range folders {
+			response.Folders[i] = BrowseResponseFolder{
+				Path: folder,
+			}
+		}
+		c.JSON(http.StatusOK, response)
 	}
 }

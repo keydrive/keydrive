@@ -279,6 +279,41 @@ var doc = `{
                 }
             }
         },
+        "/api/system/browse": {
+            "post": {
+                "security": [
+                    {
+                        "OAuth2": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System"
+                ],
+                "summary": "Browse the system storage to find paths",
+                "parameters": [
+                    {
+                        "description": "The request",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.BrowseRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.BrowseResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/user": {
             "get": {
                 "security": [
@@ -557,6 +592,36 @@ var doc = `{
                 },
                 "status": {
                     "type": "integer"
+                }
+            }
+        },
+        "controller.BrowseRequest": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.BrowseResponse": {
+            "type": "object",
+            "properties": {
+                "folders": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/controller.BrowseResponseFolder"
+                    }
+                },
+                "path": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.BrowseResponseFolder": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "string"
                 }
             }
         },
