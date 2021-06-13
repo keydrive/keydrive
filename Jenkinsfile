@@ -7,7 +7,9 @@ pipeline {
   }
   stages {
     stage('Ping') {
-      sh 'echo Ping'
+      steps {
+        sh 'echo Ping'
+      }
     }
   }
 }
