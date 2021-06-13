@@ -19,6 +19,11 @@ pipeline {
         sh "mkdir -p build/output"
         sh "go build -o build/output/clearcloud-linux-x64 ./main.go"
       }
+      post {
+        always {
+          archiveArtifacts artifacts: 'build/output/*', fingerprint: true
+        }
+      }
     }
   }
 }
