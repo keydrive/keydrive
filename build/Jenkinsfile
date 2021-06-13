@@ -12,7 +12,12 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh "docker build -t ${env.DOCKER_TAG} ."
+        // Build the frontend
+        sh 'yarn --cws install --frozen-lockfile'
+        sh 'yarn --cws build'
+        // Build the backend
+        sh "mkdir -p build/output"
+        sh "go build -o build/output/clearcloud-linux-x64 ./main.go"
       }
     }
   }
