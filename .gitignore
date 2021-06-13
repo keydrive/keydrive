@@ -3,7 +3,7 @@
 
 ## BUILD ARTIFACTS ##
 !build/static.go
-build/
+web/build/
 node_modules/
 coverage/
 clearcloud
