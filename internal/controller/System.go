@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"clearcloud/internal/service"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"io/ioutil"
@@ -89,7 +90,7 @@ type BrowseRequest struct {
 // @Produce  json
 // @Param body body BrowseRequest true "The request"
 // @Success 200 {object} BrowseResponse
-func SystemBrowse() gin.HandlerFunc {
+func SystemBrowse(fs *service.FileSystem) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var request BrowseRequest
 		if err := c.ShouldBindJSON(&request); err != nil {
@@ -99,7 +100,7 @@ func SystemBrowse() gin.HandlerFunc {
 		normalizedPath := request.Path
 		folders := make([]string, 0)
 		if normalizedPath == "" {
-			folders = listDisks()
+			folders = fs.GetDisks()
 		} else {
 			if !filepath.IsAbs(normalizedPath) {
 				writeJsonError(c, ApiError{

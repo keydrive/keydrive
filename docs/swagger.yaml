@@ -33,6 +33,8 @@ definitions:
     properties:
       name:
         type: string
+      rootFolder:
+        type: string
       type:
         enum:
         - generic
@@ -43,6 +45,7 @@ definitions:
         type: string
     required:
     - name
+    - rootFolder
     type: object
   controller.CreateUserDTO:
     properties:
@@ -207,6 +210,21 @@ definitions:
       username:
         type: string
     type: object
+  service.FileInfo:
+    properties:
+      category:
+        type: string
+      mimeType:
+        type: string
+      modified:
+        type: string
+      name:
+        type: string
+      parent:
+        type: string
+      size:
+        type: integer
+    type: object
 info:
   contact:
     email: thomas.biesaart@protonmail.com
@@ -321,6 +339,113 @@ paths:
       security:
       - OAuth2: []
       summary: Update an existing library
+      tags:
+      - Files
+  /api/libraries/{libraryId}/entries:
+    get:
+      parameters:
+      - description: The parent folder
+        in: query
+        name: parent
+        type: string
+      - description: The library id
+        in: path
+        name: libraryId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/service.FileInfo'
+            type: array
+      security:
+      - OAuth2: []
+      summary: Search the collection of files and folders
+      tags:
+      - Files
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: The library id
+        in: path
+        name: libraryId
+        required: true
+        type: integer
+      - description: The name of the new entry. Required when creating a folder.
+        in: formData
+        name: name
+        type: string
+      - description: The path to the parent folder. When missing this creates a file
+          or folder in the root of the library.
+        in: formData
+        name: parent
+        type: string
+      - description: The file contents. Required when creating a file.
+        in: formData
+        name: data
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/service.FileInfo'
+      security:
+      - OAuth2: []
+      summary: Create a new file or folder
+      tags:
+      - Files
+  /api/libraries/{libraryId}/entries/{path}:
+    delete:
+      parameters:
+      - description: The url encoded path
+        in: path
+        name: path
+        required: true
+        type: string
+      - description: The library id
+        in: path
+        name: libraryId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      security:
+      - OAuth2: []
+      summary: Delete a file or folder
+      tags:
+      - Files
+    get:
+      parameters:
+      - description: The url encoded path
+        in: path
+        name: path
+        required: true
+        type: string
+      - description: The library id
+        in: path
+        name: libraryId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/service.FileInfo'
+      security:
+      - OAuth2: []
+      summary: Search the collection of files and folders
       tags:
       - Files
   /api/libraries/{libraryId}/shares:

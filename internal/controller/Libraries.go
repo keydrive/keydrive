@@ -37,13 +37,7 @@ func ListLibraries(db *gorm.DB, libs *service.Library) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var page LibraryPage
 		user := oauth.GetUser(c).(model.User)
-		query := libs.GetLibrariesForUser(user, db).
-			Order("id")
-		if user.IsAdmin {
-			query.Select("*, TRUE as can_write")
-		} else {
-			query = query.Select("*, can_access_libraries.can_write as can_write")
-		}
+		query := libs.GetLibrariesWithAccessForUser(user, db)
 		returnPage(c, query, &page, &page.TotalElements, &page.Elements)
 	}
 }
@@ -73,6 +67,11 @@ func CreateLibrary(db *gorm.DB) gin.HandlerFunc {
 			create.Type = model.TypeGeneric
 		}
 		cleanFolder := filepath.Clean(create.RootFolder)
+		err := os.MkdirAll(cleanFolder, 0770)
+		if err != nil {
+			writeJsonError(c, ApiError{Status: http.StatusBadRequest, Description: fmt.Sprintf("failed to create root directory: %s", err)})
+			return
+		}
 		if info, err := os.Stat(cleanFolder); err != nil {
 			writeJsonError(c, ApiError{Status: http.StatusBadRequest, Description: fmt.Sprintf("invalid root folder: %s", err)})
 			return

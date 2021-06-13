@@ -203,6 +203,175 @@ var doc = `{
                 }
             }
         },
+        "/api/libraries/{libraryId}/entries": {
+            "get": {
+                "security": [
+                    {
+                        "OAuth2": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Search the collection of files and folders",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The parent folder",
+                        "name": "parent",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "The library id",
+                        "name": "libraryId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/service.FileInfo"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "OAuth2": []
+                    }
+                ],
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Create a new file or folder",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "The library id",
+                        "name": "libraryId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "The name of the new entry. Required when creating a folder.",
+                        "name": "name",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "The path to the parent folder. When missing this creates a file or folder in the root of the library.",
+                        "name": "parent",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "The file contents. Required when creating a file.",
+                        "name": "data",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/service.FileInfo"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/libraries/{libraryId}/entries/{path}": {
+            "get": {
+                "security": [
+                    {
+                        "OAuth2": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Search the collection of files and folders",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The url encoded path",
+                        "name": "path",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "The library id",
+                        "name": "libraryId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/service.FileInfo"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "OAuth2": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Delete a file or folder",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The url encoded path",
+                        "name": "path",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "The library id",
+                        "name": "libraryId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/libraries/{libraryId}/shares": {
             "post": {
                 "security": [
@@ -628,10 +797,14 @@ var doc = `{
         "controller.CreateLibraryDTO": {
             "type": "object",
             "required": [
-                "name"
+                "name",
+                "rootFolder"
             ],
             "properties": {
                 "name": {
+                    "type": "string"
+                },
+                "rootFolder": {
                     "type": "string"
                 },
                 "type": {
@@ -887,6 +1060,29 @@ var doc = `{
                 },
                 "username": {
                     "type": "string"
+                }
+            }
+        },
+        "service.FileInfo": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "mimeType": {
+                    "type": "string"
+                },
+                "modified": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parent": {
+                    "type": "string"
+                },
+                "size": {
+                    "type": "integer"
                 }
             }
         }
