@@ -1,0 +1,19 @@
+pipeline {
+  agent {
+    dockerfile {
+      dir 'build'
+      label 'docker'
+      args '-v /var/run/docker.sock:/var/run/docker.sock'
+    }
+  }
+  environment {
+    DOCKER_TAG = "chappio/clearcloud:${env.BUILD_TAG}"
+  }
+  stages {
+    stage('Build') {
+      steps {
+        sh "docker build -t ${env.DOCKER_TAG} ."
+      }
+    }
+  }
+}
