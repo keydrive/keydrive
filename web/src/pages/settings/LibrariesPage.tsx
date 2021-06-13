@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useService } from '../../hooks/useService';
-import { SettingsLayout } from '../../components/layout/SettingsLayout';
 import { Icon } from '../../components/Icon';
 import { LibrariesService, LibraryDetails } from '../../services/LibrariesService';
 import { Modal } from '../../components/Modal';
@@ -8,6 +7,7 @@ import { ApiError } from '../../services/ApiService';
 import { TextInput } from '../../components/input/TextInput';
 import { Form } from '../../components/input/Form';
 import { Button } from '../../components/Button';
+import { Layout } from '../../components/Layout';
 
 export const LibrariesPage: React.FC = () => {
   const librariesService = useService(LibrariesService);
@@ -49,48 +49,50 @@ export const LibrariesPage: React.FC = () => {
           library={editLibrary}
         />
       )}
-      <SettingsLayout className="libraries-settings-page">
-        <div className="title">
+      <Layout className="libraries-page settings-page">
+        <div className="top-bar">
           <h2>Libraries</h2>
           <Button onClick={() => setShowCreateModal(true)} square>
             <Icon icon="plus" />
           </Button>
         </div>
-        {libraries ? (
-          <table className="clickable">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Root Folder</th>
-              </tr>
-            </thead>
-            <tbody>
-              {libraries.map((library) => (
-                <tr
-                  key={library.id}
-                  onClick={() => setEditLibrary(library)}
-                  tabIndex={0}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      setEditLibrary(library);
-                    }
-                  }}
-                >
-                  <td>{library.name}</td>
-                  <td>{library.type}</td>
-                  <td>{library.rootFolder}</td>
+        <main>
+          {libraries ? (
+            <table className="clickable">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Root Folder</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <div className="loader">
-            <Icon icon="spinner" pulse size={2} />
-          </div>
-        )}
-        {error && <div className="error-message">Something went wrong. Please refresh the page and try again.</div>}
-      </SettingsLayout>
+              </thead>
+              <tbody>
+                {libraries.map((library) => (
+                  <tr
+                    key={library.id}
+                    onClick={() => setEditLibrary(library)}
+                    tabIndex={0}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        setEditLibrary(library);
+                      }
+                    }}
+                  >
+                    <td>{library.name}</td>
+                    <td>{library.type}</td>
+                    <td>{library.rootFolder}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="loader">
+              <Icon icon="spinner" pulse size={2} />
+            </div>
+          )}
+          {error && <div className="error-message">Something went wrong. Please refresh the page and try again.</div>}
+        </main>
+      </Layout>
     </>
   );
 };
