@@ -50,7 +50,7 @@ func main() {
 	log.Info("starting automigration...")
 
 	db.Exec("CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public")
-	err = db.AutoMigrate(&model.User{}, &model.OAuth2Token{}, &model.Library{}, &model.CanAccessLibrary{}, &model.Entry{})
+	err = db.AutoMigrate(&model.User{}, &model.OAuth2Token{}, &model.Library{}, &model.CanAccessLibrary{})
 	if err != nil {
 		log.Error("migration failed: %s", err)
 		os.Exit(1)

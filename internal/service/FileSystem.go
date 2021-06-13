@@ -2,14 +2,24 @@ package service
 
 import (
 	"clearcloud/internal/model"
-	"gorm.io/gorm"
+	"errors"
 	"io"
+	"io/ioutil"
 	"mime/multipart"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 )
+
+type FileInfo struct {
+	Name     string         `json:"name"`
+	Modified time.Time      `json:"modified"`
+	Parent   string         `json:"parent"`
+	Category model.Category `json:"category"`
+	MimeType string         `json:"mimeType,omitempty"`
+	Size     int64          `json:"size,omitempty"`
+}
 
 type FileSystem struct {
 }
@@ -18,133 +28,119 @@ func (fs *FileSystem) GetDisks() []string {
 	return listDisks()
 }
 
-func (fs *FileSystem) GetEntriesForLibrary(library model.Library, tx *gorm.DB) *gorm.DB {
-	return tx.Model(&model.Entry{}).
-		Where("entries.library_id = ?", library.ID)
-}
-
-type EntryPath struct {
-	ID       int
-	Name     string
-	ParentID int
-}
-
-func (fs *FileSystem) getDiskPath(library model.Library, entryId int, tx *gorm.DB) (string, error) {
-	var entry EntryPath
-	if err := fs.GetEntriesForLibrary(library, tx).Take(&entry, entryId).Error; err != nil {
-		return "", err
+func (fs *FileSystem) cleanRelativePath(relPath string) string {
+	relPath = filepath.Clean("/" + strings.TrimPrefix(relPath, "/"))
+	if relPath == "." {
+		return "/"
 	}
-	path := make([]string, 1)
-	path[0] = entry.Name
+	return "/" + strings.TrimPrefix(relPath, "/")
+}
 
-	for entry.ParentID != 0 {
-		if err := fs.GetEntriesForLibrary(library, tx).Take(&entry, entry.ParentID).Error; err != nil {
-			return "", err
-		} else {
-			path = append(path, entry.Name)
+func (fs *FileSystem) resolve(library model.Library, path ...string) string {
+	return filepath.Clean(filepath.Join(library.RootFolder, filepath.Join(path...)))
+}
+
+func (fs *FileSystem) getFileCategory(name string, mimeType string, isDir bool) (model.Category, string) {
+	if isDir {
+		return model.CategoryFolder, ""
+	}
+	if mimeType == "" || mimeType == "application/octet-stream" {
+		if trueMimeType, ok := ExtToMime[filepath.Ext(name)]; ok {
+			mimeType = trueMimeType
 		}
 	}
 
-	// reverse the slice
-	for i := len(path)/2 - 1; i >= 0; i-- {
-		opp := len(path) - 1 - i
-		path[i], path[opp] = path[opp], path[i]
+	if cat, ok := MimeToCategory[mimeType]; ok {
+		return cat, mimeType
 	}
-
-	return filepath.Clean(filepath.Join(library.RootFolder, strings.Join(path, "/"))), nil
+	return model.CategoryUnknown, mimeType
 }
 
-func (fs *FileSystem) CreateFolderInLibrary(library model.Library, name string, parentId int, tx *gorm.DB) (model.Entry, error) {
-	var parent model.Entry
-	newEntry := model.Entry{
-		Name:      name,
-		Created:   time.Now(),
-		Modified:  time.Now(),
-		Category:  model.CategoryFolder,
-		ParentID:  parentId,
-		LibraryID: library.ID,
-	}
+func (fs *FileSystem) GetEntriesForLibrary(library model.Library, parentPath string) ([]FileInfo, error) {
+	parentPath = fs.cleanRelativePath(parentPath)
+	target := fs.resolve(library, parentPath)
 
-	if parentId != 0 {
-		if err := fs.GetEntriesForLibrary(library, tx).Where("category = ?", model.CategoryFolder).Take(&parent, parentId).Error; err != nil {
-			return newEntry, err
-		}
-	}
-
-	if err := tx.Save(&newEntry).Error; err != nil {
-		return newEntry, err
-	}
-	diskPath, err := fs.getDiskPath(library, newEntry.ID, tx)
+	files, err := ioutil.ReadDir(target)
 	if err != nil {
-		return newEntry, err
+		return nil, err
 	}
-	err = os.MkdirAll(diskPath, 0770)
-	return newEntry, err
+
+	output := make([]FileInfo, len(files))
+
+	for i, file := range files {
+		category, _ := fs.getFileCategory(file.Name(), "", file.IsDir())
+		file.ModTime()
+		output[i] = FileInfo{
+			Name:     file.Name(),
+			Category: category,
+			Parent:   parentPath,
+			Modified: file.ModTime(),
+		}
+	}
+
+	return output, nil
 }
 
-func (fs *FileSystem) CreateFileInLibrary(library model.Library, name string, parentId int, data *multipart.FileHeader, tx *gorm.DB) (model.Entry, error) {
-	var parent model.Entry
-	fileName := name
+func (fs *FileSystem) CreateFolderInLibrary(library model.Library, name string, parentPath string) (FileInfo, error) {
+	parentPath = fs.cleanRelativePath(parentPath)
+	target := fs.resolve(library, parentPath, name)
+	err := os.MkdirAll(target, 0770)
+	if err != nil {
+		return FileInfo{}, err
+	}
+	created, err := os.Stat(target)
+	if err != nil {
+		return FileInfo{}, err
+	}
+	return fs.toInfo(created, parentPath, ""), nil
+}
+
+func (fs *FileSystem) CreateFileInLibrary(library model.Library, name string, parentPath string, data *multipart.FileHeader) (FileInfo, error) {
+	parentPath = fs.cleanRelativePath(parentPath)
 	if name == "" {
-		fileName = data.Filename
+		name = data.Filename
 	}
-	newEntry := model.Entry{
-		Name:      fileName,
-		Category:  model.CategoryUnknown,
-		Created:   time.Now(),
-		Modified:  time.Now(),
-		ParentID:  parentId,
-		LibraryID: library.ID,
+	target := fs.resolve(library, parentPath, name)
 
-		Size: &data.Size,
-		Type: data.Header.Get("Content-Type"),
-	}
-
-	if parentId != 0 {
-		if err := fs.GetEntriesForLibrary(library, tx).Where("category = ?", model.CategoryFolder).Take(&parent, parentId).Error; err != nil {
-			return newEntry, err
-		}
-	}
-
-	// save to check constraints
-	if err := tx.Save(&newEntry).Error; err != nil {
-		return newEntry, err
-	}
-	diskPath, err := fs.getDiskPath(library, newEntry.ID, tx)
+	soureFile, err := data.Open()
 	if err != nil {
-		return newEntry, err
+		return FileInfo{}, err
 	}
+	defer soureFile.Close()
 
-	// write to disk
-	targetFile, err := os.Create(diskPath)
+	targetFile, err := os.Create(target)
 	if err != nil {
-		return newEntry, err
+		return FileInfo{}, err
 	}
 	defer targetFile.Close()
-	sourceFile, err := data.Open()
+	written, err := io.Copy(targetFile, soureFile)
 	if err != nil {
-		return newEntry, err
+		return FileInfo{}, err
 	}
-	defer sourceFile.Close()
-	written, err := io.Copy(targetFile, sourceFile)
+	if written != data.Size {
+		return FileInfo{}, errors.New("size mismatch")
+	}
+	file, err := os.Stat(target)
 	if err != nil {
-		return newEntry, err
+		return FileInfo{}, err
 	}
-	newEntry.Size = &written
+	return fs.toInfo(file, parentPath, data.Header.Get("Content-Type")), nil
+}
 
-	// enhance metadata
-	if newEntry.Type == "" || newEntry.Type == "application/octet-stream" {
-		ext := strings.ToLower(filepath.Ext(newEntry.Name))
-		if mimeType, ok := ExtToMime[ext]; ok {
-			newEntry.Type = mimeType
-		}
+func (fs *FileSystem) toInfo(file os.FileInfo, parent string, mimeType string) FileInfo {
+	name := file.Name()
+	category, mimeType := fs.getFileCategory(name, mimeType, file.IsDir())
+	size := file.Size()
+	if file.IsDir() {
+		size = 0
+		mimeType = ""
 	}
-	if newEntry.Type != "" {
-		if category, ok := MimeToCategory[strings.ToLower(newEntry.Type)]; ok {
-			newEntry.Category = category
-		}
+	return FileInfo{
+		Name:     name,
+		Modified: file.ModTime(),
+		Parent:   parent,
+		Category: category,
+		MimeType: mimeType,
+		Size:     size,
 	}
-	err = tx.Save(&newEntry).Error
-	// TODO: metadata run
-	return newEntry, err
 }

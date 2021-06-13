@@ -37,13 +37,7 @@ func ListLibraries(db *gorm.DB, libs *service.Library) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var page LibraryPage
 		user := oauth.GetUser(c).(model.User)
-		query := libs.GetLibrariesForUser(user, db).
-			Order("id")
-		if user.IsAdmin {
-			query.Select("*, TRUE as can_write")
-		} else {
-			query = query.Select("*, can_access_libraries.can_write as can_write")
-		}
+		query := libs.GetLibrariesWithAccessForUser(user, db)
 		returnPage(c, query, &page, &page.TotalElements, &page.Elements)
 	}
 }

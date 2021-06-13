@@ -7,6 +7,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -94,6 +95,10 @@ func writeError(c *gin.Context, err error) {
 		}
 	}
 	if errors.Is(err, gorm.ErrRecordNotFound) {
+		simpleError(c, http.StatusNotFound)
+		return
+	}
+	if os.IsNotExist(err) {
 		simpleError(c, http.StatusNotFound)
 		return
 	}

@@ -63,30 +63,6 @@ definitions:
     - password
     - username
     type: object
-  controller.EntryPage:
-    properties:
-      elements:
-        items:
-          $ref: '#/definitions/controller.EntrySummary'
-        type: array
-      totalElements:
-        type: integer
-    type: object
-  controller.EntrySummary:
-    properties:
-      category:
-        type: string
-      created:
-        type: string
-      id:
-        type: integer
-      modified:
-        type: string
-      name:
-        type: string
-      parent:
-        type: integer
-    type: object
   controller.HealthCheckResponse:
     properties:
       healthy:
@@ -204,28 +180,6 @@ definitions:
       user:
         $ref: '#/definitions/model.User'
     type: object
-  model.Entry:
-    properties:
-      category:
-        type: string
-      created:
-        type: string
-      id:
-        description: Required Fields
-        type: integer
-      modified:
-        type: string
-      name:
-        type: string
-      parent:
-        description: Relations
-        type: integer
-      size:
-        type: integer
-      type:
-        description: File Metadata
-        type: string
-    type: object
   model.Library:
     properties:
       id:
@@ -255,6 +209,21 @@ definitions:
         type: string
       username:
         type: string
+    type: object
+  service.FileInfo:
+    properties:
+      category:
+        type: string
+      mimeType:
+        type: string
+      modified:
+        type: string
+      name:
+        type: string
+      parent:
+        type: string
+      size:
+        type: integer
     type: object
 info:
   contact:
@@ -375,16 +344,10 @@ paths:
   /api/libraries/{libraryId}/entries:
     get:
       parameters:
-      - default: 1
-        description: The page number to fetch
+      - description: The parent folder
         in: query
-        name: page
-        type: integer
-      - default: 20
-        description: The maximum number of elements to return
-        in: query
-        name: limit
-        type: integer
+        name: parent
+        type: string
       - description: The library id
         in: path
         name: libraryId
@@ -396,7 +359,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/controller.EntryPage'
+            items:
+              $ref: '#/definitions/service.FileInfo'
+            type: array
       security:
       - OAuth2: []
       summary: Search the collection of files and folders
@@ -415,11 +380,11 @@ paths:
         in: formData
         name: name
         type: string
-      - description: The id of the parent folder. When missing this creates a file
+      - description: The path to the parent folder. When missing this creates a file
           or folder in the root of the library.
         in: formData
-        name: parentId
-        type: integer
+        name: parent
+        type: string
       - description: The file contents. Required when creating a file.
         in: formData
         name: data
@@ -430,7 +395,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Entry'
+            $ref: '#/definitions/service.FileInfo'
       security:
       - OAuth2: []
       summary: Create a new file or folder

@@ -8,34 +8,27 @@ import (
 	"gorm.io/gorm"
 	"mime/multipart"
 	"net/http"
-	"time"
 )
 
-type EntrySummary struct {
-	ID       int            `json:"id"`
-	Name     string         `json:"name"`
-	Created  time.Time      `json:"created"`
-	Modified time.Time      `json:"modified"`
-	Category model.Category `json:"category"`
-	ParentID int            `json:"parent,omitempty"`
+type LibraryAccess struct {
+	model.Library
+	CanWrite bool
 }
 
-type EntryPage struct {
-	TotalElements int64          `json:"totalElements"`
-	Elements      []EntrySummary `json:"elements"`
-}
-
-func getAccessToLib(c *gin.Context, libs *service.Library, tx *gorm.DB) (model.Library, error) {
+func getAccessToLib(c *gin.Context, libs *service.Library, writeAccess bool, tx *gorm.DB) (model.Library, error) {
 	libraryId, ok := intParam(c, "libraryId")
-	var library model.Library
+	var library LibraryAccess
 	if !ok {
-		return library, ApiError{Status: http.StatusNotFound}
+		return library.Library, ApiError{Status: http.StatusNotFound}
 	}
 	user := oauth.GetUser(c).(model.User)
-	if err := libs.GetLibrariesForUser(user, tx).Take(&library, libraryId).Error; err != nil {
-		return library, ApiError{Status: http.StatusNotFound}
+	if err := libs.GetLibrariesWithAccessForUser(user, tx).Take(&library, libraryId).Error; err != nil {
+		return library.Library, ApiError{Status: http.StatusNotFound}
 	}
-	return library, nil
+	if writeAccess && !library.CanWrite {
+		return library.Library, ApiError{Status: http.StatusForbidden}
+	}
+	return library.Library, nil
 }
 
 // ListEntries
@@ -44,27 +37,30 @@ func getAccessToLib(c *gin.Context, libs *service.Library, tx *gorm.DB) (model.L
 // @Summary Search the collection of files and folders
 // @Security OAuth2
 // @Produce  json
-// @Success 200 {object} EntryPage
-// @Param page query int false "The page number to fetch" default(1)
-// @Param limit query int false "The maximum number of elements to return" default(20)
+// @Success 200 {array} service.FileInfo
+// @Param parent query string false "The parent folder"
 // @Param libraryId path int true "The library id"
 func ListEntries(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		library, err := getAccessToLib(c, libs, db)
+		library, err := getAccessToLib(c, libs, false, db)
 		if err != nil {
 			writeError(c, err)
 			return
 		}
-
-		var page EntryPage
-		returnPage(c, fs.GetEntriesForLibrary(library, db).Order("name"), &page, &page.TotalElements, &page.Elements)
+		parentPath := c.DefaultQuery("parent", "")
+		entries, err := fs.GetEntriesForLibrary(library, parentPath)
+		if err != nil {
+			writeError(c, err)
+			return
+		}
+		c.JSON(http.StatusOK, entries)
 	}
 }
 
 type CreateEntryDTO struct {
-	Name     string                `binding:"" form:"name"`
-	ParentID int                   `binding:"" form:"parentId"`
-	Data     *multipart.FileHeader `binding:"" form:"data"`
+	Name   string                `binding:"" form:"name"`
+	Parent string                `binding:"" form:"parent"`
+	Data   *multipart.FileHeader `binding:"" form:"data"`
 }
 
 // CreateEntry
@@ -74,10 +70,10 @@ type CreateEntryDTO struct {
 // @Security OAuth2
 // @Produce  json
 // @Accept multipart/form-data
-// @Success 200 {object} model.Entry
+// @Success 200 {object} service.FileInfo
 // @Param libraryId path int true "The library id"
 // @Param name formData string false "The name of the new entry. Required when creating a folder."
-// @Param parentId formData int false "The id of the parent folder. When missing this creates a file or folder in the root of the library."
+// @Param parent formData string false "The path to the parent folder. When missing this creates a file or folder in the root of the library."
 // @Param data formData file false "The file contents. Required when creating a file."
 func CreateEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -87,7 +83,7 @@ func CreateEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin
 			return
 		}
 		err := db.Transaction(func(tx *gorm.DB) error {
-			library, err := getAccessToLib(c, libs, tx)
+			library, err := getAccessToLib(c, libs, true, tx)
 			if err != nil {
 				return err
 			}
@@ -96,7 +92,7 @@ func CreateEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin
 				if request.Name == "" {
 					return ApiError{Status: http.StatusBadRequest, Description: "A name is required when creating a folder"}
 				}
-				created, err := fs.CreateFolderInLibrary(library, request.Name, request.ParentID, tx)
+				created, err := fs.CreateFolderInLibrary(library, request.Name, request.Parent)
 				if err != nil {
 					return err
 				}
@@ -107,7 +103,7 @@ func CreateEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin
 					return err
 				}
 				defer fileData.Close()
-				created, err := fs.CreateFileInLibrary(library, request.Name, request.ParentID, request.Data, tx)
+				created, err := fs.CreateFileInLibrary(library, request.Name, request.Parent, request.Data)
 				if err != nil {
 					return err
 				}
