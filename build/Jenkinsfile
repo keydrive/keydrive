@@ -8,6 +8,7 @@ pipeline {
   }
   environment {
     DOCKER_TAG = "chappio/clearcloud:${env.BUILD_TAG}"
+    CGO_ENABLE = "0"
   }
   stages {
     stage('Build') {
