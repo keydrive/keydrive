@@ -50,7 +50,7 @@ func main() {
 	log.Info("starting automigration...")
 
 	db.Exec("CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public")
-	err = db.AutoMigrate(&model.User{}, &model.OAuth2Token{}, &model.Library{}, &model.CanAccessLibrary{})
+	err = db.AutoMigrate(&model.User{}, &model.OAuth2Token{}, &model.Library{}, &model.CanAccessLibrary{}, &model.Entry{})
 	if err != nil {
 		log.Error("migration failed: %s", err)
 		os.Exit(1)
@@ -83,6 +83,7 @@ func main() {
 	tokenService := &service.Token{
 		DB: db,
 	}
+	fileSystemService := &service.FileSystem{}
 	passwordEncoder := &oauth.BcryptEncoder{}
 	oauthServer := &oauth.Server{
 		PasswordEncoder:      passwordEncoder,
@@ -121,11 +122,17 @@ func main() {
 			libraries.DELETE("/:libraryId", controller.RequireAdmin(), controller.DeleteLibrary(db, libraryService))
 			libraries.POST("/:libraryId/shares", controller.RequireAdmin(), controller.ShareLibrary(db, libraryService, userService))
 			libraries.DELETE("/:libraryId/shares/:userId", controller.RequireAdmin(), controller.UnshareLibrary(db))
+
+			entries := libraries.Group("/:libraryId/entries")
+			{
+				entries.GET("", controller.ListEntries(db, libraryService, fileSystemService))
+				entries.POST("", controller.CreateEntry(db, libraryService, fileSystemService))
+			}
 		}
 		system := api.Group("/system")
 		{
 			system.GET("/health", controller.HealthCheckController(db))
-			system.POST("/browse", controller.RequireAdmin(), controller.SystemBrowse())
+			system.POST("/browse", controller.RequireAdmin(), controller.SystemBrowse(fileSystemService))
 		}
 	}
 	router.NoRoute(controller.Static(http.FS(build.App)))

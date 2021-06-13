@@ -203,6 +203,106 @@ var doc = `{
                 }
             }
         },
+        "/api/libraries/{libraryId}/entries": {
+            "get": {
+                "security": [
+                    {
+                        "OAuth2": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Search the collection of files and folders",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "The page number to fetch",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 20,
+                        "description": "The maximum number of elements to return",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "The library id",
+                        "name": "libraryId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.EntryPage"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "OAuth2": []
+                    }
+                ],
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Create a new file or folder",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "The library id",
+                        "name": "libraryId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "The name of the new entry",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "The id of the parent folder. When missing this creates a folder in the root of the library.",
+                        "name": "parentId",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "The file contents",
+                        "name": "data",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Entry"
+                        }
+                    }
+                }
+            }
+        },
         "/api/libraries/{libraryId}/shares": {
             "post": {
                 "security": [
@@ -628,10 +728,14 @@ var doc = `{
         "controller.CreateLibraryDTO": {
             "type": "object",
             "required": [
-                "name"
+                "name",
+                "rootFolder"
             ],
             "properties": {
                 "name": {
+                    "type": "string"
+                },
+                "rootFolder": {
                     "type": "string"
                 },
                 "type": {
@@ -666,6 +770,43 @@ var doc = `{
                 },
                 "username": {
                     "type": "string"
+                }
+            }
+        },
+        "controller.EntryPage": {
+            "type": "object",
+            "properties": {
+                "elements": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/controller.EntrySummary"
+                    }
+                },
+                "totalElements": {
+                    "type": "integer"
+                }
+            }
+        },
+        "controller.EntrySummary": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "created": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "modified": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parent": {
+                    "type": "integer"
                 }
             }
         },
@@ -843,6 +984,38 @@ var doc = `{
                 },
                 "user": {
                     "$ref": "#/definitions/model.User"
+                }
+            }
+        },
+        "model.Entry": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "created": {
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Required Fields",
+                    "type": "integer"
+                },
+                "modified": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parent": {
+                    "description": "Relations",
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "type": {
+                    "description": "File Metadata",
+                    "type": "string"
                 }
             }
         },

@@ -1,4 +1,4 @@
-package controller
+package service
 
 func listDisks() []string {
 	return []string{"/"}

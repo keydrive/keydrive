@@ -73,6 +73,11 @@ func CreateLibrary(db *gorm.DB) gin.HandlerFunc {
 			create.Type = model.TypeGeneric
 		}
 		cleanFolder := filepath.Clean(create.RootFolder)
+		err := os.MkdirAll(cleanFolder, 0770)
+		if err != nil {
+			writeJsonError(c, ApiError{Status: http.StatusBadRequest, Description: fmt.Sprintf("failed to create root directory: %s", err)})
+			return
+		}
 		if info, err := os.Stat(cleanFolder); err != nil {
 			writeJsonError(c, ApiError{Status: http.StatusBadRequest, Description: fmt.Sprintf("invalid root folder: %s", err)})
 			return

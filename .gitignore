@@ -12,3 +12,4 @@ clearcloud
 *.log
 *.css
 .DS_Store
+testdata/
