@@ -18,15 +18,10 @@ pipeline {
         // Build the backend
         sh "mkdir -p build/output"
         sh "go mod download"
-        parallel linux: {
-          sh "GOOS=linux GOARCH=amd64 go build -o build/output/clearcloud-linux-amd64 ./main.go"
-        }, windows: {
-          sh "GOOS=windows GOARCH=amd64 go build -o build/output/clearcloud-windows-amd64.exe ./main.go"
-        }, mac: {
-          sh "GOOS=darwin GOARCH=amd64 go build -o build/output/clearcloud-darwin-amd64 ./main.go"
-        }, bsd: {
-          sh "GOOS=freebsd GOARCH=amd64 go build -o build/output/clearcloud-freebsd-amd64 ./main.go"
-        }
+        sh "GOOS=linux GOARCH=amd64 go build -o build/output/clearcloud-linux-amd64 ./main.go"
+        sh "GOOS=windows GOARCH=amd64 go build -o build/output/clearcloud-windows-amd64.exe ./main.go"
+        sh "GOOS=darwin GOARCH=amd64 go build -o build/output/clearcloud-darwin-amd64 ./main.go"
+        sh "GOOS=freebsd GOARCH=amd64 go build -o build/output/clearcloud-freebsd-amd64 ./main.go"
       }
       post {
         always {
