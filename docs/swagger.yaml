@@ -411,17 +411,16 @@ paths:
         name: libraryId
         required: true
         type: integer
-      - description: The name of the new entry
+      - description: The name of the new entry. Required when creating a folder.
         in: formData
         name: name
-        required: true
         type: string
-      - description: The id of the parent folder. When missing this creates a folder
-          in the root of the library.
+      - description: The id of the parent folder. When missing this creates a file
+          or folder in the root of the library.
         in: formData
         name: parentId
         type: integer
-      - description: The file contents
+      - description: The file contents. Required when creating a file.
         in: formData
         name: data
         type: file

@@ -257,20 +257,19 @@
                     },
                     {
                         "type": "string",
-                        "description": "The name of the new entry",
+                        "description": "The name of the new entry. Required when creating a folder.",
                         "name": "name",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "integer",
-                        "description": "The id of the parent folder. When missing this creates a folder in the root of the library.",
+                        "description": "The id of the parent folder. When missing this creates a file or folder in the root of the library.",
                         "name": "parentId",
                         "in": "formData"
                     },
                     {
                         "type": "file",
-                        "description": "The file contents",
+                        "description": "The file contents. Required when creating a file.",
                         "name": "data",
                         "in": "formData"
                     }

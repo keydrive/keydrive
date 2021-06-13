@@ -17,7 +17,7 @@ type EntrySummary struct {
 	Created  time.Time      `json:"created"`
 	Modified time.Time      `json:"modified"`
 	Category model.Category `json:"category"`
-	ParentID *int           `json:"parent"`
+	ParentID int            `json:"parent,omitempty"`
 }
 
 type EntryPage struct {
@@ -62,8 +62,8 @@ func ListEntries(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin
 }
 
 type CreateEntryDTO struct {
-	Name     string                `binding:"required" form:"name"`
-	ParentID *int                  `binding:"" form:"parentId"`
+	Name     string                `binding:"" form:"name"`
+	ParentID int                   `binding:"" form:"parentId"`
 	Data     *multipart.FileHeader `binding:"" form:"data"`
 }
 
@@ -76,9 +76,9 @@ type CreateEntryDTO struct {
 // @Accept multipart/form-data
 // @Success 200 {object} model.Entry
 // @Param libraryId path int true "The library id"
-// @Param name formData string true "The name of the new entry"
-// @Param parentId formData int false "The id of the parent folder. When missing this creates a folder in the root of the library."
-// @Param data formData file false "The file contents"
+// @Param name formData string false "The name of the new entry. Required when creating a folder."
+// @Param parentId formData int false "The id of the parent folder. When missing this creates a file or folder in the root of the library."
+// @Param data formData file false "The file contents. Required when creating a file."
 func CreateEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var request CreateEntryDTO
@@ -93,6 +93,9 @@ func CreateEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin
 			}
 
 			if request.Data == nil {
+				if request.Name == "" {
+					return ApiError{Status: http.StatusBadRequest, Description: "A name is required when creating a folder"}
+				}
 				created, err := fs.CreateFolderInLibrary(library, request.Name, request.ParentID, tx)
 				if err != nil {
 					return err

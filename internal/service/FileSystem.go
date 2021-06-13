@@ -26,7 +26,7 @@ func (fs *FileSystem) GetEntriesForLibrary(library model.Library, tx *gorm.DB) *
 type EntryPath struct {
 	ID       int
 	Name     string
-	ParentID *int
+	ParentID int
 }
 
 func (fs *FileSystem) getDiskPath(library model.Library, entryId int, tx *gorm.DB) (string, error) {
@@ -37,7 +37,7 @@ func (fs *FileSystem) getDiskPath(library model.Library, entryId int, tx *gorm.D
 	path := make([]string, 1)
 	path[0] = entry.Name
 
-	for entry.ParentID != nil {
+	for entry.ParentID != 0 {
 		if err := fs.GetEntriesForLibrary(library, tx).Take(&entry, entry.ParentID).Error; err != nil {
 			return "", err
 		} else {
@@ -54,7 +54,7 @@ func (fs *FileSystem) getDiskPath(library model.Library, entryId int, tx *gorm.D
 	return filepath.Clean(filepath.Join(library.RootFolder, strings.Join(path, "/"))), nil
 }
 
-func (fs *FileSystem) CreateFolderInLibrary(library model.Library, name string, parentId *int, tx *gorm.DB) (model.Entry, error) {
+func (fs *FileSystem) CreateFolderInLibrary(library model.Library, name string, parentId int, tx *gorm.DB) (model.Entry, error) {
 	var parent model.Entry
 	newEntry := model.Entry{
 		Name:      name,
@@ -65,8 +65,8 @@ func (fs *FileSystem) CreateFolderInLibrary(library model.Library, name string, 
 		LibraryID: library.ID,
 	}
 
-	if parentId != nil {
-		if err := fs.GetEntriesForLibrary(library, tx).Where("category = ?", model.CategoryFolder).Take(&parent, *parentId).Error; err != nil {
+	if parentId != 0 {
+		if err := fs.GetEntriesForLibrary(library, tx).Where("category = ?", model.CategoryFolder).Take(&parent, parentId).Error; err != nil {
 			return newEntry, err
 		}
 	}
@@ -82,10 +82,14 @@ func (fs *FileSystem) CreateFolderInLibrary(library model.Library, name string, 
 	return newEntry, err
 }
 
-func (fs *FileSystem) CreateFileInLibrary(library model.Library, name string, parentId *int, data *multipart.FileHeader, tx *gorm.DB) (model.Entry, error) {
+func (fs *FileSystem) CreateFileInLibrary(library model.Library, name string, parentId int, data *multipart.FileHeader, tx *gorm.DB) (model.Entry, error) {
 	var parent model.Entry
+	fileName := name
+	if name == "" {
+		fileName = data.Filename
+	}
 	newEntry := model.Entry{
-		Name:      name,
+		Name:      fileName,
 		Category:  model.CategoryUnknown,
 		Created:   time.Now(),
 		Modified:  time.Now(),
@@ -96,12 +100,13 @@ func (fs *FileSystem) CreateFileInLibrary(library model.Library, name string, pa
 		Type: data.Header.Get("Content-Type"),
 	}
 
-	if parentId != nil {
-		if err := fs.GetEntriesForLibrary(library, tx).Where("category = ?", model.CategoryFolder).Take(&parent, *parentId).Error; err != nil {
+	if parentId != 0 {
+		if err := fs.GetEntriesForLibrary(library, tx).Where("category = ?", model.CategoryFolder).Take(&parent, parentId).Error; err != nil {
 			return newEntry, err
 		}
 	}
 
+	// save to check constraints
 	if err := tx.Save(&newEntry).Error; err != nil {
 		return newEntry, err
 	}
@@ -109,6 +114,8 @@ func (fs *FileSystem) CreateFileInLibrary(library model.Library, name string, pa
 	if err != nil {
 		return newEntry, err
 	}
+
+	// write to disk
 	targetFile, err := os.Create(diskPath)
 	if err != nil {
 		return newEntry, err
@@ -124,6 +131,19 @@ func (fs *FileSystem) CreateFileInLibrary(library model.Library, name string, pa
 		return newEntry, err
 	}
 	newEntry.Size = &written
+
+	// enhance metadata
+	if newEntry.Type == "" || newEntry.Type == "application/octet-stream" {
+		ext := strings.ToLower(filepath.Ext(newEntry.Name))
+		if mimeType, ok := ExtToMime[ext]; ok {
+			newEntry.Type = mimeType
+		}
+	}
+	if newEntry.Type != "" {
+		if category, ok := MimeToCategory[strings.ToLower(newEntry.Type)]; ok {
+			newEntry.Category = category
+		}
+	}
 	err = tx.Save(&newEntry).Error
 	// TODO: metadata run
 	return newEntry, err
