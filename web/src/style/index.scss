@@ -11,7 +11,7 @@ $top-bar-height: 64px;
 @import 'mixins';
 
 // Fonts and icons.
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,700;1,400&display=swap');
 @import '~@fortawesome/fontawesome-free/css/all.min.css';
 
 // Component styles.
@@ -24,6 +24,7 @@ $top-bar-height: 64px;
   @import '../components/Columns';
   @import '../components/Layout';
   @import '../components/Modal';
+  @import '../components/Panel';
   @import '../pages/settings/SettingsPage';
   @import '../pages/settings/UsersPage';
   @import '../pages/LoginPage';

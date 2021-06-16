@@ -4,8 +4,8 @@
 
   .sidebar {
     flex: 0 0 220px;
-    height: 100%;
-    background-color: var(--gray-4);
+    height: 100vh;
+    background-color: var(--side-bar-color);
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -14,10 +14,11 @@
     .logo {
       height: $top-bar-height;
       display: flex;
-      justify-content: center;
+      padding: 12px;
       align-items: center;
-      background-color: var(--gray-5);
+      background-color: var(--top-bar-color);
       margin-bottom: 12px;
+      border-bottom: 2px solid var(--background);
     }
 
     .libraries {
@@ -39,7 +40,7 @@
 
       .icon {
         margin-right: 8px;
-        color: var(--teal);
+        color: var(--primary);
         width: 24px;
         text-align: center;
       }
@@ -51,10 +52,11 @@
 
     .top-bar {
       height: $top-bar-height;
-      background-color: var(--gray-5);
+      background-color: var(--top-bar-color);
       display: flex;
       align-items: center;
       padding: 0 12px;
+      border-bottom: 2px solid var(--background);
     }
 
     main {
