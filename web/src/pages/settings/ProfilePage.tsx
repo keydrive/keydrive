@@ -22,7 +22,7 @@ export const ProfilePage: React.FC = () => {
   return (
     <Layout className="profile-page settings-page">
       <div className="top-bar">
-        <h2 className="title">Profile</h2>
+        <h1 className="title">Profile</h1>
       </div>
       <main>
         <Form

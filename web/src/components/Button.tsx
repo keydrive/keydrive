@@ -8,6 +8,7 @@ export interface Props {
   type?: 'button' | 'submit';
   loading?: boolean;
   disabled?: boolean;
+  primary?: boolean;
 }
 
 export const Button: React.FC<Props> = ({
@@ -15,10 +16,11 @@ export const Button: React.FC<Props> = ({
   square,
   type = 'button',
   loading,
+  primary,
   ...props
 }) => (
   <button
-    className={classNames('button', square && 'square', loading && 'loading')}
+    className={classNames('button', square && 'square', loading && 'loading', primary && 'primary')}
     type={type}
     {...props}
   >

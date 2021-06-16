@@ -2,38 +2,66 @@
 // https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/color
 
 :root {
-  --blue: rgb(0, 122, 255);
+  --blue: rgb(99, 209, 255);
   --red: rgb(255, 59, 48);
-  --teal: rgb(90, 200, 250);
+  --yellow: rgb(255, 188, 46);
 
-  --gray: rgb(142, 142, 147);
-  --gray-2: rgb(174, 174, 178);
-  --gray-3: rgb(199, 199, 204);
-  --gray-4: rgb(209, 209, 214);
-  --gray-5: rgb(229, 229, 234);
-  --gray-6: rgb(242, 242, 247);
+  --black: rgb(0, 0, 0);
+  --void-gray: rgb(19, 20, 21);
+  --deep-gray: rgb(35, 36, 43);
+  --dark-gray: rgb(70, 71, 74);
+  --light-gray: rgb(150, 151, 154);
 
-  --text-dark: rgb(28, 28, 30);
-  --text-light: rgb(242, 242, 247);
+  --off-white: rgb(246, 246, 246);
+  --white-smoke: rgb(250, 250, 250);
+  --white: rgb(255, 255, 255);
 
-  --text: var(--text-dark);
-  --input-bg: var(--gray-5);
-  --overlay-bg: rgba(242, 242, 247, 0.5);
+  --primary: var(--blue);
+  --primary-darkened: rgb(60, 158, 199);
+  // Light gray 20%
+  --zebra-highlight: rgba(150, 151, 154, 0.2);
+  // Primary 20%
+  --primary-highlight: rgba(99, 209, 255, 0.2);
+
+  @mixin light-theme {
+    --background: var(--white-smoke);
+    --foreground: var(--black);
+    --side-bar-color: var(--off-white);
+    --top-bar-color: var(--white);
+    --panel-color: var(--white);
+  }
+
+  @mixin dark-theme {
+    --background: var(--void-gray);
+    --foreground: var(--white);
+    --side-bar-color: var(--dark-gray);
+    --top-bar-color: var(--deep-gray);
+    --panel-color: var(--deep-gray);
+  }
+
+  // we default to light theme
+  @media (prefers-color-scheme: no-preference) {
+    @include light-theme;
+  }
+
+  @media (prefers-color-scheme: light) {
+    @include light-theme;
+  }
 
   @media (prefers-color-scheme: dark) {
-    --blue: rgb(10, 132, 255);
-    --red: rgb(255, 69, 58);
-    --teal: rgb(100, 210, 255);
-
-    --gray: rgb(142, 142, 147);
-    --gray-2: rgb(99, 99, 102);
-    --gray-3: rgb(72, 72, 74);
-    --gray-4: rgb(58, 58, 60);
-    --gray-5: rgb(44, 44, 46);
-    --gray-6: rgb(28, 28, 30);
-
-    --text: var(--text-light);
-    --input-bg: var(--gray-3);
-    --overlay-bg: rgba(28, 28, 30, 0.5);
+    @include dark-theme;
   }
+
+  // allows theme overrides through class names
+  .light-theme {
+    @include light-theme;
+  }
+
+  .dark-theme {
+    @include dark-theme;
+  }
+}
+
+body {
+  background-color: var(--background);
 }
