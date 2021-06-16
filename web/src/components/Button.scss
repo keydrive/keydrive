@@ -1,8 +1,6 @@
 .button {
   padding: 0 18px;
-  border: none;
   height: $input-height;
-  border-radius: $border-radius;
   cursor: pointer;
   font-size: 1rem;
   outline: none;
@@ -10,12 +8,10 @@
   align-items: center;
   justify-content: center;
 
-  transition: background-color $transition-duration;
-  background-color: var(--gray-4);
+  border-radius: $border-radius;
 
-  &:not(:disabled):not(.loading) {
-    @include clickable(var(--gray-3), var(--gray-2));
-  }
+  transition-property: background-color, border-color;
+  transition-duration: $transition-duration;
 
   &:disabled {
     cursor: not-allowed;
@@ -32,6 +28,26 @@
     > i.loader {
       position: absolute;
       margin: 0;
+    }
+  }
+
+  // styles
+  // default: basic
+  background: none;
+  border: 1px solid var(--light-gray);
+
+  &:not(:disabled):not(.loading) {
+    @include clickable(var(--gray-3), var(--gray-2));
+  }
+
+  // primary
+  &.primary {
+    background-color: var(--primary);
+    color: var(--inverted-primary);
+    border: 1px solid var(--primary);
+
+    &:not(:disabled):not(.loading) {
+      @include clickable(var(--primary-darkened), var(--primary));
     }
   }
 

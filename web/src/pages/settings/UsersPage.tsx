@@ -52,7 +52,7 @@ export const UsersPage: React.FC = () => {
       )}
       <Layout className="users-page settings-page">
         <div className="top-bar">
-          <h2>Users</h2>
+          <h1>Users</h1>
           <Button onClick={() => setShowCreateModal(true)} square>
             <Icon icon="plus" />
           </Button>

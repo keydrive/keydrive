@@ -32,17 +32,18 @@
     .entry {
       font-weight: 600;
       display: block;
-      padding: 6px;
-      border-radius: $border-radius;
-      margin: 0 12px;
-
-      @include clickable(var(--gray-3), var(--gray-2));
+      padding: 6px 12px;
+      border-right: transparent solid 4px;
 
       .icon {
         margin-right: 8px;
         color: var(--primary);
         width: 24px;
         text-align: center;
+      }
+
+      &.active {
+        border-color: var(--primary);
       }
     }
   }

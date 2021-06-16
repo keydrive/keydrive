@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import logo from '../images/logo.png';
 import { Icon } from './Icon';
 import { useService } from '../hooks/useService';
@@ -19,6 +19,8 @@ const libraryIcons: Record<LibraryType, string> = {
 };
 
 export const Layout: React.FC<Props> = ({ children, className }) => {
+  // TODO: The nav bar is flickering on navigate.
+  // We probably want to move this to global state
   const librariesService = useService(LibrariesService);
   const [libraries, setLibraries] = useState<Library[]>();
 
@@ -49,22 +51,22 @@ export const Layout: React.FC<Props> = ({ children, className }) => {
           )}
         </div>
         <div>
-          <Link to="/settings/libraries" className="entry">
+          <NavLink to="/settings/libraries" className="entry">
             <Icon icon="sitemap" />
             Libraries
-          </Link>
-          <Link to="/settings/profile" className="entry">
+          </NavLink>
+          <NavLink to="/settings/profile" className="entry">
             <Icon icon="address-card" />
             Profile
-          </Link>
-          <Link to="/settings/users" className="entry">
+          </NavLink>
+          <NavLink to="/settings/users" className="entry">
             <Icon icon="users" />
             Users
-          </Link>
-          <Link to="/logout" className="entry">
+          </NavLink>
+          <NavLink to="/logout" className="entry">
             <Icon icon="sign-out-alt" />
             Log Out
-          </Link>
+          </NavLink>
         </div>
       </div>
       <div className="content-wrapper">{children}</div>

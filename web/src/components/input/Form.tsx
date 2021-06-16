@@ -27,7 +27,7 @@ export const Form: React.FC<Props> = ({ children, onSubmit, submitLabel, error }
       }}
     >
       {children}
-      <Button type="submit" loading={loading}>
+      <Button type="submit" primary loading={loading}>
         {submitLabel}
       </Button>
       <div className="error-message">{error}</div>

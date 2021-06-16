@@ -51,7 +51,7 @@ export const LibrariesPage: React.FC = () => {
       )}
       <Layout className="libraries-page settings-page">
         <div className="top-bar">
-          <h2>Libraries</h2>
+          <h1>Libraries</h1>
           <Button onClick={() => setShowCreateModal(true)} square>
             <Icon icon="plus" />
           </Button>
