@@ -32,6 +32,7 @@
     --panel-color: var(--white);
     --field-background: var(--white);
     --field-foreground: var(--black);
+    --field-border: var(--light-gray);
   }
 
   @mixin dark-theme {
@@ -42,6 +43,7 @@
     --panel-color: var(--deep-gray);
     --field-background: var(--black);
     --field-foreground: var(--white);
+    --field-border: var(--void-gray);
   }
 
   // we default to light theme

@@ -22,7 +22,7 @@
     background-color: var(--field-background);
     color: var(--field-foreground);
     outline: none;
-    border: 1px solid var(--light-gray);
+    border: 1px solid var(--field-border);
 
     &:not(:first-child) {
       margin-left: 12px;
