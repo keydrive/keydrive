@@ -33,7 +33,7 @@ export const Modal: React.FC<Props> = ({ children, title, onClose }) => {
       <div className={classNames('modal', closing && 'closing')}>
         <h2>{title}</h2>
         <div className='modal-content'>
-          <p>Hello! I am a modal</p>
+          {children}
         </div>
       </div>
     </>

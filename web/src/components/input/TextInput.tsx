@@ -9,10 +9,12 @@ export interface Props extends FieldProps {
   className?: string;
   autoFocus?: boolean;
   required?: boolean;
+  label?: string;
 }
 
-export const TextInput: React.FC<Props> = ({ type = 'text', onChange, error, className, ...props }) => (
+export const TextInput: React.FC<Props> = ({ type = 'text', onChange, error, className, label, ...props }) => (
   <Field id={props.id} error={error} className={className}>
+    {label && <label htmlFor={props.id}>{label}</label>}
     <input type={type} onChange={(e) => onChange(e.currentTarget.value)} {...props} />
   </Field>
 );

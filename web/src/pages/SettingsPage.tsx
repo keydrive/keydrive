@@ -7,25 +7,43 @@ import { userStore } from '../store/user';
 import { Tag } from '../components/Tag';
 import { SettingButton } from '../components/SettingButton';
 import { Modal } from '../components/Modal';
+import { Form } from '../components/input/Form';
+import { TextInput } from '../components/input/TextInput';
+import { PasswordInput } from '../components/input/PasswordInput';
 
 interface ModalProps {
   onClose: () => void;
 }
 
-const EditProfileModal: React.FC<ModalProps> = ({ onClose }) => (
-  <Modal onClose={onClose} title='Edit Profile'>
-    Sup?
-  </Modal>
-);
+const EditProfileModal: React.FC<ModalProps> = ({ onClose }) => {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  return (
+    <Modal onClose={onClose} title='My Profile'>
+      <Form onSubmit={() => undefined} submitLabel='Save'>
+        <TextInput label='First Name:' value={firstName} onChange={setFirstName} id='firstName' />
+        <TextInput label='Last Name:' value={lastName} onChange={setLastName} id='lastName' />
+        <TextInput label='Email:' value={email} onChange={setEmail} id='email' />
+      </Form>
+    </Modal>
+  );
+};
 
-const ChangePasswordModal: React.FC<ModalProps> = ({ onClose }) => (
-  <Modal onClose={onClose} title='Change Password'>
-    Sup?
-  </Modal>
-);
+const ChangePasswordModal: React.FC<ModalProps> = ({ onClose }) => {
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
+  return (<Modal onClose={onClose} title='Change Password'>
+      <Form onSubmit={() => undefined} submitLabel='Change'>
+        <PasswordInput label='Password' value={password} onChange={setPassword} id='password' />
+        <PasswordInput label='Confirm' value={confirm} onChange={setConfirm} id='confirm' />
+      </Form>
+    </Modal>
+  );
+};
 
 const ManageLibrariesModal: React.FC<ModalProps> = ({ onClose }) => (
-  <Modal onClose={onClose} title='Manage Libraries'>
+  <Modal onClose={onClose} title='Libraries'>
     Sup?
   </Modal>
 );

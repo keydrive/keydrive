@@ -1,6 +1,13 @@
 form {
+  display: flex;
+  flex-direction: column;
+
   .error-message {
     margin-top: 8px;
     margin-bottom: 8px;
+  }
+
+  button {
+    align-self: flex-end;
   }
 }

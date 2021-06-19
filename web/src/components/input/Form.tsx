@@ -30,7 +30,7 @@ export const Form: React.FC<Props> = ({ children, onSubmit, submitLabel, error }
       <Button type="submit" primary loading={loading}>
         {submitLabel}
       </Button>
-      <div className="error-message">{error}</div>
+      {error && <div className="error-message">{error}</div>}
     </form>
   );
 };
