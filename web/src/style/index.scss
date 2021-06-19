@@ -26,8 +26,9 @@ $top-bar-height: 64px;
   @import '../components/Layout';
   @import '../components/Modal';
   @import '../components/Panel';
+  @import '../components/SettingButton';
   @import '../components/Tag';
-  @import '../pages/settings/SettingsPage';
+  @import '../pages/SettingsPage';
   @import '../pages/settings/UsersPage';
   @import '../pages/LoginPage';
 }

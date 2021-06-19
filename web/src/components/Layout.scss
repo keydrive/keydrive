@@ -30,7 +30,6 @@
     }
 
     .entry {
-      font-weight: 600;
       display: block;
       padding: 6px 12px;
       border-right: transparent solid 4px;
@@ -44,6 +43,7 @@
 
       &.active {
         border-color: var(--primary);
+        font-weight: 600;
       }
     }
   }
