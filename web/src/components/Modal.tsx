@@ -4,9 +4,10 @@ import { classNames } from '../utils/classNames';
 export interface Props {
   onClose: () => void;
   title: string;
+  shouldClose?: boolean;
 }
 
-export const Modal: React.FC<Props> = ({ children, title, onClose }) => {
+export const Modal: React.FC<Props> = ({ children, title, onClose, shouldClose }) => {
   const [closing, setClosing] = useState(false);
 
   const close = useCallback(() => {
@@ -26,6 +27,12 @@ export const Modal: React.FC<Props> = ({ children, title, onClose }) => {
       document.removeEventListener('keydown', listener);
     };
   }, [close]);
+
+  useEffect(() => {
+    if (shouldClose) {
+      close();
+    }
+  }, [shouldClose, close]);
 
   return (
     <>

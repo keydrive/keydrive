@@ -9,6 +9,7 @@ export interface Props {
   loading?: boolean;
   disabled?: boolean;
   primary?: boolean;
+  tabIndex?: number;
 }
 
 export const Button: React.FC<Props> = ({

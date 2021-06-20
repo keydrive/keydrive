@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Layout } from '../components/Layout';
 import { Panel } from '../components/Panel';
 import { useAppDispatch, useAppSelector } from '../store';
@@ -10,6 +10,8 @@ import { Modal } from '../components/Modal';
 import { Form } from '../components/input/Form';
 import { TextInput } from '../components/input/TextInput';
 import { PasswordInput } from '../components/input/PasswordInput';
+import { UserService } from '../services/UserService';
+import { ApiError } from '../services/ApiService';
 
 interface ModalProps {
   onClose: () => void;
@@ -18,13 +20,42 @@ interface ModalProps {
 const EditProfileModal: React.FC<ModalProps> = ({ onClose }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState<string>();
+  const { selectors: { currentUser }, actions: { updateCurrentUserAsync } } = useService(userStore);
+  const currentUserData = useAppSelector(currentUser);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (currentUserData) {
+      setUsername(currentUserData.username);
+      setFirstName(currentUserData.firstName);
+      setLastName(currentUserData.lastName);
+    }
+  }, [currentUserData]);
+
   return (
-    <Modal onClose={onClose} title='My Profile'>
-      <Form onSubmit={() => undefined} submitLabel='Save'>
+    <Modal onClose={onClose} shouldClose={done} title='My Profile'>
+      <Form error={error} onSubmit={async () => {
+        setError(undefined);
+        const action = await dispatch(updateCurrentUserAsync({
+          firstName,
+          lastName,
+          username
+        }));
+        switch (action.type) {
+          case updateCurrentUserAsync.fulfilled.type:
+            setDone(true);
+            break;
+          case updateCurrentUserAsync.rejected.type:
+            setError((action.payload as ApiError).error);
+            break;
+        }
+      }} submitLabel='Save'>
+        <TextInput label='Username:' value={username} onChange={setUsername} id='username' />
         <TextInput label='First Name:' value={firstName} onChange={setFirstName} id='firstName' />
         <TextInput label='Last Name:' value={lastName} onChange={setLastName} id='lastName' />
-        <TextInput label='Email:' value={email} onChange={setEmail} id='email' />
       </Form>
     </Modal>
   );
@@ -33,10 +64,27 @@ const EditProfileModal: React.FC<ModalProps> = ({ onClose }) => {
 const ChangePasswordModal: React.FC<ModalProps> = ({ onClose }) => {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
-  return (<Modal onClose={onClose} title='Change Password'>
-      <Form onSubmit={() => undefined} submitLabel='Change'>
-        <PasswordInput label='Password' value={password} onChange={setPassword} id='password' />
-        <PasswordInput label='Confirm' value={confirm} onChange={setConfirm} id='confirm' />
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState<string>();
+  const userService = useService(UserService);
+
+  return (<Modal shouldClose={done} onClose={onClose} title='Change Password'>
+      <Form error={error} onSubmit={async () => {
+        setError(undefined);
+        if (password !== confirm) {
+          setError('Make sure both passwords match');
+        }
+        try {
+          await userService.updateCurrentUser({
+            password
+          });
+          setDone(true);
+        } catch (e) {
+          setError(e.message);
+        }
+      }} submitLabel='Change'>
+        <PasswordInput autoFocus required label='Password' value={password} onChange={setPassword} id='password' />
+        <PasswordInput required label='Confirm' value={confirm} onChange={setConfirm} id='confirm' />
       </Form>
     </Modal>
   );
