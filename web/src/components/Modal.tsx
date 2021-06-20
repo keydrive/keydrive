@@ -41,7 +41,7 @@ export const Modal: React.FC<Props> = ({ children, title, panelled, onClose, sho
     <>
       <div className={classNames('modal-overlay', closing && 'closing')} onClick={close} />
       <div className={classNames('modal', closing && 'closing', panelled && 'panelled')}>
-        <h2>{title}</h2>
+        <h2>{title} <Button onClick={close}><Icon icon='times' /></Button></h2>
         <div className='modal-content'>
           {children}
         </div>

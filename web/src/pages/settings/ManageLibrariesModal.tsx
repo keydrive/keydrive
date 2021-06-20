@@ -40,6 +40,34 @@ const CreateLibraryForm: React.FC<{ onDone: (id: number) => void }> = ({ onDone 
   );
 };
 
+const EditLibraryForm: React.FC<{ library: LibraryDetails, onDone: () => void }> = ({ library, onDone }) => {
+  const [name, setName] = useState('');
+  const librariesService = useService(LibrariesService);
+  const [error, setError] = useState<string>();
+
+  useEffect(() => {
+    setName(library.name);
+  }, [library]);
+  return (
+    <>
+      <h2>Library: {library.name}</h2>
+      <Form error={error} onSubmit={async () => {
+        setError(undefined);
+        try {
+          const lib = await librariesService.updateLibrary(library.id, {
+            name: name.trim()
+          });
+          onDone();
+        } catch (e) {
+          setError(e.description || e.message);
+        }
+      }} submitLabel='Save'>
+        <TextInput required label='Name:' value={name} onChange={setName} id='name' />
+      </Form>
+    </>
+  );
+};
+
 export interface Props {
   onClose: () => void;
 }
@@ -77,7 +105,9 @@ export const ManageLibrariesModal: React.FC<Props> = ({ onClose }) => {
         )}
       </ModalLeftPanel>
       <ModalRightPanel>
-        {library ? 'OK' : (
+        {library ? <EditLibraryForm library={library} onDone={() => {
+          refreshLibraries(library.id);
+        }} /> : (
           <CreateLibraryForm onDone={(id) => {
             refreshLibraries(id);
           }} />
