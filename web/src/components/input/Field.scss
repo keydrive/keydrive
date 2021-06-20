@@ -14,8 +14,9 @@
   }
 
   label {
-    width: 120px;
+    width: 100px;
     text-align: right;
+    flex-shrink: 0;
   }
 
   input {

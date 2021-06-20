@@ -21,6 +21,7 @@ export const ChangePasswordModal: React.FC<Props> = ({ onClose }) => {
         setError(undefined);
         if (password !== confirm) {
           setError('Make sure both passwords match');
+          return;
         }
         try {
           await userService.updateCurrentUser({

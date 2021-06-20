@@ -31,7 +31,7 @@ export class UserService {
     return this.api.getAllPages('/users');
   }
 
-  public createUser(user: CreateUser): Promise<void> {
+  public createUser(user: CreateUser): Promise<User> {
     return this.api.jsonPost('/users', user);
   }
 
