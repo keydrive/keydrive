@@ -1,10 +1,37 @@
 .field {
   width: 100%;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 
   &.field-error {
     input:not(:focus) {
       padding: 0 7px;
-      border: 2px inset var(--red);
+      border-color: var(--red);
+      box-shadow: 0 0 2px var(--red);
+    }
+  }
+
+  label {
+    width: 100px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  input {
+    background-color: var(--field-background);
+    color: var(--field-foreground);
+    outline: none;
+    border: 1px solid var(--field-border);
+
+    &:not(:first-child) {
+      margin-left: 12px;
+    }
+
+    &:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 2px var(--primary);
     }
   }
 }

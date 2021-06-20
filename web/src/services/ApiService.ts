@@ -27,7 +27,8 @@ export class ApiService {
 
   private store?: Store;
 
-  public constructor(private readonly injector: Injector) {}
+  public constructor(private readonly injector: Injector) {
+  }
 
   public jsonGet<T>(path: string, params?: Record<string, string>): Promise<T> {
     return this.jsonRequest('GET', path, undefined, params);
@@ -41,9 +42,13 @@ export class ApiService {
     return this.jsonRequest('PATCH', path, body);
   }
 
+  public delete(path: string): Promise<void> {
+    return this.jsonRequest('DELETE', path, undefined);
+  }
+
   public async getAllPages<T>(path: string): Promise<T[]> {
     const firstPage = await this.jsonGet<Page<T>>(path, {
-      limit: MAX_LIMIT.toString(),
+      limit: MAX_LIMIT.toString()
     });
     const totalElements = firstPage.totalElements;
     const totalPages = Math.ceil(totalElements / MAX_LIMIT);
@@ -52,7 +57,7 @@ export class ApiService {
     for (let page = 2; page <= totalPages; page++) {
       const nextPage = await this.jsonGet<Page<T>>(path, {
         page: page.toString(),
-        limit: MAX_LIMIT.toString(),
+        limit: MAX_LIMIT.toString()
       });
       result.push(...nextPage.elements);
     }
@@ -61,14 +66,14 @@ export class ApiService {
   }
 
   private async jsonRequest<T>(
-    method: 'GET' | 'POST' | 'PATCH',
+    method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
     path: string,
     body?: unknown,
     params?: Record<string, string>
   ): Promise<T> {
     const headers: HeadersInit = {
       Authorization: `Bearer ${this.getToken()}`,
-      Accept: 'application/json',
+      Accept: 'application/json'
     };
 
     if (body) {
@@ -77,11 +82,10 @@ export class ApiService {
 
     const paramString = params ? `?${new URLSearchParams(params)}` : '';
 
-    // The path has a trailing slash to prevent the server from having to redirect us there.
-    const response = await fetch(`/api${path}/${paramString}`, {
+    const response = await fetch(`/api${path}${paramString}`, {
       method,
       headers,
-      body: body ? JSON.stringify(body) : undefined,
+      body: body ? JSON.stringify(body) : undefined
     });
     const responseBody = response.status === 204 ? undefined : await response.json();
 

@@ -21,13 +21,15 @@ $top-bar-height: 64px;
   @import '../components/input/Field';
   @import '../components/input/Form';
   @import '../components/input/PasswordInput';
+  @import '../components/input/SelectField';
   @import '../components/Button';
   @import '../components/Columns';
   @import '../components/Layout';
   @import '../components/Modal';
   @import '../components/Panel';
-  @import '../pages/settings/SettingsPage';
-  @import '../pages/settings/UsersPage';
+  @import '../components/SettingButton';
+  @import '../components/Tag';
+  @import '../pages/SettingsPage';
   @import '../pages/LoginPage';
 }
 

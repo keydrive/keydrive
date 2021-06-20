@@ -43,11 +43,14 @@
   // primary
   &.primary {
     background-color: var(--primary);
-    color: var(--inverted-primary);
     border: 1px solid var(--primary);
 
     &:not(:disabled):not(.loading) {
       @include clickable(var(--primary-darkened), var(--primary));
+    }
+
+    .content {
+      color: var(--primary-inverted);
     }
   }
 

@@ -9,7 +9,7 @@ import { PasswordInput } from '../components/input/PasswordInput';
 export const LoginPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const {
-    actions: { loginAsync },
+    actions: { loginAsync }
   } = useService(userStore);
 
   const [username, setUsername] = useState('');
@@ -17,9 +17,9 @@ export const LoginPage: React.FC = () => {
   const [error, setError] = useState(false);
 
   return (
-    <div className="login-page">
-      <div className="login-box">
-        <div className="title">Welcome to ClearCloud</div>
+    <div className='login-page'>
+      <div className='login-box'>
+        <div className='title'>Welcome to ClearCloud</div>
         <Form
           onSubmit={async () => {
             setError(false);
@@ -28,11 +28,11 @@ export const LoginPage: React.FC = () => {
               setError(true);
             }
           }}
-          submitLabel="Log In"
+          submitLabel='Log In'
           error={error && 'Invalid username or password.'}
         >
-          <TextInput id="username" value={username} onChange={setUsername} placeholder="Username" autoFocus />
-          <PasswordInput id="password" value={password} onChange={setPassword} />
+          <TextInput id='username' value={username} onChange={setUsername} placeholder='Username' autoFocus />
+          <PasswordInput id='password' value={password} onChange={setPassword} placeholder='Password' />
         </Form>
       </div>
     </div>

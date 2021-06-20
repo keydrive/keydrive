@@ -17,6 +17,7 @@
   --white: rgb(255, 255, 255);
 
   --primary: var(--blue);
+  --primary-inverted: var(--white);
   --primary-darkened: rgb(60, 158, 199);
   // Light gray 20%
   --zebra-highlight: rgba(150, 151, 154, 0.2);
@@ -29,6 +30,9 @@
     --side-bar-color: var(--off-white);
     --top-bar-color: var(--white);
     --panel-color: var(--white);
+    --field-background: var(--white);
+    --field-foreground: var(--black);
+    --field-border: var(--light-gray);
   }
 
   @mixin dark-theme {
@@ -37,6 +41,9 @@
     --side-bar-color: var(--dark-gray);
     --top-bar-color: var(--deep-gray);
     --panel-color: var(--deep-gray);
+    --field-background: var(--black);
+    --field-foreground: var(--white);
+    --field-border: var(--void-gray);
   }
 
   // we default to light theme

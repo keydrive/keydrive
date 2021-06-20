@@ -30,7 +30,6 @@
     }
 
     .entry {
-      font-weight: 600;
       display: block;
       padding: 6px 12px;
       border-right: transparent solid 4px;
@@ -44,6 +43,7 @@
 
       &.active {
         border-color: var(--primary);
+        font-weight: 600;
       }
     }
   }
@@ -58,10 +58,6 @@
       align-items: center;
       padding: 0 12px;
       border-bottom: 2px solid var(--background);
-    }
-
-    main {
-      padding: 12px;
     }
   }
 }

@@ -28,22 +28,26 @@ export class UserService {
   }
 
   public listUsers(): Promise<User[]> {
-    return this.api.getAllPages('/users');
+    return this.api.getAllPages('/users/');
   }
 
-  public createUser(user: CreateUser): Promise<void> {
-    return this.api.jsonPost('/users', user);
+  public createUser(user: CreateUser): Promise<User> {
+    return this.api.jsonPost('/users/', user);
   }
 
   public getCurrentUser(): Promise<User> {
-    return this.api.jsonGet('/user');
+    return this.api.jsonGet('/user/');
   }
 
   public updateCurrentUser(updates: UpdateUser): Promise<User> {
-    return this.api.jsonPatch('/user', updates);
+    return this.api.jsonPatch('/user/', updates);
   }
 
   public updateUser(id: number, updates: UpdateUser): Promise<User> {
     return this.api.jsonPatch(`/users/${id}`, updates);
+  }
+
+  public deleteUser(id: number): Promise<void> {
+    return this.api.delete(`/users/${id}`);
   }
 }
