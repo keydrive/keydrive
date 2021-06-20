@@ -22,6 +22,60 @@
 
   .modal-content {
     padding: 12px;
+
+    & > .left-panel {
+      background-color: var(--panel-color);
+      width: 35%;
+      border: 1px solid var(--field-border);
+      border-radius: 6px;
+      height: 400px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+
+      & > .items {
+        flex-grow: 1;
+
+        & > .item {
+          padding: 12px;
+          cursor: pointer;
+
+          &:nth-child(even) {
+            background-color: var(--zebra-highlight);
+          }
+
+          &.active {
+            background-color: var(--primary-highlight);
+          }
+        }
+      }
+
+      & > .actions {
+        display: flex;
+        flex-direction: row;
+        background-color: var(--side-bar-color);
+        border-bottom-right-radius: 6px;
+        border-bottom-left-radius: 6px;
+        border-top: 1px solid var(--field-border);
+
+        & > button {
+          border-radius: 0;
+          border: none;
+          border-right: 1px solid var(--field-border);
+          padding: 0 12px;
+
+          i {
+            color: var(--light-gray);
+          }
+
+          &:hover {
+            i {
+              color: var(--foreground);
+            }
+          }
+        }
+      }
+    }
   }
 
   @keyframes fly-in {

@@ -46,4 +46,8 @@ export class UserService {
   public updateUser(id: number, updates: UpdateUser): Promise<User> {
     return this.api.jsonPatch(`/users/${id}`, updates);
   }
+
+  public deleteUser(id: number): Promise<void> {
+    return this.api.delete(`/users/${id}`);
+  }
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Layout } from '../components/Layout';
 import { Panel } from '../components/Panel';
 import { useAppDispatch, useAppSelector } from '../store';
@@ -6,11 +6,11 @@ import { useService } from '../hooks/useService';
 import { userStore } from '../store/user';
 import { Tag } from '../components/Tag';
 import { SettingButton } from '../components/SettingButton';
-import { Modal } from '../components/Modal';
+import { Modal, ModalLeftPanel } from '../components/Modal';
 import { Form } from '../components/input/Form';
 import { TextInput } from '../components/input/TextInput';
 import { PasswordInput } from '../components/input/PasswordInput';
-import { UserService } from '../services/UserService';
+import { User, UserService } from '../services/UserService';
 import { ApiError } from '../services/ApiService';
 
 interface ModalProps {
@@ -96,9 +96,54 @@ const ManageLibrariesModal: React.FC<ModalProps> = ({ onClose }) => (
   </Modal>
 );
 
+const ManageUsersModal: React.FC<ModalProps> = ({ onClose }) => {
+  const userService = useService(UserService);
+  const [users, setUsers] = useState<User[]>([]);
+  const [selectedUser, setSelectedUser] = useState<number>();
+
+  const refreshUsers = useCallback(() => {
+    userService.listUsers().then(users => {
+      setUsers(users);
+      setSelectedUser(users[0].id);
+    });
+  }, [userService]);
+
+  useEffect(() => {
+    refreshUsers();
+  }, [refreshUsers]);
+
+
+  return (
+    <Modal onClose={onClose} title='Users'>
+      <ModalLeftPanel items={users}
+                      selected={selectedUser}
+                      onSelect={setSelectedUser}
+                      onDelete={async (id) => {
+                        setSelectedUser(undefined);
+                        try {
+                          await userService.deleteUser(id);
+                        } catch (e) {
+                          alert(e.message);
+                        }
+                        await refreshUsers();
+                      }}
+                      onAdd={() => {
+                        setSelectedUser(undefined);
+                      }}>
+        {(user: User) => (
+          <>
+            <h4>{user.firstName} {user.lastName}</h4>
+            <span>{user.username}</span>
+          </>
+        )}
+      </ModalLeftPanel>
+    </Modal>
+  );
+};
+
 export const SettingsPage: React.FC = () => {
   const { selectors: { currentUser }, actions: { logout } } = useService(userStore);
-  const [modal, showModal] = useState<'profile' | 'password' | 'libraries'>();
+  const [modal, showModal] = useState<'profile' | 'password' | 'libraries' | 'users'>();
   const user = useAppSelector(currentUser);
   const dispatch = useAppDispatch();
 
@@ -114,6 +159,9 @@ export const SettingsPage: React.FC = () => {
       break;
     case 'libraries':
       Modal = ManageLibrariesModal;
+      break;
+    case 'users':
+      Modal = ManageUsersModal;
       break;
   }
   return (
@@ -144,10 +192,17 @@ export const SettingsPage: React.FC = () => {
           </Panel>
           <div className='settings'>
             <SettingButton icon='user-lock' label='Change Password' onClick={() => showModal('password')} />
-            <SettingButton icon='folder' label='Manage Libraries' onClick={() => showModal('libraries')} />
-            <SettingButton disabled icon='align-justify' label='System Logs' onClick={() => undefined} />
-            <SettingButton disabled icon='sync' label='Check for Updates' onClick={() => undefined} />
-            <SettingButton disabled icon='user-shield' label='Security & Privacy' onClick={() => undefined} />
+            {
+              user?.isAdmin && (
+                <>
+                  <SettingButton icon='users' label='Manage Users' onClick={() => showModal('users')} />
+                  <SettingButton icon='folder' label='Manage Libraries' onClick={() => showModal('libraries')} />
+                  <SettingButton disabled icon='align-justify' label='System Logs' onClick={() => undefined} />
+                  <SettingButton disabled icon='sync' label='Check for Updates' onClick={() => undefined} />
+                  <SettingButton disabled icon='user-shield' label='Security & Privacy' onClick={() => undefined} />
+                </>
+              )
+            }
           </div>
         </main>
       </Layout>
