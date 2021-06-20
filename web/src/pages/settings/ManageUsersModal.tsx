@@ -10,7 +10,9 @@ export interface Props {
   onClose: () => void;
 }
 
-const CreateUserForm: React.FC<{ onDone: (id: number) => void }> = ({ onDone }) => {
+const CreateOrEditUserForm: React.FC<{
+  user?: User; onDone: (id: number) => void
+}> = ({ user, onDone }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [username, setUsername] = useState('');
@@ -19,9 +21,17 @@ const CreateUserForm: React.FC<{ onDone: (id: number) => void }> = ({ onDone }) 
   const [error, setError] = useState<string>();
   const userService = useService(UserService);
 
+  useEffect(() => {
+    if (user) {
+      setFirstName(user.firstName);
+      setLastName(user.lastName);
+      setUsername(user.username);
+    }
+  }, [user]);
+
   return (
     <>
-      <h2>Add User</h2>
+      <h2>{user ? `${user.firstName} ${user.lastName}` : 'Add User'}</h2>
       <Form error={error} onSubmit={async () => {
         setError(undefined);
         if (password !== confirm) {
@@ -29,26 +39,37 @@ const CreateUserForm: React.FC<{ onDone: (id: number) => void }> = ({ onDone }) 
           return;
         }
         try {
-          const user = await userService.createUser({
-            username: username.trim(),
-            firstName: firstName.trim(),
-            lastName: lastName.trim(),
-            password
-          });
-          onDone(user.id);
+          if (user) {
+            const updatedUser = await userService.updateUser(user.id, {
+              username: username.trim(),
+              firstName: firstName.trim(),
+              lastName: lastName.trim(),
+              password: password || undefined
+            });
+            onDone(updatedUser.id);
+          } else {
+            const newUser = await userService.createUser({
+              username: username.trim(),
+              firstName: firstName.trim(),
+              lastName: lastName.trim(),
+              password
+            });
+            onDone(newUser.id);
+          }
         } catch (e) {
-          if(e.error === 'Conflict') {
+          if (e.error === 'Conflict') {
             setError('That username is already taken');
           } else {
             setError(e.message);
           }
         }
-      }} submitLabel='Add'>
+      }} submitLabel={user ? 'Save' : 'Add'}>
         <TextInput autoFocus required label='Username:' value={username} onChange={setUsername} id='username' />
         <TextInput required label='First Name:' value={firstName} onChange={setFirstName} id='firstName' />
         <TextInput required label='Last Name:' value={lastName} onChange={setLastName} id='lastName' />
-        <PasswordInput required label='Password:' value={password} onChange={setPassword} id='password' />
-        <PasswordInput required label='Confirm:' value={confirm} onChange={setConfirm} id='confirm' />
+        <PasswordInput required={!user} label='Password:' value={password} onChange={setPassword} id='password' />
+        <PasswordInput required={!user || !!password} label='Confirm:' value={confirm} onChange={setConfirm}
+                       id='confirm' />
       </Form>
     </>
   );
@@ -96,9 +117,7 @@ export const ManageUsersModal: React.FC<Props> = ({ onClose }) => {
         )}
       </ModalLeftPanel>
       <ModalRightPanel>
-        {user ? (<>
-          <h2>{user?.firstName} {user?.lastName}</h2>
-        </>) : (<CreateUserForm onDone={(id) => refreshUsers(id)} />)}
+        <CreateOrEditUserForm user={user} onDone={(id) => refreshUsers(id)} />
       </ModalRightPanel>
     </Modal>
   );
