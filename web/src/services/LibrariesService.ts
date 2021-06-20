@@ -64,4 +64,12 @@ export class LibrariesService {
   public deleteLibrary(id: number): Promise<void> {
     return this.api.delete(`/libraries/${id}`);
   }
+
+  public async getSubFolders(path: string): Promise<string[]> {
+    const response = await this.api.jsonPost<{ path: string }, { folders: { path: string }[] }>(`/system/browse`, {
+      path
+    });
+
+    return response.folders.map(f => f.path);
+  }
 }
