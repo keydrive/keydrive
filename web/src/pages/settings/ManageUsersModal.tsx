@@ -26,6 +26,12 @@ const CreateOrEditUserForm: React.FC<{
       setFirstName(user.firstName);
       setLastName(user.lastName);
       setUsername(user.username);
+    } else {
+      setFirstName('');
+      setLastName('');
+      setUsername('');
+      setPassword('');
+      setConfirm('');
     }
   }, [user]);
 
@@ -102,7 +108,7 @@ export const ManageUsersModal: React.FC<Props> = ({ onClose }) => {
                         try {
                           await userService.deleteUser(id);
                         } catch (e) {
-                          alert(e.message);
+                          alert(e.description || e.message);
                         }
                         await refreshUsers();
                       }}
