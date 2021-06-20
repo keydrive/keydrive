@@ -41,11 +41,11 @@ export class LibrariesService {
   }
 
   public listLibraries(): Promise<Library[]> {
-    return this.api.getAllPages('/libraries');
+    return this.api.getAllPages('/libraries/');
   }
 
   public createLibrary(library: CreateLibrary): Promise<Library> {
-    return this.api.jsonPost('/libraries', library);
+    return this.api.jsonPost('/libraries/', library);
   }
 
   public updateLibrary(id: number, updates: UpdateLibrary): Promise<Library> {
@@ -59,5 +59,9 @@ export class LibrariesService {
   public async listLibraryDetails(): Promise<LibraryDetails[]> {
     const libraries = await this.listLibraries();
     return Promise.all(libraries.map((l) => this.getLibraryDetails(l.id)));
+  }
+
+  public deleteLibrary(id: number): Promise<void> {
+    return this.api.delete(`/libraries/${id}`);
   }
 }

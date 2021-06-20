@@ -28,19 +28,19 @@ export class UserService {
   }
 
   public listUsers(): Promise<User[]> {
-    return this.api.getAllPages('/users');
+    return this.api.getAllPages('/users/');
   }
 
   public createUser(user: CreateUser): Promise<User> {
-    return this.api.jsonPost('/users', user);
+    return this.api.jsonPost('/users/', user);
   }
 
   public getCurrentUser(): Promise<User> {
-    return this.api.jsonGet('/user');
+    return this.api.jsonGet('/user/');
   }
 
   public updateCurrentUser(updates: UpdateUser): Promise<User> {
-    return this.api.jsonPatch('/user', updates);
+    return this.api.jsonPatch('/user/', updates);
   }
 
   public updateUser(id: number, updates: UpdateUser): Promise<User> {
