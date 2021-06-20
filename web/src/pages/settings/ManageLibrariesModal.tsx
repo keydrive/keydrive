@@ -54,7 +54,7 @@ const EditLibraryForm: React.FC<{ library: LibraryDetails, onDone: () => void }>
       <Form error={error} onSubmit={async () => {
         setError(undefined);
         try {
-          const lib = await librariesService.updateLibrary(library.id, {
+          await librariesService.updateLibrary(library.id, {
             name: name.trim()
           });
           onDone();
