@@ -7,9 +7,10 @@ export interface Props {
   onClose: () => void;
   title: string;
   shouldClose?: boolean;
+  panelled?: boolean;
 }
 
-export const Modal: React.FC<Props> = ({ children, title, onClose, shouldClose }) => {
+export const Modal: React.FC<Props> = ({ children, title, panelled, onClose, shouldClose }) => {
   const [closing, setClosing] = useState(false);
 
   const close = useCallback(() => {
@@ -39,7 +40,7 @@ export const Modal: React.FC<Props> = ({ children, title, onClose, shouldClose }
   return (
     <>
       <div className={classNames('modal-overlay', closing && 'closing')} onClick={close} />
-      <div className={classNames('modal', closing && 'closing')}>
+      <div className={classNames('modal', closing && 'closing', panelled && 'panelled')}>
         <h2>{title}</h2>
         <div className='modal-content'>
           {children}
@@ -68,7 +69,7 @@ export const ModalLeftPanel = <T extends { id: number }>({
                                                          }: LeftPanelProps<T>): ReactElement => {
   const [deleting, setDeleting] = useState(false);
   return (
-    <div className='left-panel'>
+    <div className='left panel'>
       <div className='items'>
         {items?.map(item => (
           <div key={item.id} className={classNames(`item`, item.id === selected && 'active')} onClick={() => {
@@ -92,6 +93,14 @@ export const ModalLeftPanel = <T extends { id: number }>({
           }
         }}><Icon icon='minus' /></Button>
       </div>
+    </div>
+  );
+};
+
+export const ModalRightPanel: React.FC = ({ children }) => {
+  return (
+    <div className='right panel'>
+      {children}
     </div>
   );
 };

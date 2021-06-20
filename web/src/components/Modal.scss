@@ -20,18 +20,29 @@
     padding: 0 12px;
   }
 
+  &.panelled {
+    .modal-content {
+      display: flex;
+      flex-direction: row;
+    }
+  }
+
   .modal-content {
     padding: 12px;
 
-    & > .left-panel {
-      background-color: var(--panel-color);
-      width: 35%;
-      border: 1px solid var(--field-border);
-      border-radius: 6px;
+    & > .panel {
       height: 400px;
       max-height: 80vh;
       display: flex;
       flex-direction: column;
+    }
+
+    & > .left.panel {
+      background-color: var(--panel-color);
+      width: 35%;
+      border: 1px solid var(--field-border);
+      border-radius: 6px;
+      padding: 0;
 
       & > .items {
         flex-grow: 1;
@@ -75,6 +86,11 @@
           }
         }
       }
+    }
+
+    & > .right.panel {
+      background: none;
+      padding: 0 12px;
     }
   }
 

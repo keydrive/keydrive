@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Layout } from '../components/Layout';
 import { Panel } from '../components/Panel';
 import { useAppDispatch, useAppSelector } from '../store';
@@ -6,140 +6,14 @@ import { useService } from '../hooks/useService';
 import { userStore } from '../store/user';
 import { Tag } from '../components/Tag';
 import { SettingButton } from '../components/SettingButton';
-import { Modal, ModalLeftPanel } from '../components/Modal';
-import { Form } from '../components/input/Form';
-import { TextInput } from '../components/input/TextInput';
-import { PasswordInput } from '../components/input/PasswordInput';
-import { User, UserService } from '../services/UserService';
-import { ApiError } from '../services/ApiService';
+import { ChangePasswordModal } from './settings/ChangePasswordModal';
+import { EditProfileModal } from './settings/EditProfileModal';
+import { ManageUsersModal } from './settings/ManageUsersModal';
+import { ManageLibrariesModal } from './settings/ManageLibrariesModal';
 
 interface ModalProps {
   onClose: () => void;
 }
-
-const EditProfileModal: React.FC<ModalProps> = ({ onClose }) => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [username, setUsername] = useState('');
-  const [done, setDone] = useState(false);
-  const [error, setError] = useState<string>();
-  const { selectors: { currentUser }, actions: { updateCurrentUserAsync } } = useService(userStore);
-  const currentUserData = useAppSelector(currentUser);
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    if (currentUserData) {
-      setUsername(currentUserData.username);
-      setFirstName(currentUserData.firstName);
-      setLastName(currentUserData.lastName);
-    }
-  }, [currentUserData]);
-
-  return (
-    <Modal onClose={onClose} shouldClose={done} title='My Profile'>
-      <Form error={error} onSubmit={async () => {
-        setError(undefined);
-        const action = await dispatch(updateCurrentUserAsync({
-          firstName,
-          lastName,
-          username
-        }));
-        switch (action.type) {
-          case updateCurrentUserAsync.fulfilled.type:
-            setDone(true);
-            break;
-          case updateCurrentUserAsync.rejected.type:
-            setError((action.payload as ApiError).error);
-            break;
-        }
-      }} submitLabel='Save'>
-        <TextInput label='Username:' value={username} onChange={setUsername} id='username' />
-        <TextInput label='First Name:' value={firstName} onChange={setFirstName} id='firstName' />
-        <TextInput label='Last Name:' value={lastName} onChange={setLastName} id='lastName' />
-      </Form>
-    </Modal>
-  );
-};
-
-const ChangePasswordModal: React.FC<ModalProps> = ({ onClose }) => {
-  const [password, setPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
-  const [done, setDone] = useState(false);
-  const [error, setError] = useState<string>();
-  const userService = useService(UserService);
-
-  return (<Modal shouldClose={done} onClose={onClose} title='Change Password'>
-      <Form error={error} onSubmit={async () => {
-        setError(undefined);
-        if (password !== confirm) {
-          setError('Make sure both passwords match');
-        }
-        try {
-          await userService.updateCurrentUser({
-            password
-          });
-          setDone(true);
-        } catch (e) {
-          setError(e.message);
-        }
-      }} submitLabel='Change'>
-        <PasswordInput autoFocus required label='Password' value={password} onChange={setPassword} id='password' />
-        <PasswordInput required label='Confirm' value={confirm} onChange={setConfirm} id='confirm' />
-      </Form>
-    </Modal>
-  );
-};
-
-const ManageLibrariesModal: React.FC<ModalProps> = ({ onClose }) => (
-  <Modal onClose={onClose} title='Libraries'>
-    Sup?
-  </Modal>
-);
-
-const ManageUsersModal: React.FC<ModalProps> = ({ onClose }) => {
-  const userService = useService(UserService);
-  const [users, setUsers] = useState<User[]>([]);
-  const [selectedUser, setSelectedUser] = useState<number>();
-
-  const refreshUsers = useCallback(() => {
-    userService.listUsers().then(users => {
-      setUsers(users);
-      setSelectedUser(users[0].id);
-    });
-  }, [userService]);
-
-  useEffect(() => {
-    refreshUsers();
-  }, [refreshUsers]);
-
-
-  return (
-    <Modal onClose={onClose} title='Users'>
-      <ModalLeftPanel items={users}
-                      selected={selectedUser}
-                      onSelect={setSelectedUser}
-                      onDelete={async (id) => {
-                        setSelectedUser(undefined);
-                        try {
-                          await userService.deleteUser(id);
-                        } catch (e) {
-                          alert(e.message);
-                        }
-                        await refreshUsers();
-                      }}
-                      onAdd={() => {
-                        setSelectedUser(undefined);
-                      }}>
-        {(user: User) => (
-          <>
-            <h4>{user.firstName} {user.lastName}</h4>
-            <span>{user.username}</span>
-          </>
-        )}
-      </ModalLeftPanel>
-    </Modal>
-  );
-};
 
 export const SettingsPage: React.FC = () => {
   const { selectors: { currentUser }, actions: { logout } } = useService(userStore);
