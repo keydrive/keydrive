@@ -2,8 +2,8 @@
 .idea/
 
 ## BUILD ARTIFACTS ##
-!build/static.go
-web/build/
+web/build/*
+!web/build/static.go
 node_modules/
 coverage/
 clearcloud

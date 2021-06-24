@@ -1,8 +1,8 @@
 = ClearCloud
 :toc: macro
 
-image:https://img.shields.io/docker/v/chappio/clearcloud[Docker Image Version,link="https://hub.docker.com/r/chappio/clearcloud"]
-image:https://img.shields.io/github/license/ChappIO/clearcloud[License,link="https://github.com/ChappIO/clearcloud/blob/master/LICENSE"]
+image:https://img.shields.io/jenkins/build?jobUrl=https%3A%2F%2Fjenkins.chapp.io%2Fjob%2FTocabi%2Fjob%2Fclearcloud%2Fjob%2Fmain[Jenkins,link="https://jenkins.chapp.io/blue/organizations/jenkins/Tocabi%2Fclearcloud/branches"]
+image:https://img.shields.io/github/license/Tocabi/clearcloud[License,link="https://github.com/Tocabi/clearcloud/blob/main/LICENSE"]
 
 A personal file management and sharing application.
 
@@ -12,7 +12,7 @@ toc::[]
 
 ClearCloud is a self-hosted file management system which allows you to access your files from anywhere, without the privacy concerns of a cloud service.
 
-image:screenshot_files.png[ClearCloud file browser]
+image:docs/screenshot_files.png[ClearCloud file browser]
 
 == Installation
 
