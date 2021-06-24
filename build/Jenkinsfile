@@ -29,11 +29,11 @@ pipeline {
           steps {
             sh 'yarn --cwd web install --frozen-lockfile'
             sh 'yarn --cwd web lint  -f json -o eslint-report.json || true'
-            sh 'yarn --cwd web test --ci --reporters=default --reporters=jest-junit'
+            sh 'yarn --cwd web test --ci --coverage --reporters=default --reporters=jest-junit'
           }
           post {
             always {
-              stash includes: 'web/coverage/lcov.info,eslint-report.json,web/junit.xml', name: 'frontend-tests', useDefaultExcludes: false
+              stash includes: 'web/coverage/lcov.info,web/eslint-report.json,web/junit.xml', name: 'frontend-tests', useDefaultExcludes: false
               junit 'web/junit.xml'
             }
           }
@@ -50,7 +50,7 @@ pipeline {
         sh 'ls -lah'
         script {
           if(env.CHANGE_ID) {
-            sh "sonar-scanner -Dsonar.login='${env.SONAR_LOGIN}' -Dsonar.pullrequest.key=${env.CHANGE_ID}"
+            sh "sonar-scanner -Dsonar.login='$SONAR_LOGIN' -Dsonar.pullrequest.key=${env.CHANGE_ID}"
           }
         }
       }
