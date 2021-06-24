@@ -16,6 +16,12 @@ pipeline {
         stage('Backend') {
           steps {
              sh "go mod download"
+             sh "go test -v ./... 2>&1 | go-junit-report > junit.xml"
+          }
+          post {
+            always {
+              junit 'junit.xml'
+            }
           }
         }
         stage('Frontend') {
