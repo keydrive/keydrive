@@ -25,9 +25,5 @@ ENV POSTGRES_DB=clearcloud
 ENV POSTGRES_USER=clearcloud
 ENV POSTGRES_PASSWORD=clearcloud
 ENV POSTGRES_PORT=5432
-ENV POSTGRES_SSL=disable
 
-ENTRYPOINT [ \
-    "/app/clearcloud", \
-    "--postgres-dsn=host='${POSTGRES_HOST}' user='${POSTGRES_USER}' password='${POSTGRES_PASSWORD}' dbname='${POSTGRES_DB}' port='${POSTGRES_PORT}' sslmode=${POSTGRES_SSL}" \
-]
+ENTRYPOINT ["/app/clearcloud"]
