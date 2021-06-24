@@ -10,11 +10,13 @@ toc::[]
 
 == Introduction
 
+ClearCloud is a self-hosted file management system which allows you to access your files from anywhere, without the privacy concerns of a cloud service.
+
 image:screenshot_files.png[ClearCloud file browser]
 
 == Installation
 
-The project is not ready yet. We provide no installation.
+The project is currently in a very early beta stage, and as such we provide no installation instructions yet. Check back soon!
 
 == Development
 
@@ -27,7 +29,7 @@ To set up your development environment you need the following software:
 - Node v16
 - Yarn v1.22
 
-=== Running a Development Instance
+=== Running Locally
 
 To start the backend:
 
