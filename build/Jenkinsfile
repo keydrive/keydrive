@@ -3,7 +3,7 @@ pipeline {
     dockerfile {
       dir 'build'
       label 'docker'
-      args '-v /var/run/docker.sock:/var/run/docker.sock'
+      args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
     }
   }
   environment {
@@ -11,22 +11,48 @@ pipeline {
     CGO_ENABLE = "0"
   }
   stages {
-    stage('Build') {
-      steps {
-        // Build the frontend
-        sh 'yarn --cwd web install --frozen-lockfile'
-        sh 'yarn --cwd web build'
-        // Build the backend
-        sh "mkdir -p build/output"
-        sh "go mod download"
-        sh "GOOS=linux GOARCH=amd64 go build -o build/output/clearcloud-linux-amd64 ./main.go"
-        sh "GOOS=windows GOARCH=amd64 go build -o build/output/clearcloud-windows-amd64.exe ./main.go"
-        sh "GOOS=darwin GOARCH=amd64 go build -o build/output/clearcloud-darwin-amd64 ./main.go"
-        sh "GOOS=freebsd GOARCH=amd64 go build -o build/output/clearcloud-freebsd-amd64 ./main.go"
+    stage('Test') {
+      parallel {
+        stage('Backend') {
+          steps {
+             sh "go mod download"
+             sh "go test -v -coverprofile=coverage.out ./... 2>&1 | go-junit-report > junit.xml"
+          }
+          post {
+            always {
+              stash includes: 'coverage.out,junit.xml', name: 'backend-tests', useDefaultExcludes: false
+              junit 'junit.xml'
+            }
+          }
+        }
+        stage('Frontend') {
+          steps {
+            sh 'yarn --cwd web install --frozen-lockfile'
+            sh 'yarn --cwd web lint  -f json -o eslint-report.json || true'
+            sh 'yarn --cwd web test --ci --coverage --reporters=default --reporters=jest-junit'
+          }
+          post {
+            always {
+              stash includes: 'web/coverage/lcov.info,web/eslint-report.json,web/junit.xml', name: 'frontend-tests', useDefaultExcludes: false
+              junit 'web/junit.xml'
+            }
+          }
+        }
       }
-      post {
-        always {
-          archiveArtifacts artifacts: 'build/output/*', fingerprint: true
+    }
+    stage('Sonar') {
+      environment {
+        SONAR_LOGIN = credentials('SONAR_LOGIN')
+      }
+      steps {
+        unstash 'frontend-tests'
+        unstash 'backend-tests'
+        script {
+          if(env.CHANGE_ID) {
+            sh "sonar-scanner -Dsonar.login='$SONAR_LOGIN' -Dsonar.pullrequest.key=${env.CHANGE_ID} -Dsonar.pullrequest.branch='${env.CHANGE_BRANCH}' -Dsonar.pullrequest.base='${env.CHANGE_TARGET}'"
+          } else {
+            sh "sonar-scanner -Dsonar.login='$SONAR_LOGIN' -Dsonar.branch.name='${env.BRANCH_NAME}'"
+          }
         }
       }
     }
