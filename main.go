@@ -10,6 +10,7 @@ import (
 	"clearcloud/web/build"
 	"errors"
 	"flag"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -18,10 +19,32 @@ import (
 	glog "gorm.io/gorm/logger"
 	"net/http"
 	"os"
+	"strconv"
+	"strings"
 )
 
-var listenAddr = flag.String("listen", ":5555", "The address on which to listen for http requests.")
-var postgresDsn = flag.String("postgres-dsn", "host=localhost user=postgres password=postgres dbname=postgres port=5432 sslmode=disable", "The connection string to connect to the postgres database.")
+func stringOpt(name string, value string, description string) *string {
+	if envValue, ok := os.LookupEnv(strings.ToUpper(strings.ReplaceAll(name, "-", "_"))); ok {
+		value = envValue
+	}
+	return flag.String(name, value, description)
+}
+
+func intOpt(name string, value int, description string) *int {
+	if envValue, ok := os.LookupEnv(strings.ToUpper(strings.ReplaceAll(name, "-", "_"))); ok {
+		if intVal, err := strconv.Atoi(envValue); err != nil {
+			value = intVal
+		}
+	}
+	return flag.Int(name, value, description)
+}
+
+var listenAddr = stringOpt("listen", ":5555", "The address on which to listen for http requests.")
+var postgresHost = stringOpt("postgres-host", "localhost", "The psql host")
+var postgresUser = stringOpt("postgres-user", "postgres", "The psql username")
+var postgresPassword = stringOpt("postgres-password", "postgres", "The psql password")
+var postgresDb = stringOpt("postgres-db", "postgres", "The psql database name")
+var postgresPort = intOpt("postgres-port", 5432, "The psql host port")
 var log = logger.NewConsole(logger.LevelDebug, "MAIN")
 
 // @title ClearCloud API
@@ -37,7 +60,15 @@ func main() {
 	flag.Parse()
 
 	log.Info("connecting to database...")
-	db, err := gorm.Open(postgres.Open(*postgresDsn), &gorm.Config{
+	postgresDsn := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%d sslmode=disable",
+		*postgresHost,
+		*postgresUser,
+		*postgresPassword,
+		*postgresDb,
+		*postgresPort,
+	)
+	db, err := gorm.Open(postgres.Open(postgresDsn), &gorm.Config{
 		Logger: glog.New(log, glog.Config{
 			LogLevel: glog.Info,
 		}),
