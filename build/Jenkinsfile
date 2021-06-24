@@ -58,7 +58,7 @@ pipeline {
     }
     stage('Build') {
       parallel {
-        stage('Docker') {
+        stage('Docker linux/amd64') {
           environment {
             SONAR_LOGIN = credentials('SONAR_LOGIN')
             DOCKER_LOGIN = credentials('DOCKER_LOGIN')
@@ -67,7 +67,7 @@ pipeline {
             sh 'yarn --cwd web install --frozen-lockfile'
             sh 'yarn --cwd web build'
             sh 'docker login --username $DOCKER_LOGIN_USR --password "$DOCKER_LOGIN_PSW"'
-            sh 'docker buildx build --platform linux/arm/v7,linux/arm/v5,linux/arm64/v8,linux/amd64 --tag tocabi/clearcloud:$BRANCH_NAME --push .'
+            sh 'docker build --tag tocabi/clearcloud:$BRANCH_NAME --push .'
           }
         }
       }
