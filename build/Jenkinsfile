@@ -2,7 +2,7 @@ pipeline {
   agent {
     dockerfile {
       dir 'build'
-      label 'docker'
+      label 'docker && amd64'
       args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
     }
   }
