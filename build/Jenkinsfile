@@ -20,6 +20,7 @@ pipeline {
           }
           post {
             always {
+              stash includes: 'coverage.out,junit.xml', name: 'backend-tests', useDefaultExcludes: false
               junit 'junit.xml'
             }
           }
@@ -32,6 +33,7 @@ pipeline {
           }
           post {
             always {
+              stash includes: 'web/coverage/lcov.info,eslint-report.json,web/junit.xml', name: 'frontend-tests', useDefaultExcludes: false
               junit 'web/junit.xml'
             }
           }
@@ -43,6 +45,8 @@ pipeline {
         SONAR_LOGIN = credentials('SONAR_LOGIN')
       }
       steps {
+        unstash 'frontend-tests'
+        unstash 'backend-tests'
         sh 'ls -lah'
         script {
           if(env.CHANGE_ID) {
