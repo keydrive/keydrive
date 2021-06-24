@@ -61,6 +61,7 @@ pipeline {
         stage('Docker') {
           environment {
             SONAR_LOGIN = credentials('SONAR_LOGIN')
+            DOCKER_LOGIN = credentials('DOCKER_LOGIN')
           }
           steps {
             sh 'yarn --cwd web install --frozen-lockfile'
