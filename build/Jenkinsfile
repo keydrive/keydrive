@@ -43,7 +43,12 @@ pipeline {
         SONAR_LOGIN = credentials('SONAR_LOGIN')
       }
       steps {
-        sh 'sonar-scanner -Dsonar.login="$SONAR_LOGIN"'
+        sh 'ls -lah'
+        script {
+          if(env.CHANGE_ID) {
+            sh "sonar-scanner -Dsonar.login='${env.SONAR_LOGIN}' -Dsonar.pullrequest.key=${env.CHANGE_ID}"
+          }
+        }
       }
     }
   }
