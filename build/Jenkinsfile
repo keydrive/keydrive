@@ -11,22 +11,23 @@ pipeline {
     CGO_ENABLE = "0"
   }
   stages {
-    stage('Build') {
-      steps {
-        // Build the frontend
-        sh 'yarn --cwd web install --frozen-lockfile'
-        sh 'yarn --cwd web build'
-        // Build the backend
-        sh "mkdir -p build/output"
-        sh "go mod download"
-        sh "GOOS=linux GOARCH=amd64 go build -o build/output/clearcloud-linux-amd64 ./main.go"
-        sh "GOOS=windows GOARCH=amd64 go build -o build/output/clearcloud-windows-amd64.exe ./main.go"
-        sh "GOOS=darwin GOARCH=amd64 go build -o build/output/clearcloud-darwin-amd64 ./main.go"
-        sh "GOOS=freebsd GOARCH=amd64 go build -o build/output/clearcloud-freebsd-amd64 ./main.go"
-      }
-      post {
-        always {
-          archiveArtifacts artifacts: 'build/output/*', fingerprint: true
+    stage('Test') {
+      parallel {
+        stage('Backend') {
+          steps {
+             sh "go mod download"
+          }
+        }
+        stage('Frontend') {
+          steps {
+            sh 'yarn --cwd web install --frozen-lockfile'
+            sh 'yarn --cwd web test --ci --reporters=default --reporters=jest-junit'
+          }
+          post {
+            always {
+              junit 'web/junit.xml'
+            }
+          }
         }
       }
     }
