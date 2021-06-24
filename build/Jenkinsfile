@@ -16,7 +16,7 @@ pipeline {
         stage('Backend') {
           steps {
              sh "go mod download"
-             sh "go test -v ./... 2>&1 | go-junit-report > junit.xml"
+             sh "go test -v -coverprofile=coverage.out ./... 2>&1 | go-junit-report > junit.xml"
           }
           post {
             always {
@@ -27,6 +27,7 @@ pipeline {
         stage('Frontend') {
           steps {
             sh 'yarn --cwd web install --frozen-lockfile'
+            sh 'yarn --cwd web lint  -f json -o eslint-report.json || true'
             sh 'yarn --cwd web test --ci --reporters=default --reporters=jest-junit'
           }
           post {
