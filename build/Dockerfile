@@ -16,7 +16,8 @@ RUN curl -fsSLO https://download.docker.com/linux/static/stable/x86_64/docker-${
 
 # Golang
 RUN apt-get install -y golang-1.16
-ENV PATH="$PATH:/usr/lib/go-1.16/bin"
+ENV PATH="$PATH:/usr/lib/go-1.16/bin:/root/go/bin"
+RUN go get -u github.com/jstemmer/go-junit-report
 
 # Node
 RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash
