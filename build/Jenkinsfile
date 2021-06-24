@@ -47,7 +47,7 @@ pipeline {
       steps {
         unstash 'frontend-tests'
         unstash 'backend-tests'
-        sh 'ls -lah'
+        sh 'env'
         script {
           if(env.CHANGE_ID) {
             sh "sonar-scanner -Dsonar.login='$SONAR_LOGIN' -Dsonar.pullrequest.key=${env.CHANGE_ID}"
