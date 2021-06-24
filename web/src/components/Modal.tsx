@@ -41,10 +41,13 @@ export const Modal: React.FC<Props> = ({ children, title, panelled, onClose, sho
     <>
       <div className={classNames('modal-overlay', closing && 'closing')} onClick={close} />
       <div className={classNames('modal', closing && 'closing', panelled && 'panelled')}>
-        <h2>{title} <Button onClick={close}><Icon icon='times' /></Button></h2>
-        <div className='modal-content'>
-          {children}
-        </div>
+        <h2>
+          {title}{' '}
+          <Button onClick={close}>
+            <Icon icon="times" />
+          </Button>
+        </h2>
+        <div className="modal-content">{children}</div>
       </div>
     </>
   );
@@ -60,47 +63,55 @@ export interface LeftPanelProps<T extends { id: number }> {
 }
 
 export const ModalLeftPanel = <T extends { id: number }>({
-                                                           items,
-                                                           children,
-                                                           onSelect,
-                                                           selected,
-                                                           onAdd,
-                                                           onDelete
-                                                         }: LeftPanelProps<T>): ReactElement => {
+  items,
+  children,
+  onSelect,
+  selected,
+  onAdd,
+  onDelete,
+}: LeftPanelProps<T>): ReactElement => {
   const [deleting, setDeleting] = useState(false);
   return (
-    <div className='left panel'>
-      <div className='items'>
-        {items?.map(item => (
-          <div key={item.id} className={classNames(`item`, item.id === selected && 'active')} onClick={() => {
-            onSelect(item.id);
-          }}>
+    <div className="left panel">
+      <div className="items">
+        {items?.map((item) => (
+          <div
+            key={item.id}
+            className={classNames(`item`, item.id === selected && 'active')}
+            onClick={() => {
+              onSelect(item.id);
+            }}
+          >
             {children(item)}
           </div>
         ))}
       </div>
-      <div className='actions'>
-        <Button onClick={onAdd}><Icon icon='plus' /></Button>
-        <Button loading={deleting} disabled={!selected} onClick={async () => {
-          if (!selected) {
-            return;
-          }
-          try {
-            setDeleting(true);
-            await onDelete(selected);
-          } finally {
-            setDeleting(false);
-          }
-        }}><Icon icon='minus' /></Button>
+      <div className="actions">
+        <Button onClick={onAdd}>
+          <Icon icon="plus" />
+        </Button>
+        <Button
+          loading={deleting}
+          disabled={!selected}
+          onClick={async () => {
+            if (!selected) {
+              return;
+            }
+            try {
+              setDeleting(true);
+              await onDelete(selected);
+            } finally {
+              setDeleting(false);
+            }
+          }}
+        >
+          <Icon icon="minus" />
+        </Button>
       </div>
     </div>
   );
 };
 
 export const ModalRightPanel: React.FC = ({ children }) => {
-  return (
-    <div className='right panel'>
-      {children}
-    </div>
-  );
+  return <div className="right panel">{children}</div>;
 };

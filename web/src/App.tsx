@@ -13,7 +13,7 @@ import { SettingsPage } from './pages/SettingsPage';
 export const App: React.FC = () => {
   const {
     selectors,
-    actions: { getCurrentUserAsync }
+    actions: { getCurrentUserAsync },
   } = useService(userStore);
   const token = useAppSelector(selectors.token);
   const currentUser = useAppSelector(selectors.currentUser);
@@ -28,26 +28,26 @@ export const App: React.FC = () => {
   if (!token) {
     return (
       <Switch>
-        <Route exact path='/auth/login' component={LoginPage} />
-        <Redirect to='/auth/login' />
+        <Route exact path="/auth/login" component={LoginPage} />
+        <Redirect to="/auth/login" />
       </Switch>
     );
   }
 
   if (!currentUser) {
     return (
-      <div className='app-loader'>
-        <Icon icon='spinner' size={2} pulse />
+      <div className="app-loader">
+        <Icon icon="spinner" size={2} pulse />
       </div>
     );
   }
 
   return (
     <Switch>
-      <Route exact path='/' component={FilesPage} />
-      <Route exact path='/logout' component={LogoutPage} />
-      <Route exact path='/settings' component={SettingsPage} />
-      <Redirect to='/' />
+      <Route exact path="/" component={FilesPage} />
+      <Route exact path="/logout" component={LogoutPage} />
+      <Route exact path="/settings" component={SettingsPage} />
+      <Redirect to="/" />
     </Switch>
   );
 };

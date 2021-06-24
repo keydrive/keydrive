@@ -67,9 +67,9 @@ export class LibrariesService {
 
   public async getSubFolders(path: string): Promise<string[]> {
     const response = await this.api.jsonPost<{ path: string }, { folders: { path: string }[] }>(`/system/browse`, {
-      path
+      path,
     });
 
-    return response.folders.map(f => f.path);
+    return response.folders.map((f) => f.path);
   }
 }

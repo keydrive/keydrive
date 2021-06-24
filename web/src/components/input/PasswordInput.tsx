@@ -10,7 +10,7 @@ export const PasswordInput: React.FC<Props> = ({ label, onChange, ...props }) =>
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <Field className='password-input' id={props.id} error={props.error}>
+    <Field className="password-input" id={props.id} error={props.error}>
       {label && <label htmlFor={props.id}>{label}</label>}
       <input type={showPassword ? 'text' : 'password'} onChange={(e) => onChange(e.currentTarget.value)} {...props} />
       <Button tabIndex={-1} square onClick={() => setShowPassword(!showPassword)}>
