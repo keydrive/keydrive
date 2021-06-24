@@ -20,8 +20,8 @@ image:docs/screenshot_files.png[ClearCloud file browser]
 
 Docker is probably the easiest way to install ClearCloud.
 
-1. [Install Docker](https://docs.docker.com/engine/install/)
-2. Find your desired version on [Docker Hub](https://hub.docker.com/r/tocabi/clearcloud/tags?page=1&ordering=last_updated)
+1. https://docs.docker.com/engine/install[Install Docker]
+2. Find your desired version on https://hub.docker.com/r/tocabi/clearcloud/tags?page=1&ordering=last_updated[Docker Hub]
 3. Create a `docker-compose.yml` file:
 +
 [source,yml]
