@@ -38,8 +38,11 @@ pipeline {
       }
     }
     stage('Sonar') {
+      environment {
+        SONAR_LOGIN = credentials('SONAR_LOGIN')
+      }
       steps {
-        sh 'ls -lah'
+        sh 'sonar-scanner -Dsonar.login="$SONAR_LOGIN"'
       }
     }
   }
