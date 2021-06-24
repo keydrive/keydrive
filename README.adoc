@@ -1,7 +1,16 @@
 = ClearCloud
-:toc:
+:toc: macro
 
-This repository contains the source code of the ClearCloud project: a personal file management and sharing application.
+image:https://img.shields.io/docker/v/chappio/clearcloud[Docker Image Version,link="https://hub.docker.com/r/chappio/clearcloud"]
+image:https://img.shields.io/github/license/ChappIO/clearcloud[License,link="https://github.com/ChappIO/clearcloud/blob/master/LICENSE"]
+
+A personal file management and sharing application.
+
+toc::[]
+
+== Introduction
+
+image:screenshot_files.png[ClearCloud file browser]
 
 == Installation
 
@@ -9,12 +18,16 @@ The project is not ready yet. We provide no installation.
 
 == Development
 
-To set up your development environment, install the following software:
+=== Prerequisites
 
-1. Docker v20
-2. Go v1.16
-3. Node v16
-4. Yarn v1.22
+To set up your development environment you need the following software:
+
+- Docker v20
+- Go v1.16
+- Node v16
+- Yarn v1.22
+
+=== Running a Development Instance
 
 To start the backend:
 
@@ -34,7 +47,7 @@ swag init
 go run ./main.go
 ----
 
-You can now access the api docs at http://localhost:5555/docs/index.html
+You can now access the API docs at http://localhost:5555/docs/index.html
 
 To start the frontend:
 
