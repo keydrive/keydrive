@@ -3,7 +3,7 @@ pipeline {
     dockerfile {
       dir 'build'
       label 'docker'
-      args '-v /var/run/docker.sock:/var/run/docker.sock'
+      args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
     }
   }
   environment {
