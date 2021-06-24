@@ -13,7 +13,7 @@ toc::[]
 
 ClearCloud is a self-hosted file management system which allows you to access your files from anywhere, without the privacy concerns of a cloud service.
 
-image:screenshot_files.png[ClearCloud file browser]
+image:docs/screenshot_files.png[ClearCloud file browser]
 
 == Installation
 
