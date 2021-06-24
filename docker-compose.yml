@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   database:
     image: library/postgres:13
