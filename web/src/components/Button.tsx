@@ -12,14 +12,7 @@ export interface Props {
   tabIndex?: number;
 }
 
-export const Button: React.FC<Props> = ({
-  children,
-  square,
-  type = 'button',
-  loading,
-  primary,
-  ...props
-}) => (
+export const Button: React.FC<Props> = ({ children, square, type = 'button', loading, primary, ...props }) => (
   <button
     className={classNames('button', square && 'square', loading && 'loading', primary && 'primary')}
     type={type}

@@ -14,9 +14,9 @@ export interface Props extends FieldProps {
 export const SelectField: React.FC<Props> = ({ onSelect, options, error, className, label, ...props }) => (
   <Field id={props.id} error={error} className={className}>
     {label && <label htmlFor={props.id}>{label}</label>}
-    <div className='select-field'>
-      {options.map(option => (
-        <div className='option' key={option} onClick={() => onSelect(option)}>
+    <div className="select-field">
+      {options.map((option) => (
+        <div className="option" key={option} onClick={() => onSelect(option)}>
           {option}
         </div>
       ))}
