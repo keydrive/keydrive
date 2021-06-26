@@ -43,7 +43,7 @@ pipeline {
           post {
             always {
               stash includes: 'web/coverage/lcov.info,web/eslint-report.json,web/junit.xml', name: 'frontend-tests', useDefaultExcludes: false
-              stash includes: 'web/build', name: 'frontend-build', useDefaultExcludes: false
+              stash includes: 'web/build/**', name: 'frontend-build', useDefaultExcludes: false
               junit 'web/junit.xml'
             }
           }
