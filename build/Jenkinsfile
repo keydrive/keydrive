@@ -3,7 +3,7 @@ pipeline {
     dockerfile {
       dir 'build'
       label 'docker && amd64 && buildx-multi'
-      args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
+      args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache -v /usr/bin/docker:/usr/bin/docker'
     }
   }
   environment {
