@@ -1,8 +1,13 @@
+
+def binary(os, arch, folder) {
+  sh "CGO_ENABLE=0 GOOS=${os} GOARCH=${arch} go build -o ${folder}/clearcloud ./main.go"
+  sh "chmod +x ${folder}/clearcloud"
+}
+
 pipeline {
   agent none
   environment {
     DOCKER_TAG = "tocabi/clearcloud:${env.BRANCH_NAME}"
-    CGO_ENABLE = "0"
   }
   stages {
     stage('Build Frontend') {
@@ -31,6 +36,9 @@ pipeline {
           args '-v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
         }
       }
+      environment {
+        CGO_ENABLE = "0"
+      }
       steps {
         unstash 'frontend-build'
 
@@ -42,13 +50,8 @@ pipeline {
         stash includes: 'coverage.out,junit.xml', name: 'backend-tests', useDefaultExcludes: false
 
         // Build the binaries
-        sh "mkdir -p linux/arm64 linux/amd64 linux/arm/v7"
-        sh "GOOS=linux GOARCH=amd64 go build -o linux/amd64/clearcloud ./main.go"
-        sh "chmod +x linux/amd64/clearcloud"
-        sh "GOOS=linux GOARCH=arm64 go build -o linux/arm64/clearcloud ./main.go"
-        sh "chmod +x linux/arm64/clearcloud"
-        sh "GOOS=linux GOARCH=arm go build -o linux/arm/v7/clearcloud ./main.go"
-        sh "chmod +x linux/arm/v7/clearcloud"
+        binary("linux", "amd64", "linux/amd64")
+        binary("linux", "arm", "linux/arm/v7")
         stash includes: 'linux/**', name: 'binaries', useDefaultExcludes: false
       }
     }
@@ -86,7 +89,7 @@ pipeline {
           steps {
             unstash 'binaries'
             sh 'docker login --username $DOCKER_LOGIN_USR --password "$DOCKER_LOGIN_PSW"'
-            sh 'docker build --no-cache --platform linux/amd64,linux/arm64,linux/arm/v7 --push -t $DOCKER_TAG .'
+            sh 'docker build --no-cache --platform linux/amd64,linux/arm/v7 --push -t $DOCKER_TAG .'
           }
         }
       }
