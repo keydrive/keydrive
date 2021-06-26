@@ -1,23 +1,28 @@
 pipeline {
-  agent none
+  agent {
+    dockerfile {
+      dir 'build'
+      label 'docker && amd64 && buildx-multi'
+      args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
+    }
+  }
   environment {
     DOCKER_TAG = "tocabi/clearcloud:${env.BRANCH_NAME}"
     CGO_ENABLE = "0"
   }
   stages {
-    stage('Test') {
+    stage('Build') {
       parallel {
         stage('Backend') {
-          agent {
-            dockerfile {
-              dir 'build'
-              label 'docker && amd64 && buildx-multi'
-              args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
-            }
-          }
           steps {
-             sh "go mod download"
-             sh "go test -v -coverprofile=coverage.out ./... 2>&1 | go-junit-report > junit.xml"
+           sh "go mod download"
+           sh "go test -v -coverprofile=coverage.out ./... 2>&1 | go-junit-report > junit.xml"
+           sh "GOOS=linux GOARCH=amd64 go build -o clearcloud ./main.go"
+           sh "chmod +x clearcloud"
+           stash includes: 'clearcloud', name: 'binary-linux-amd64', useDefaultExcludes: false
+           sh "GOOS=linux GOARCH=arm64 go build -o clearcloud ./main.go"
+           sh "chmod +x clearcloud"
+           stash includes: 'clearcloud', name: 'binary-linux-arm64', useDefaultExcludes: false
           }
           post {
             always {
@@ -27,39 +32,25 @@ pipeline {
           }
         }
         stage('Frontend') {
-          agent {
-            dockerfile {
-              dir 'build'
-              label 'docker && amd64 && buildx-multi'
-              args '-v /var/run/docker.sock:/var/run/docker.sock'
-            }
-          }
           steps {
             sh 'yarn --cwd web install --frozen-lockfile'
             sh 'yarn --cwd web lint  -f json -o eslint-report.json || true'
             sh 'yarn --cwd web test --ci --coverage --reporters=default --reporters=jest-junit'
+            stash includes: 'web/coverage/lcov.info,web/eslint-report.json,web/junit.xml', name: 'frontend-tests', useDefaultExcludes: false
             sh 'yarn --cwd web build'
+            stash includes: 'web/build/**', name: 'frontend-build', useDefaultExcludes: false
           }
           post {
             always {
-              stash includes: 'web/coverage/lcov.info,web/eslint-report.json,web/junit.xml', name: 'frontend-tests', useDefaultExcludes: false
-              stash includes: 'web/build/**', name: 'frontend-build', useDefaultExcludes: false
               junit 'web/junit.xml'
             }
           }
         }
       }
     }
-    stage('Build') {
+    stage('Post Build') {
       parallel {
         stage('Sonar') {
-          agent {
-            dockerfile {
-              dir 'build'
-              label 'docker && amd64 && buildx-multi'
-              args '-v /var/run/docker.sock:/var/run/docker.sock'
-            }
-          }
           environment {
             SONAR_LOGIN = credentials('SONAR_LOGIN')
           }
@@ -75,17 +66,17 @@ pipeline {
             }
           }
         }
-        stage('Docker') {
-          agent {
-            label 'docker && amd64 && buildx-multi'
-          }
+        stage('Docker Distribution') {
           environment {
             DOCKER_LOGIN = credentials('DOCKER_LOGIN')
           }
           steps {
-            unstash 'frontend-build'
             sh 'docker login --username $DOCKER_LOGIN_USR --password "$DOCKER_LOGIN_PSW"'
-            sh 'docker buildx --builder multi build --platform linux/amd64,linux/arm64 --push -t $DOCKER_TAG .'
+            unstash 'frontend-build'
+            unstash 'binary-linux-amd64'
+            sh 'docker build --platform linux/amd64 --load -t $DOCKER_TAG-amd64 .'
+            unstash 'binary-linux-arm64'
+            sh 'docker build --platform linux/amd64 --load -t $DOCKER_TAG-arm64 .'
           }
         }
       }
