@@ -1,4 +1,5 @@
 pipeline {
+  agent none
   environment {
     DOCKER_TAG = "tocabi/clearcloud:${env.BRANCH_NAME}"
     CGO_ENABLE = "0"
