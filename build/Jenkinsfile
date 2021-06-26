@@ -38,6 +38,7 @@ pipeline {
             sh 'yarn --cwd web install --frozen-lockfile'
             sh 'yarn --cwd web lint  -f json -o eslint-report.json || true'
             sh 'yarn --cwd web test --ci --coverage --reporters=default --reporters=jest-junit'
+            sh 'yarn --cwd web build'
           }
           post {
             always {
