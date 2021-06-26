@@ -70,11 +70,7 @@ pipeline {
         }
         stage('Docker linux/arm') {
           agent {
-            dockerfile {
-              dir 'build'
-              label 'docker && arm'
-              args '-v /var/run/docker.sock:/var/run/docker.sock'
-            }
+            label 'docker && arm'
           }
           environment {
             DOCKER_LOGIN = credentials('DOCKER_LOGIN')
