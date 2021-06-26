@@ -1,11 +1,4 @@
 pipeline {
-  agent {
-    dockerfile {
-      dir 'build'
-      label 'docker && amd64 && buildx-multi'
-      args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache -v /root/.docker/buildx/instances:/root/.docker/buildx/instances'
-    }
-  }
   environment {
     DOCKER_TAG = "tocabi/clearcloud:${env.BRANCH_NAME}"
     CGO_ENABLE = "0"
@@ -14,6 +7,13 @@ pipeline {
     stage('Test') {
       parallel {
         stage('Backend') {
+          agent {
+            dockerfile {
+              dir 'build'
+              label 'docker && amd64 && buildx-multi'
+              args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
+            }
+          }
           steps {
              sh "go mod download"
              sh "go test -v -coverprofile=coverage.out ./... 2>&1 | go-junit-report > junit.xml"
@@ -26,6 +26,13 @@ pipeline {
           }
         }
         stage('Frontend') {
+          agent {
+            dockerfile {
+              dir 'build'
+              label 'docker && amd64 && buildx-multi'
+              args '-v /var/run/docker.sock:/var/run/docker.sock'
+            }
+          }
           steps {
             sh 'yarn --cwd web install --frozen-lockfile'
             sh 'yarn --cwd web lint  -f json -o eslint-report.json || true'
@@ -34,6 +41,7 @@ pipeline {
           post {
             always {
               stash includes: 'web/coverage/lcov.info,web/eslint-report.json,web/junit.xml', name: 'frontend-tests', useDefaultExcludes: false
+              stash includes: 'web/build', name: 'frontend-build', useDefaultExcludes: false
               junit 'web/junit.xml'
             }
           }
@@ -43,6 +51,13 @@ pipeline {
     stage('Build') {
       parallel {
         stage('Sonar') {
+          agent {
+            dockerfile {
+              dir 'build'
+              label 'docker && amd64 && buildx-multi'
+              args '-v /var/run/docker.sock:/var/run/docker.sock'
+            }
+          }
           environment {
             SONAR_LOGIN = credentials('SONAR_LOGIN')
           }
@@ -59,12 +74,14 @@ pipeline {
           }
         }
         stage('Docker') {
+          agent {
+            label 'docker && amd64 && buildx-multi'
+          }
           environment {
             DOCKER_LOGIN = credentials('DOCKER_LOGIN')
           }
           steps {
-            sh 'yarn --cwd web install --frozen-lockfile'
-            sh 'yarn --cwd web build'
+            unstash 'frontend-build'
             sh 'docker login --username $DOCKER_LOGIN_USR --password "$DOCKER_LOGIN_PSW"'
             sh 'docker buildx --builder multi build --platform linux/amd64,linux/arm64 --push -t $DOCKER_TAG .'
           }
