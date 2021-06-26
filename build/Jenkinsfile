@@ -31,7 +31,7 @@ pipeline {
             dockerfile {
               dir 'build'
               label 'docker && amd64'
-              args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
+              args '-v /var/run/docker.sock:/var/run/docker.sock'
             }
           }
           steps {
@@ -48,37 +48,36 @@ pipeline {
         }
       }
     }
-    stage('Sonar') {
-      agent {
-        dockerfile {
-          dir 'build'
-          label 'docker && amd64'
-          args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
-        }
-      }
-      environment {
-        SONAR_LOGIN = credentials('SONAR_LOGIN')
-      }
-      steps {
-        unstash 'frontend-tests'
-        unstash 'backend-tests'
-        script {
-          if(env.CHANGE_ID) {
-            sh 'sonar-scanner -Dsonar.login="$SONAR_LOGIN" -Dsonar.pullrequest.key="$CHANGE_ID" -Dsonar.pullrequest.branch="$CHANGE_BRANCH" -Dsonar.pullrequest.base="$CHANGE_TARGET"'
-          } else {
-            sh 'sonar-scanner -Dsonar.login="$SONAR_LOGIN" -Dsonar.branch.name="$BRANCH_NAME"'
-          }
-        }
-      }
-    }
     stage('Build') {
       parallel {
+        stage('Sonar') {
+          agent {
+            dockerfile {
+              dir 'build'
+              label 'docker && amd64'
+            }
+          }
+          environment {
+            SONAR_LOGIN = credentials('SONAR_LOGIN')
+          }
+          steps {
+            unstash 'frontend-tests'
+            unstash 'backend-tests'
+            script {
+              if(env.CHANGE_ID) {
+                sh 'sonar-scanner -Dsonar.login="$SONAR_LOGIN" -Dsonar.pullrequest.key="$CHANGE_ID" -Dsonar.pullrequest.branch="$CHANGE_BRANCH" -Dsonar.pullrequest.base="$CHANGE_TARGET"'
+              } else {
+                sh 'sonar-scanner -Dsonar.login="$SONAR_LOGIN" -Dsonar.branch.name="$BRANCH_NAME"'
+              }
+            }
+          }
+        }
         stage('Docker linux/amd64') {
           agent {
             dockerfile {
               dir 'build'
               label 'docker && amd64'
-              args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
+              args '-v /var/run/docker.sock:/var/run/docker.sock'
             }
           }
           environment {
