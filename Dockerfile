@@ -2,6 +2,7 @@ FROM golang:1.16 as build
 
 ENV GO111MODULE=on
 ENV CGO_ENABLED=0
+ENV GOMAXPROCS=1
 
 WORKDIR /app
 ADD docs ./docs
