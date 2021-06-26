@@ -5,15 +5,15 @@ pipeline {
   }
   stages {
     stage('Test') {
-      agent {
-        dockerfile {
-          dir 'build'
-          label 'docker && amd64'
-          args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
-        }
-      }
       parallel {
         stage('Backend') {
+          agent {
+            dockerfile {
+              dir 'build'
+              label 'docker && amd64'
+              args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
+            }
+          }
           steps {
              sh "go mod download"
              sh "go test -v -coverprofile=coverage.out ./... 2>&1 | go-junit-report > junit.xml"
@@ -26,6 +26,13 @@ pipeline {
           }
         }
         stage('Frontend') {
+          agent {
+            dockerfile {
+              dir 'build'
+              label 'docker && amd64'
+              args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
+            }
+          }
           steps {
             sh 'yarn --cwd web install --frozen-lockfile'
             sh 'yarn --cwd web lint  -f json -o eslint-report.json || true'
