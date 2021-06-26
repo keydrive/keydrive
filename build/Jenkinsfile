@@ -17,7 +17,7 @@ pipeline {
         sh 'yarn --cwd web install --frozen-lockfile'
         sh 'yarn --cwd web lint  -f json -o eslint-report.json || true'
         sh 'yarn --cwd web test --ci --coverage --reporters=default --reporters=jest-junit'
-        junit 'web/junit.xml'
+        junit checksName: 'React Tests', testResults:  'web/junit.xml'
         stash includes: 'web/coverage/lcov.info,web/eslint-report.json,web/junit.xml', name: 'frontend-tests', useDefaultExcludes: false
         sh 'yarn --cwd web build'
         stash includes: 'web/build/**', name: 'frontend-build', useDefaultExcludes: false
@@ -38,7 +38,7 @@ pipeline {
         sh "go mod download"
         sh 'go get -u github.com/jstemmer/go-junit-report'
         sh "go test -v -coverprofile=coverage.out ./... 2>&1 | go-junit-report > junit.xml"
-        junit 'junit.xml'
+        junit checksName: 'Go Tests', testResults: 'junit.xml'
         stash includes: 'coverage.out,junit.xml', name: 'backend-tests', useDefaultExcludes: false
 
         // Build the binaries
