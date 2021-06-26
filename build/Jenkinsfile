@@ -32,9 +32,12 @@ pipeline {
       agent {
         docker {
           label 'docker && linux && amd64'
-          image 'golang:1.16'
+          image 'golang:1.16-alpine'
           args '-v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
         }
+      }
+      environment {
+        CGO_ENABLE = "0"
       }
       steps {
         unstash 'frontend-build'
