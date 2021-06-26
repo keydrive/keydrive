@@ -76,7 +76,6 @@ pipeline {
             DOCKER_LOGIN = credentials('DOCKER_LOGIN')
           }
           steps {
-            sh 'docker login --username $DOCKER_LOGIN_USR --password "$DOCKER_LOGIN_PSW"'
             sh 'docker build --tag tocabi/clearcloud:$BRANCH_NAME .'
             sh 'docker push tocabi/clearcloud:$BRANCH_NAME'
           }
