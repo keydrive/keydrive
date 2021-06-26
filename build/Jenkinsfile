@@ -1,6 +1,6 @@
 
 def binary(goopts, folder) {
-  sh "CGO_ENABLE=0 ${goopts} go build -o ${folder}/clearcloud ./main.go"
+  sh "${goopts} go build -o ${folder}/clearcloud ./main.go"
   sh "chmod +x ${folder}/clearcloud"
 }
 
