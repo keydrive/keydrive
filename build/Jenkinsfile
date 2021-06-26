@@ -33,7 +33,7 @@ pipeline {
       agent {
         docker {
           label 'docker && linux && amd64'
-          image 'golang:1.16-alpine'
+          image 'golang:1.16'
           args '-v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
         }
       }
