@@ -43,11 +43,11 @@ pipeline {
 
         // Build the binaries
         sh "mkdir -p linux/arm64 linux/amd64 linux/arm/v7"
-        sh "GOOS=linux GOARCH=amd64 go build -o linux/arm64/clearcloud ./main.go"
+        sh "GOOS=linux GOARCH=amd64 go build -o linux/amd64/clearcloud ./main.go"
         sh "chmod +x linux/amd64/clearcloud"
-        sh "GOOS=linux GOARCH=arm64 go build -o linux/amd64/clearcloud ./main.go"
+        sh "GOOS=linux GOARCH=arm64 go build -o linux/arm64/clearcloud ./main.go"
         sh "chmod +x linux/arm64/clearcloud"
-        sh "GOOS=linux GOARCH=arm go build -o linux/amd64/clearcloud ./main.go"
+        sh "GOOS=linux GOARCH=arm go build -o linux/arm/v7/clearcloud ./main.go"
         sh "chmod +x linux/arm/v7/clearcloud"
         stash includes: 'linux/**', name: 'binaries', useDefaultExcludes: false
       }
