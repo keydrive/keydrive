@@ -84,7 +84,7 @@ pipeline {
           steps {
             unstash 'binaries'
             sh 'docker login --username $DOCKER_LOGIN_USR --password "$DOCKER_LOGIN_PSW"'
-            sh 'docker build --platform linux/amd64,linux/arm64 --push -t $DOCKER_TAG-amd64 .'
+            sh 'docker build --platform linux/amd64,linux/arm64 --push -t $DOCKER_TAG .'
           }
         }
       }
