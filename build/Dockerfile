@@ -7,10 +7,6 @@ RUN apt-get update && \
   apt-get update && \
   apt-get install -y curl unzip
 
-# Docker
-ARG DOCKER_VERSION=20.10.7
-RUN curl -sSL get.docker.com | bash
-
 # Golang
 RUN apt-get install -y golang-1.16
 ENV PATH="$PATH:/usr/lib/go-1.16/bin:/root/go/bin"
