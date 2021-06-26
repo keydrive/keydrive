@@ -72,9 +72,6 @@ pipeline {
           agent {
             label 'docker && arm'
           }
-          environment {
-            DOCKER_LOGIN = credentials('DOCKER_LOGIN')
-          }
           steps {
             sh 'docker build --tag tocabi/clearcloud:$BRANCH_NAME .'
             sh 'docker push tocabi/clearcloud:$BRANCH_NAME'
