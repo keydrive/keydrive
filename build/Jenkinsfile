@@ -6,64 +6,45 @@ pipeline {
   }
   stages {
     stage('Build') {
-      parallel {
-        stage('Backend') {
-          agent {
-            dockerfile {
-              dir 'build'
-              label 'docker && amd64 && buildx-multi'
-              args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
-            }
-          }
-          steps {
-           sh "go mod download"
-           sh "go test -v -coverprofile=coverage.out ./... 2>&1 | go-junit-report > junit.xml"
-           sh "mkdir -p linux/arm64 linux/amd64"
-           sh "GOOS=linux GOARCH=amd64 go build -o linux/arm64/clearcloud ./main.go"
-           sh "chmod +x linux/arm64/clearcloud"
-           sh "GOOS=linux GOARCH=arm64 go build -o linux/amd64/clearcloud ./main.go"
-           sh "chmod +x linux/amd64/clearcloud"
-           stash includes: 'linux/**', name: 'binaries', useDefaultExcludes: false
-          }
-          post {
-            always {
-              stash includes: 'coverage.out,junit.xml', name: 'backend-tests', useDefaultExcludes: false
-              junit 'junit.xml'
-            }
-          }
+      agent {
+        dockerfile {
+          dir 'build'
+          label 'docker && amd64 && buildx-multi'
+          args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
         }
-        stage('Frontend') {
-          agent {
-            dockerfile {
-              dir 'build'
-              label 'docker && amd64 && buildx-multi'
-              args '-v /var/run/docker.sock:/var/run/docker.sock'
-            }
-          }
-          steps {
-            sh 'yarn --cwd web install --frozen-lockfile'
-            sh 'yarn --cwd web lint  -f json -o eslint-report.json || true'
-            sh 'yarn --cwd web test --ci --coverage --reporters=default --reporters=jest-junit'
-            stash includes: 'web/coverage/lcov.info,web/eslint-report.json,web/junit.xml', name: 'frontend-tests', useDefaultExcludes: false
-            sh 'yarn --cwd web build'
-            stash includes: 'web/build/**', name: 'frontend-build', useDefaultExcludes: false
-          }
-          post {
-            always {
-              junit 'web/junit.xml'
-            }
-          }
-        }
+      }
+      steps {
+        // Test the frontend
+        sh 'yarn --cwd web install --frozen-lockfile'
+        sh 'yarn --cwd web lint  -f json -o eslint-report.json || true'
+        sh 'yarn --cwd web test --ci --coverage --reporters=default --reporters=jest-junit'
+        junit 'junit.xml'
+        junit 'web/junit.xml'
+        stash includes: 'web/coverage/lcov.info,web/eslint-report.json,web/junit.xml', name: 'frontend-tests', useDefaultExcludes: false
+
+        // Test the frontend
+        sh 'yarn --cwd web build'
+
+        // Test the backend
+        sh "go mod download"
+        sh "go test -v -coverprofile=coverage.out ./... 2>&1 | go-junit-report > junit.xml"
+        stash includes: 'coverage.out,junit.xml', name: 'backend-tests', useDefaultExcludes: false
+
+        // Build the binaries
+        sh "mkdir -p linux/arm64 linux/amd64"
+        sh "GOOS=linux GOARCH=amd64 go build -o linux/arm64/clearcloud ./main.go"
+        sh "chmod +x linux/arm64/clearcloud"
+        sh "GOOS=linux GOARCH=arm64 go build -o linux/amd64/clearcloud ./main.go"
+        sh "chmod +x linux/amd64/clearcloud"
+        stash includes: 'linux/**', name: 'binaries', useDefaultExcludes: false
       }
     }
     stage('Post Build') {
       parallel {
         stage('Sonar') {
           agent {
-            dockerfile {
-              dir 'build'
-              label 'docker && amd64 && buildx-multi'
-              args '-v /var/run/docker.sock:/var/run/docker.sock'
+            docker {
+              image 'sonarsource/sonar-scanner-cli'
             }
           }
           environment {

@@ -5,7 +5,7 @@ RUN apt-get update && \
   apt-get install -y software-properties-common && \
   add-apt-repository ppa:longsleep/golang-backports && \
   apt-get update && \
-  apt-get install -y curl unzip
+  apt-get install -y curl
 
 # Golang
 RUN apt-get install -y golang-1.16
@@ -20,9 +20,3 @@ RUN apt-get install -y nodejs
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 RUN apt-get update && apt-get install -y yarn
-
-# Sonar
-RUN curl -o sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
-RUN unzip sonar-scanner.zip
-RUN mv sonar-scanner-* /opt/sonar-scanner
-ENV PATH="$PATH:/opt/sonar-scanner/bin"
