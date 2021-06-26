@@ -18,12 +18,12 @@ pipeline {
           steps {
            sh "go mod download"
            sh "go test -v -coverprofile=coverage.out ./... 2>&1 | go-junit-report > junit.xml"
-           sh "GOOS=linux GOARCH=amd64 go build -o clearcloud ./main.go"
-           sh "chmod +x clearcloud"
-           stash includes: 'clearcloud', name: 'binary-linux-amd64', useDefaultExcludes: false
-           sh "GOOS=linux GOARCH=arm64 go build -o clearcloud ./main.go"
-           sh "chmod +x clearcloud"
-           stash includes: 'clearcloud', name: 'binary-linux-arm64', useDefaultExcludes: false
+           sh "mkdir -p linux/arm64 linux/amd64"
+           sh "GOOS=linux GOARCH=amd64 go build -o linux/arm64/clearcloud ./main.go"
+           sh "chmod +x linux/arm64/clearcloud"
+           sh "GOOS=linux GOARCH=arm64 go build -o linux/amd64/clearcloud ./main.go"
+           sh "chmod +x linux/amd64/clearcloud"
+           stash includes: 'linux/**', name: 'binaries', useDefaultExcludes: false
           }
           post {
             always {
@@ -87,17 +87,11 @@ pipeline {
           }
           environment {
             DOCKER_LOGIN = credentials('DOCKER_LOGIN')
-            DOCKER_CLI_EXPERIMENTAL = "true"
           }
           steps {
+            unstash 'binaries'
             sh 'docker login --username $DOCKER_LOGIN_USR --password "$DOCKER_LOGIN_PSW"'
-            unstash 'frontend-build'
-            unstash 'binary-linux-amd64'
-            sh 'docker build --platform linux/amd64 --load -t $DOCKER_TAG-amd64 .'
-            unstash 'binary-linux-arm64'
-            sh 'docker build --platform linux/amd64 --load -t $DOCKER_TAG-arm64 .'
-            sh 'docker manifest create $DOCKER_TAG $DOCKER_TAG-amd64 $DOCKER_TAG-arm64'
-            sh 'docker push $DOCKER_TAG'
+            sh 'docker build --platform linux/amd64,linux/arm64 --push -t $DOCKER_TAG-amd64 .'
           }
         }
       }
