@@ -1,6 +1,6 @@
 
-def binary(os, arch, folder) {
-  sh "CGO_ENABLE=0 GOOS=${os} GOARCH=${arch} go build -o ${folder}/clearcloud ./main.go"
+def binary(goopts, folder) {
+  sh "CGO_ENABLE=0 ${goopts} go build -o ${folder}/clearcloud ./main.go"
   sh "chmod +x ${folder}/clearcloud"
 }
 
@@ -49,8 +49,8 @@ pipeline {
         stash includes: 'coverage.out,junit.xml', name: 'backend-tests', useDefaultExcludes: false
 
         // Build the binaries
-        binary("linux", "amd64", "linux/amd64")
-        binary("linux", "arm", "linux/arm/v7")
+        binary("linux", "linux/amd64")
+        binary("linux", "GOARCH=arm GOARM=7", "linux/arm/v7")
         stash includes: 'linux/**', name: 'binaries', useDefaultExcludes: false
       }
     }
