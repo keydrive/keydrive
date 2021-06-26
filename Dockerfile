@@ -10,6 +10,6 @@ ENV POSTGRES_USER=clearcloud
 ENV POSTGRES_PASSWORD=clearcloud
 ENV POSTGRES_PORT=5432
 
-ADD ${TARGETPLATFORM}/clearcloud /app/clearcloud
+ADD ${TARGETPLATFORM}/clearcloud /clearcloud
 
-ENTRYPOINT ["/app/clearcloud"]
+ENTRYPOINT ["/clearcloud"]
