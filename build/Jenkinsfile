@@ -5,12 +5,11 @@ pipeline {
     CGO_ENABLE = "0"
   }
   stages {
-    stage('Build') {
+    stage('Build Frontend') {
       agent {
-        dockerfile {
-          dir 'build'
-          label 'docker && amd64 && buildx-multi'
-          args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
+        docker {
+          label 'docker && linux && amd64'
+          image 'node:16'
         }
       }
       steps {
@@ -21,9 +20,20 @@ pipeline {
         junit 'junit.xml'
         junit 'web/junit.xml'
         stash includes: 'web/coverage/lcov.info,web/eslint-report.json,web/junit.xml', name: 'frontend-tests', useDefaultExcludes: false
-
-        // Test the frontend
         sh 'yarn --cwd web build'
+        stash includes: 'web/build/**', name: 'frontend-build', useDefaultExcludes: false
+      }
+    }
+    stage('Build Binaries') {
+      agent {
+        docker {
+          label 'docker && linux && amd64'
+          image 'golang:1.16'
+          args '-v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
+        }
+      }
+      steps {
+        unstash 'frontend-build'
 
         // Test the backend
         sh "go mod download"
@@ -44,6 +54,7 @@ pipeline {
         stage('Sonar') {
           agent {
             docker {
+              label 'docker && linux && amd64'
               image 'sonarsource/sonar-scanner-cli'
             }
           }
