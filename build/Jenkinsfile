@@ -70,6 +70,25 @@ pipeline {
             sh 'docker push tocabi/clearcloud:$BRANCH_NAME'
           }
         }
+        stage('Docker linux/arm') {
+          agent {
+            dockerfile {
+              dir 'build'
+              label 'docker && arm'
+              args '-v /var/run/docker.sock:/var/run/docker.sock'
+            }
+          }
+          environment {
+            DOCKER_LOGIN = credentials('DOCKER_LOGIN')
+          }
+          steps {
+            sh 'yarn --cwd web install --frozen-lockfile'
+            sh 'yarn --cwd web build'
+            sh 'docker login --username $DOCKER_LOGIN_USR --password "$DOCKER_LOGIN_PSW"'
+            sh 'docker build --tag tocabi/clearcloud:$BRANCH_NAME .'
+            sh 'docker push tocabi/clearcloud:$BRANCH_NAME'
+          }
+        }
       }
     }
   }
