@@ -1,6 +1,7 @@
 pipeline {
+  agent none
   environment {
-    DOCKER_TAG = "chappio/clearcloud:${env.BUILD_TAG}"
+    DOCKER_TAG = "tocabi/clearcloud:${env.BRANCH_NAME}"
     CGO_ENABLE = "0"
   }
   stages {
@@ -85,8 +86,8 @@ pipeline {
           }
           steps {
             sh 'docker login --username $DOCKER_LOGIN_USR --password "$DOCKER_LOGIN_PSW"'
-            sh 'docker build --tag tocabi/clearcloud:$BRANCH_NAME .'
-            sh 'docker push tocabi/clearcloud:$BRANCH_NAME'
+            sh 'docker build --tag $DOCKER_TAG .'
+            sh 'docker push $DOCKER_TAG'
           }
         }
         stage('Docker linux/arm') {
@@ -94,8 +95,8 @@ pipeline {
             label 'docker && arm'
           }
           steps {
-            sh 'docker build --tag tocabi/clearcloud:$BRANCH_NAME .'
-            sh 'docker push tocabi/clearcloud:$BRANCH_NAME'
+            sh 'docker build --tag $DOCKER_TAG .'
+            sh 'docker push $DOCKER_TAG'
           }
         }
       }
