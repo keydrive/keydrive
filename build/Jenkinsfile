@@ -1,11 +1,5 @@
 pipeline {
-  agent {
-    dockerfile {
-      dir 'build'
-      label 'docker && amd64 && buildx-multi'
-      args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache -v /usr/bin/docker:/usr/bin/docker'
-    }
-  }
+  agent none
   environment {
     DOCKER_TAG = "tocabi/clearcloud:${env.BRANCH_NAME}"
     CGO_ENABLE = "0"
@@ -14,6 +8,13 @@ pipeline {
     stage('Build') {
       parallel {
         stage('Backend') {
+          agent {
+            dockerfile {
+              dir 'build'
+              label 'docker && amd64 && buildx-multi'
+              args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
+            }
+          }
           steps {
            sh "go mod download"
            sh "go test -v -coverprofile=coverage.out ./... 2>&1 | go-junit-report > junit.xml"
@@ -32,6 +33,13 @@ pipeline {
           }
         }
         stage('Frontend') {
+          agent {
+            dockerfile {
+              dir 'build'
+              label 'docker && amd64 && buildx-multi'
+              args '-v /var/run/docker.sock:/var/run/docker.sock'
+            }
+          }
           steps {
             sh 'yarn --cwd web install --frozen-lockfile'
             sh 'yarn --cwd web lint  -f json -o eslint-report.json || true'
@@ -51,6 +59,13 @@ pipeline {
     stage('Post Build') {
       parallel {
         stage('Sonar') {
+          agent {
+            dockerfile {
+              dir 'build'
+              label 'docker && amd64 && buildx-multi'
+              args '-v /var/run/docker.sock:/var/run/docker.sock'
+            }
+          }
           environment {
             SONAR_LOGIN = credentials('SONAR_LOGIN')
           }
@@ -67,6 +82,9 @@ pipeline {
           }
         }
         stage('Docker Distribution') {
+          agent {
+            label 'docker && amd64'
+          }
           environment {
             DOCKER_LOGIN = credentials('DOCKER_LOGIN')
             DOCKER_CLI_EXPERIMENTAL = "true"
