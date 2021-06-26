@@ -49,9 +49,9 @@ pipeline {
         unstash 'backend-tests'
         script {
           if(env.CHANGE_ID) {
-            sh "sonar-scanner -Dsonar.login='$SONAR_LOGIN' -Dsonar.pullrequest.key=${env.CHANGE_ID} -Dsonar.pullrequest.branch='${env.CHANGE_BRANCH}' -Dsonar.pullrequest.base='${env.CHANGE_TARGET}'"
+            sh 'sonar-scanner -Dsonar.login="$SONAR_LOGIN" -Dsonar.pullrequest.key="$CHANGE_ID" -Dsonar.pullrequest.branch="$CHANGE_BRANCH" -Dsonar.pullrequest.base="$CHANGE_TARGET"'
           } else {
-            sh "sonar-scanner -Dsonar.login='$SONAR_LOGIN' -Dsonar.branch.name='${env.BRANCH_NAME}'"
+            sh 'sonar-scanner -Dsonar.login="$SONAR_LOGIN" -Dsonar.branch.name="$BRANCH_NAME"'
           }
         }
       }
