@@ -69,6 +69,7 @@ pipeline {
         stage('Docker Distribution') {
           environment {
             DOCKER_LOGIN = credentials('DOCKER_LOGIN')
+            DOCKER_CLI_EXPERIMENTAL = "true"
           }
           steps {
             sh 'docker login --username $DOCKER_LOGIN_USR --password "$DOCKER_LOGIN_PSW"'
@@ -77,6 +78,8 @@ pipeline {
             sh 'docker build --platform linux/amd64 --load -t $DOCKER_TAG-amd64 .'
             unstash 'binary-linux-arm64'
             sh 'docker build --platform linux/amd64 --load -t $DOCKER_TAG-arm64 .'
+            sh 'docker manifest create $DOCKER_TAG $DOCKER_TAG-amd64 $DOCKER_TAG-arm64'
+            sh 'docker push $DOCKER_TAG'
           }
         }
       }
