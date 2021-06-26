@@ -64,7 +64,7 @@ pipeline {
           }
           steps {
             sh 'docker login --username $DOCKER_LOGIN_USR --password "$DOCKER_LOGIN_PSW"'
-            sh 'docker buildx --builder multi build --platform linux/amd64,linux/arm64,linux/arm/v7 --push -t $DOCKER_TAG .'
+            sh 'docker buildx --builder multi build --platform linux/amd64,linux/arm64 --push -t $DOCKER_TAG .'
           }
         }
       }
