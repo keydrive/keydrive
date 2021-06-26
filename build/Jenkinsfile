@@ -1,17 +1,17 @@
 pipeline {
-  agent {
-    dockerfile {
-      dir 'build'
-      label 'docker && amd64'
-      args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
-    }
-  }
   environment {
     DOCKER_TAG = "chappio/clearcloud:${env.BUILD_TAG}"
     CGO_ENABLE = "0"
   }
   stages {
     stage('Test') {
+      agent {
+        dockerfile {
+          dir 'build'
+          label 'docker && amd64'
+          args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
+        }
+      }
       parallel {
         stage('Backend') {
           steps {
@@ -41,6 +41,13 @@ pipeline {
       }
     }
     stage('Sonar') {
+      agent {
+        dockerfile {
+          dir 'build'
+          label 'docker && amd64'
+          args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
+        }
+      }
       environment {
         SONAR_LOGIN = credentials('SONAR_LOGIN')
       }
@@ -59,6 +66,13 @@ pipeline {
     stage('Build') {
       parallel {
         stage('Docker linux/amd64') {
+          agent {
+            dockerfile {
+              dir 'build'
+              label 'docker && amd64'
+              args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
+            }
+          }
           environment {
             DOCKER_LOGIN = credentials('DOCKER_LOGIN')
           }
