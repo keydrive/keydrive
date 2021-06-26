@@ -37,6 +37,7 @@ pipeline {
         // Test the backend
         sh "go mod download"
         sh "go test -v -coverprofile=coverage.out ./... 2>&1 | go-junit-report > junit.xml"
+        junit 'junit.xml'
         stash includes: 'coverage.out,junit.xml', name: 'backend-tests', useDefaultExcludes: false
 
         // Build the binaries
