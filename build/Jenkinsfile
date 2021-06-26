@@ -36,9 +36,6 @@ pipeline {
           args '-v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
         }
       }
-      environment {
-        CGO_ENABLE = "0"
-      }
       steps {
         unstash 'frontend-build'
 
