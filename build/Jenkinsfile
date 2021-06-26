@@ -2,7 +2,7 @@ pipeline {
   agent {
     dockerfile {
       dir 'build'
-      label 'docker && amd64'
+      label 'docker && amd64 && buildx-multi'
       args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
     }
   }
@@ -64,7 +64,7 @@ pipeline {
           }
           steps {
             sh 'docker login --username $DOCKER_LOGIN_USR --password "$DOCKER_LOGIN_PSW"'
-            sh 'docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 --push -t $DOCKER_TAG .'
+            sh 'docker buildx --builder multi build --platform linux/amd64,linux/arm64,linux/arm/v7 --push -t $DOCKER_TAG .'
           }
         }
       }
