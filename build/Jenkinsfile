@@ -49,8 +49,8 @@ pipeline {
         stash includes: 'coverage.out,junit.xml', name: 'backend-tests', useDefaultExcludes: false
 
         // Build the binaries
-        binary("linux", "", "linux/amd64")
-        binary("linux", "GOARCH=arm GOARM=7", "linux/arm/v7")
+        binary("", "linux/amd64")
+        binary("GOARCH=arm GOARM=7", "linux/arm/v7")
         stash includes: 'linux/**', name: 'binaries', useDefaultExcludes: false
       }
     }
