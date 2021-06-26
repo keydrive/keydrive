@@ -1,5 +1,11 @@
 pipeline {
-  agent none
+  agent {
+    dockerfile {
+      dir 'build'
+      label 'docker && amd64'
+      args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
+    }
+  }
   environment {
     DOCKER_TAG = "tocabi/clearcloud:${env.BRANCH_NAME}"
     CGO_ENABLE = "0"
@@ -8,13 +14,6 @@ pipeline {
     stage('Test') {
       parallel {
         stage('Backend') {
-          agent {
-            dockerfile {
-              dir 'build'
-              label 'docker && amd64'
-              args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
-            }
-          }
           steps {
              sh "go mod download"
              sh "go test -v -coverprofile=coverage.out ./... 2>&1 | go-junit-report > junit.xml"
@@ -27,13 +26,6 @@ pipeline {
           }
         }
         stage('Frontend') {
-          agent {
-            dockerfile {
-              dir 'build'
-              label 'docker && amd64'
-              args '-v /var/run/docker.sock:/var/run/docker.sock'
-            }
-          }
           steps {
             sh 'yarn --cwd web install --frozen-lockfile'
             sh 'yarn --cwd web lint  -f json -o eslint-report.json || true'
@@ -51,12 +43,6 @@ pipeline {
     stage('Build') {
       parallel {
         stage('Sonar') {
-          agent {
-            dockerfile {
-              dir 'build'
-              label 'docker && amd64'
-            }
-          }
           environment {
             SONAR_LOGIN = credentials('SONAR_LOGIN')
           }
@@ -72,30 +58,13 @@ pipeline {
             }
           }
         }
-        stage('Docker linux/amd64') {
-          agent {
-            dockerfile {
-              dir 'build'
-              label 'docker && amd64'
-              args '-v /var/run/docker.sock:/var/run/docker.sock'
-            }
-          }
+        stage('Docker') {
           environment {
             DOCKER_LOGIN = credentials('DOCKER_LOGIN')
           }
           steps {
             sh 'docker login --username $DOCKER_LOGIN_USR --password "$DOCKER_LOGIN_PSW"'
-            sh 'docker build --tag $DOCKER_TAG .'
-            sh 'docker push $DOCKER_TAG'
-          }
-        }
-        stage('Docker linux/arm') {
-          agent {
-            label 'docker && arm'
-          }
-          steps {
-            sh 'docker build --tag $DOCKER_TAG .'
-            sh 'docker push $DOCKER_TAG'
+            sh 'docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 --push -t $DOCKER_TAG .'
           }
         }
       }
