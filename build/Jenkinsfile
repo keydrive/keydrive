@@ -51,7 +51,7 @@ pipeline {
 
         // Build the binaries
         binary("", "linux/amd64")
-        binary("GOARCH=arm GOARM=7", "linux/arm/v7")
+        binary("GOARCH=arm GOARM=6", "linux/arm/v6")
         stash includes: 'linux/**', name: 'docker-binaries', useDefaultExcludes: false
       }
     }
@@ -89,7 +89,7 @@ pipeline {
           steps {
             unstash 'docker-binaries'
             sh 'docker login --username $DOCKER_LOGIN_USR --password "$DOCKER_LOGIN_PSW"'
-            sh 'docker build --no-cache --platform linux/amd64,linux/arm/v7 --push -t $DOCKER_TAG .'
+            sh 'docker build --no-cache --platform linux/amd64,linux/arm/v6 --push -t $DOCKER_TAG .'
           }
         }
       }
