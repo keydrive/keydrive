@@ -32,6 +32,8 @@ services:
   clearcloud:
     image: tocabi/clearcloud:{latest-release}
     restart: unless-stopped
+    networks:
+      - default
     ports:
       # Here we expose clearcloud on port 5555
       - 5555:5555
@@ -46,6 +48,8 @@ services:
   database:
     image: library/postgres:13
     restart: unless-stopped
+    networks:
+      - default
     volumes:
       # We need to store the database files somewhere
       - /path/to/your/database/storage:/var/lib/postgresql/data
@@ -53,6 +57,9 @@ services:
       POSTGRES_DB: clearcloud
       POSTGRES_USER: clearcloud
       POSTGRES_PASSWORD: "ChangeMeToASecurePassword"
+      
+networks:
+  default:
 ----
 3. Run `docker compose up -d` to start the stack
 4. Open clearcloud on http://localhost:5555 or http://<your-server-ip>:5555
