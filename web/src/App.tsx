@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import { Icon } from './components/Icon';
 import { LogoutPage } from './pages/LogoutPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { HomePage } from './pages/HomePage';
 
 export const App: React.FC = () => {
   const {
@@ -44,7 +45,8 @@ export const App: React.FC = () => {
 
   return (
     <Switch>
-      <Route exact path="/" component={FilesPage} />
+      <Route exact path="/" component={HomePage} />
+      <Route exact path="/files/:library/:path*" component={FilesPage} />
       <Route exact path="/logout" component={LogoutPage} />
       <Route exact path="/settings" component={SettingsPage} />
       <Redirect to="/" />

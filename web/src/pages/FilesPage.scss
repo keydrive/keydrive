@@ -1,0 +1,15 @@
+.files-page {
+  table {
+    user-select: none;
+
+    colgroup {
+      .modified {
+        width: 240px;
+      }
+
+      .category {
+        width: 120px;
+      }
+    }
+  }
+}
