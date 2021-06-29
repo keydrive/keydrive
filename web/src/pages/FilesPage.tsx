@@ -14,7 +14,10 @@ export const FilesPage: React.FC = () => {
   const [entries, setEntries] = useState<Entry[]>();
 
   useEffect(() => {
-    libraries.getEntries(library, path || '').then(setEntries);
+    libraries
+      .getEntries(library, path || '')
+      .then(sortEntries)
+      .then(setEntries);
   }, [libraries, library, path]);
 
   return (
@@ -75,4 +78,16 @@ function resolvePath(parent: string, name: string): string {
     result = `${result}/`;
   }
   return `${result}${name}`;
+}
+
+function sortEntries(entries: Entry[]): Entry[] {
+  return entries.sort((a, b) => {
+    if (a.category === 'Folder' && b.category !== 'Folder') {
+      return -1;
+    }
+    if (a.category !== 'Folder' && b.category === 'Folder') {
+      return 1;
+    }
+    return a.name.localeCompare(b.name);
+  });
 }
