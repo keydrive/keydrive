@@ -5,6 +5,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import { useService } from '../hooks/useService';
 import { Entry, LibrariesService } from '../services/LibrariesService';
 import { Icon } from '../components/Icon';
+import { FileIcon } from '../components/FileIcon';
 
 export const FilesPage: React.FC = () => {
   const libraries = useService(LibrariesService);
@@ -48,7 +49,7 @@ export const FilesPage: React.FC = () => {
                     }}
                   >
                     <td className="icon">
-                      <Icon icon="folder" />
+                      {category === 'Folder' ? <Icon icon="folder" /> : <FileIcon name={name} />}
                     </td>
                     <td>{name}</td>
                     <td>{new Date(modified).toLocaleString()}</td>
