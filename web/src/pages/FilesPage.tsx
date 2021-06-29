@@ -33,8 +33,8 @@ export const FilesPage: React.FC = () => {
                 <tr>
                   <th />
                   <th>Name</th>
-                  <th>Modified</th>
-                  <th>Category</th>
+                  <th>Last Modified</th>
+                  <th>Kind</th>
                 </tr>
               </thead>
               <tbody>

@@ -50,6 +50,7 @@
 
   .content-wrapper {
     flex: 1 1 auto;
+    height: 100vh;
 
     .top-bar {
       height: $top-bar-height;
@@ -58,6 +59,11 @@
       align-items: center;
       padding: 0 12px;
       border-bottom: 2px solid var(--background);
+    }
+
+    main {
+      height: calc(100% - #{$top-bar-height});
+      overflow-y: auto;
     }
   }
 }
