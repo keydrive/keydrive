@@ -42,7 +42,7 @@ export class ApiService {
   }
 
   public delete(path: string): Promise<void> {
-    return this.jsonRequest('DELETE', path, undefined);
+    return this.jsonRequest('DELETE', path);
   }
 
   public async getAllPages<T>(path: string): Promise<T[]> {

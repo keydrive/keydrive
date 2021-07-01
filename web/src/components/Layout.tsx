@@ -39,10 +39,10 @@ export const Layout: React.FC<Props> = ({ children, className }) => {
         <div className="libraries">
           {libraries ? (
             libraries.map((library) => (
-              <div key={library.id} className="entry">
+              <NavLink key={library.id} className="entry" to={`/files/${library.id}`}>
                 <Icon icon={libraryIcons[library.type]} />
                 {library.name}
-              </div>
+              </NavLink>
             ))
           ) : (
             <div className="loader">

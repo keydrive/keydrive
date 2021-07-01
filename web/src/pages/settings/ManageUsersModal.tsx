@@ -99,9 +99,9 @@ export const ManageUsersModal: React.FC<Props> = ({ onClose }) => {
 
   const refreshUsers = useCallback(
     (selectId?: number) => {
-      userService.listUsers().then((users) => {
-        setUsers(users);
-        setSelectedUser(selectId || users[0].id);
+      userService.listUsers().then((usersList) => {
+        setUsers(usersList);
+        setSelectedUser(selectId || usersList[0].id);
       });
     },
     [userService]
@@ -124,18 +124,18 @@ export const ManageUsersModal: React.FC<Props> = ({ onClose }) => {
           } catch (e) {
             alert(e.description || e.message);
           }
-          await refreshUsers();
+          refreshUsers();
         }}
         onAdd={() => {
           setSelectedUser(undefined);
         }}
       >
-        {(user: User) => (
+        {({ firstName, lastName, username }) => (
           <>
             <h4>
-              {user.firstName} {user.lastName}
+              {firstName} {lastName}
             </h4>
-            <span>{user.username}</span>
+            <span>{username}</span>
           </>
         )}
       </ModalLeftPanel>

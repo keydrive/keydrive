@@ -21,9 +21,9 @@ pipeline {
       steps {
         // Test the frontend
         sh 'yarn --cwd web install --frozen-lockfile'
-        sh 'yarn --cwd web lint  -f json -o eslint-report.json || true'
+        sh 'yarn --cwd web lint -f json -o eslint-report.json || true'
         sh 'yarn --cwd web test --ci --coverage --reporters=default --reporters=jest-junit'
-        junit checksName: 'React Tests', testResults:  'web/junit.xml'
+        junit checksName: 'React Tests', testResults: 'web/junit.xml'
         stash includes: 'web/coverage/lcov.info,web/eslint-report.json,web/junit.xml', name: 'frontend-tests', useDefaultExcludes: false
         sh 'yarn --cwd web build'
         stash includes: 'web/build/**', name: 'frontend-build', useDefaultExcludes: false

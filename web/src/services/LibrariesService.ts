@@ -31,6 +31,14 @@ export interface UpdateLibrary {
   name?: string;
 }
 
+export interface Entry {
+  name: string;
+  parent: string;
+  modified: string;
+  category: string;
+  size: number;
+}
+
 export class LibrariesService {
   public static readonly NAME = 'LibrariesService';
 
@@ -71,5 +79,9 @@ export class LibrariesService {
     });
 
     return response.folders.map((f) => f.path);
+  }
+
+  public getEntries(libraryId: number | string, parent: string): Promise<Entry[]> {
+    return this.api.jsonGet(`/libraries/${libraryId}/entries`, { parent });
   }
 }

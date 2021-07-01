@@ -2,9 +2,17 @@ table {
   width: 100%;
   border-collapse: collapse;
 
+  col.icon {
+    width: 32px;
+  }
+
   td,
   th {
     padding: 2px 6px;
+
+    &.icon {
+      text-align: center;
+    }
   }
 
   tr {
@@ -12,10 +20,10 @@ table {
   }
 
   thead {
-    border-bottom: 1px solid var(--gray-4);
+    border-bottom: 1px solid var(--dark-gray);
 
     th {
-      font-weight: 600;
+      font-weight: 500;
       text-align: left;
     }
   }
@@ -24,14 +32,14 @@ table {
     tr {
       outline: none;
 
-      &:nth-child(2n) {
+      &:nth-child(even) {
         td {
-          background-color: var(--gray-5);
+          background-color: var(--zebra-highlight);
         }
       }
 
       td {
-        transition: background-color $transition-duration;
+        transition: background-color $fast-transition-duration;
 
         &:first-child {
           border-top-left-radius: $border-radius;
@@ -49,12 +57,10 @@ table {
   &.clickable {
     tbody {
       tr {
-        cursor: pointer;
-
         &:hover,
         &:focus {
           td {
-            background-color: var(--gray-4);
+            background-color: var(--primary-highlight);
           }
         }
       }

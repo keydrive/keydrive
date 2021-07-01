@@ -1,0 +1,108 @@
+.files-page {
+  .top-bar {
+    .parent-dir {
+      display: inline-block;
+      width: 27px;
+      font-size: 22px;
+      text-align: center;
+      margin: 0 12px;
+      cursor: pointer;
+
+      .icon {
+        transition: color $transition-duration;
+        color: var(--light-gray);
+      }
+
+      &:hover .icon {
+        color: var(--foreground);
+      }
+    }
+  }
+
+  main {
+    display: flex;
+
+    .icon {
+      color: var(--primary);
+    }
+
+    .files {
+      flex: 1 1 auto;
+      margin-left: 12px;
+      overflow-y: auto;
+
+      table {
+        user-select: none;
+
+        colgroup {
+          .modified {
+            width: 240px;
+          }
+
+          .size,
+          .category {
+            width: 120px;
+          }
+        }
+      }
+    }
+
+    .details {
+      flex: 0 1 320px;
+      margin-left: 12px;
+      padding: 12px;
+
+      .close {
+        display: inline-block;
+        width: 27px;
+        font-size: 22px;
+        text-align: center;
+        cursor: pointer;
+
+        .icon {
+          transition: color $transition-duration;
+          color: var(--light-gray);
+        }
+
+        &:hover .icon {
+          color: var(--foreground);
+        }
+      }
+
+      .preview {
+        margin: 12px;
+        height: 240px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .icon {
+          font-size: 160px;
+        }
+      }
+
+      .name {
+        font-weight: 500;
+        font-size: 1.2rem;
+        margin-bottom: 6px;
+      }
+
+      .category {
+        margin-bottom: 24px;
+        color: var(--light-gray);
+      }
+
+      .columns {
+        > div {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 6px;
+
+          :first-child {
+            color: var(--light-gray);
+          }
+        }
+      }
+    }
+  }
+}

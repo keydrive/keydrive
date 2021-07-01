@@ -8,14 +8,18 @@ button.setting-button {
   width: 96px;
   outline: none;
 
+  i,
+  span {
+    color: var(--light-gray);
+    transition: color $transition-duration;
+  }
+
   i {
     font-size: 36px;
-    color: var(--light-gray);
     margin-bottom: 12px;
   }
 
   span {
-    color: var(--light-gray);
     font-size: 16px;
   }
 
