@@ -15,6 +15,7 @@ export interface RenderOptions {
   initialState?: ReallyDeepPartial<RootState>;
   path?: string;
   route?: string;
+  loggedIn?: boolean;
 }
 
 export interface TestAPI {
@@ -24,8 +25,15 @@ export interface TestAPI {
 }
 
 export async function render(element: ReactElement, options: RenderOptions = {}): Promise<TestAPI> {
+  const combinedInitialState = options.initialState || {};
+  if (options.loggedIn) {
+    combinedInitialState.user = {
+      token: 'mock-token',
+    };
+  }
+
   const injector = new Injector();
-  const store = initializeStore(injector, options.initialState);
+  const store = initializeStore(injector, combinedInitialState);
   injector.bindTo(initializeStore, store);
 
   const navigation = {

@@ -3,11 +3,12 @@ import fetchMock from 'fetch-mock';
 import { render } from '../__testutils__/render';
 import { FilesPage } from './FilesPage';
 import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 describe('FilesPage', () => {
   afterEach(checkPendingMocks);
 
-  it('shows the files', async () => {
+  beforeEach(() => {
     fetchMock.getOnce('path:/api/libraries/', {
       status: 200,
       body: [
@@ -55,19 +56,30 @@ describe('FilesPage', () => {
         ],
       }
     );
+  });
 
+  it('shows the files', async () => {
     await render(<FilesPage />, {
       path: '/files/4',
       route: '/files/:library/:path*',
-      initialState: {
-        user: {
-          token: 'mock-token',
-        },
-      },
+      loggedIn: true,
     });
 
     expect(await screen.findByText('Mock Library', { selector: 'h1' })).toBeDefined();
     expect(await screen.findByText('Ballmers Peak Label.xcf')).toBeDefined();
     expect(await screen.findByText('2.7 MB')).toBeDefined();
+  });
+
+  it('shows file details on click', async () => {
+    await render(<FilesPage />, {
+      path: '/files/4',
+      route: '/files/:library/:path*',
+      loggedIn: true,
+    });
+
+    expect(await screen.findByText('Ballmers Peak Label.xcf')).toBeDefined();
+    expect(screen.queryByText('Ballmers Peak Label.xcf', { selector: '.details *' })).toBeNull();
+    await userEvent.click(screen.getByText('Ballmers Peak Label.xcf'));
+    expect(screen.getByText('Ballmers Peak Label.xcf', { selector: '.details *' })).toBeDefined();
   });
 });
