@@ -1,6 +1,4 @@
 table {
-  // TODO: better colors
-
   width: 100%;
   border-collapse: collapse;
 
@@ -36,12 +34,12 @@ table {
 
       &:nth-child(2n) {
         td {
-          background-color: var(--dark-gray);
+          background-color: var(--zebra-highlight);
         }
       }
 
       td {
-        transition: background-color $transition-duration;
+        transition: background-color $fast-transition-duration;
 
         &:first-child {
           border-top-left-radius: $border-radius;
@@ -62,7 +60,7 @@ table {
         &:hover,
         &:focus {
           td {
-            background-color: var(--dark-gray);
+            background-color: var(--primary-highlight);
           }
         }
       }
