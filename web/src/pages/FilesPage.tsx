@@ -8,6 +8,7 @@ import { Icon } from '../components/Icon';
 import { FileIcon } from '../components/FileIcon';
 import { humanReadableSize } from '../utils/humanReadableSize';
 import { parentPath, resolvePath } from '../utils/path';
+import { sortEntries } from '../utils/sortEntries';
 
 export const FilesPage: React.FC = () => {
   const libraries = useService(LibrariesService);
@@ -117,15 +118,3 @@ export const FilesPage: React.FC = () => {
     </Layout>
   );
 };
-
-function sortEntries(entries: Entry[]): Entry[] {
-  return entries.sort((a, b) => {
-    if (a.category === 'Folder' && b.category !== 'Folder') {
-      return -1;
-    }
-    if (a.category !== 'Folder' && b.category === 'Folder') {
-      return 1;
-    }
-    return a.name.localeCompare(b.name);
-  });
-}
