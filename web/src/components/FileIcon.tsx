@@ -10,6 +10,7 @@ const icons: Record<string, string> = {
   pdf: 'file-pdf',
   // Text
   adoc: 'file-alt',
+  log: 'file-alt',
   md: 'file-alt',
   txt: 'file-alt',
   // Archives

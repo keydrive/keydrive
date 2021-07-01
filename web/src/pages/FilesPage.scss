@@ -60,6 +60,7 @@
         > div {
           display: flex;
           justify-content: space-between;
+          margin-bottom: 6px;
 
           :first-child {
             color: var(--light-gray);

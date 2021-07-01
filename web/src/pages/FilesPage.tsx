@@ -6,6 +6,7 @@ import { useService } from '../hooks/useService';
 import { Entry, LibrariesService } from '../services/LibrariesService';
 import { Icon } from '../components/Icon';
 import { FileIcon } from '../components/FileIcon';
+import { humanReadableSize } from '../utils/humanReadableSize';
 
 export const FilesPage: React.FC = () => {
   const libraries = useService(LibrariesService);
@@ -62,7 +63,7 @@ export const FilesPage: React.FC = () => {
                     </td>
                     <td>{entry.name}</td>
                     <td>{new Date(entry.modified).toLocaleString()}</td>
-                    <td>{entry.category === 'Folder' ? '--' : entry.size}</td>
+                    <td>{entry.category === 'Folder' ? '--' : humanReadableSize(entry.size)}</td>
                     <td>{entry.category}</td>
                   </tr>
                 ))}
@@ -85,6 +86,10 @@ export const FilesPage: React.FC = () => {
               <div>
                 <span>Modified</span>
                 <span>{new Date(selectedEntry.modified).toLocaleString()}</span>
+              </div>
+              <div>
+                <span>Size</span>
+                <span>{humanReadableSize(selectedEntry.size)}</span>
               </div>
             </div>
           </Panel>
