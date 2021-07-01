@@ -36,7 +36,7 @@ export interface Entry {
   parent: string;
   modified: string;
   category: string;
-  size?: number;
+  size: number;
 }
 
 export class LibrariesService {

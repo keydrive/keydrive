@@ -18,7 +18,7 @@ type FileInfo struct {
 	Parent   string         `json:"parent"`
 	Category model.Category `json:"category"`
 	MimeType string         `json:"mimeType,omitempty"`
-	Size     int64          `json:"size,omitempty"`
+	Size     int64          `json:"size"`
 }
 
 type FileSystem struct {
@@ -69,12 +69,12 @@ func (fs *FileSystem) GetEntriesForLibrary(library model.Library, parentPath str
 
 	for i, file := range files {
 		category, _ := fs.getFileCategory(file.Name(), "", file.IsDir())
-		file.ModTime()
 		output[i] = FileInfo{
 			Name:     file.Name(),
 			Category: category,
 			Parent:   parentPath,
 			Modified: file.ModTime(),
+			Size:     file.Size(),
 		}
 	}
 

@@ -32,6 +32,7 @@ export const FilesPage: React.FC = () => {
                 <col className="icon" />
                 <col />
                 <col className="modified" />
+                <col className="size" />
                 <col className="category" />
               </colgroup>
               <thead>
@@ -39,6 +40,7 @@ export const FilesPage: React.FC = () => {
                   <th />
                   <th>Name</th>
                   <th>Modified</th>
+                  <th>Size</th>
                   <th>Kind</th>
                 </tr>
               </thead>
@@ -60,6 +62,7 @@ export const FilesPage: React.FC = () => {
                     </td>
                     <td>{entry.name}</td>
                     <td>{new Date(entry.modified).toLocaleString()}</td>
+                    <td>{entry.category === 'Folder' ? '--' : entry.size}</td>
                     <td>{entry.category}</td>
                   </tr>
                 ))}
