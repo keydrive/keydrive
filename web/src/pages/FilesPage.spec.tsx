@@ -106,7 +106,7 @@ describe('FilesPage', () => {
       }
     );
 
-    await render(<FilesPage />, {
+    const { navigation } = await render(<FilesPage />, {
       path: '/files/4',
       route: '/files/:library/:path*',
       loggedIn: true,
@@ -114,5 +114,41 @@ describe('FilesPage', () => {
 
     await userEvent.dblClick(await screen.findByText('Documents'));
     expect(await screen.findByText('ClearCloud Settings.pdf')).toBeDefined();
+    expect(navigation.pathname).toBe('/files/4/Documents');
+  });
+
+  it('enters the parent directory when going up', async () => {
+    fetchMock.getOnce(
+      {
+        url: 'path:/api/libraries/4/entries',
+        query: {
+          parent: 'Documents',
+        },
+        overwriteRoutes: false,
+      },
+      {
+        status: 200,
+        body: [
+          {
+            name: 'ClearCloud Settings.pdf',
+            parent: '/Documents',
+            modified: '2021-06-16T09:52:47.769779842+02:00',
+            category: 'Binary',
+            size: 3570049,
+          },
+        ],
+      }
+    );
+
+    const { navigation } = await render(<FilesPage />, {
+      path: '/files/4/Documents',
+      route: '/files/:library/:path*',
+      loggedIn: true,
+    });
+
+    expect(await screen.findByText('ClearCloud Settings.pdf')).toBeDefined();
+    await userEvent.click(screen.getByLabelText('Parent directory'));
+    expect(await screen.findByText('Documents')).toBeDefined();
+    expect(navigation.pathname).toBe('/files/4');
   });
 });

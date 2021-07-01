@@ -38,8 +38,9 @@ export const FilesPage: React.FC = () => {
         <span
           className="parent-dir"
           onClick={() => {
-            history.push(`/files/${library}/${parentPath(path)}`);
+            history.push(`/files/${library}${parentPath(path)}`);
           }}
+          aria-label="Parent directory"
         >
           <Icon icon="level-up-alt" />
         </span>

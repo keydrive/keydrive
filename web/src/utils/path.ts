@@ -3,14 +3,20 @@ export function resolvePath(parent: string, name: string): string {
   if (!result.endsWith('/')) {
     result = `${result}/`;
   }
+  if (!result.startsWith('/')) {
+    result = `/${result}`;
+  }
   return `${result}${name}`;
 }
 
 export function parentPath(path?: string): string {
-  if (!path) {
+  if (!path || path === '/') {
     return '';
   }
 
-  const lastSlash = path.lastIndexOf('/');
-  return lastSlash >= 0 ? path.substring(0, lastSlash) : '';
+  let result = path;
+  if (!result.startsWith('/')) {
+    result = `/${result}`;
+  }
+  return result.substring(0, result.lastIndexOf('/'));
 }
