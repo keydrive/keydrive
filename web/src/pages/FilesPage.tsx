@@ -12,6 +12,7 @@ export const FilesPage: React.FC = () => {
   const { library, path } = useParams<{ library: string; path?: string }>();
   const history = useHistory();
   const [entries, setEntries] = useState<Entry[]>();
+  const [selectedEntry, setSelectedEntry] = useState<Entry>();
 
   useEffect(() => {
     libraries
@@ -24,7 +25,7 @@ export const FilesPage: React.FC = () => {
     <Layout className="files-page">
       <div className="top-bar" />
       <main>
-        <Panel>
+        <Panel className="files">
           {entries ? (
             <table className="clickable">
               <colgroup>
@@ -37,26 +38,29 @@ export const FilesPage: React.FC = () => {
                 <tr>
                   <th />
                   <th>Name</th>
-                  <th>Last Modified</th>
+                  <th>Modified</th>
                   <th>Kind</th>
                 </tr>
               </thead>
               <tbody>
-                {entries.map(({ parent, name, category, modified }) => (
+                {entries.map((entry) => (
                   <tr
-                    key={name}
+                    key={entry.name}
                     onDoubleClick={() => {
-                      if (category === 'Folder') {
-                        history.push(`/files/${library}${resolvePath(parent, name)}`);
+                      if (entry.category === 'Folder') {
+                        history.push(`/files/${library}${resolvePath(entry.parent, entry.name)}`);
                       }
+                    }}
+                    onClick={() => {
+                      setSelectedEntry(entry);
                     }}
                   >
                     <td className="icon">
-                      {category === 'Folder' ? <Icon icon="folder" /> : <FileIcon name={name} />}
+                      {entry.category === 'Folder' ? <Icon icon="folder" /> : <FileIcon name={entry.name} />}
                     </td>
-                    <td>{name}</td>
-                    <td>{new Date(modified).toLocaleString()}</td>
-                    <td>{category}</td>
+                    <td>{entry.name}</td>
+                    <td>{new Date(entry.modified).toLocaleString()}</td>
+                    <td>{entry.category}</td>
                   </tr>
                 ))}
               </tbody>
@@ -67,6 +71,21 @@ export const FilesPage: React.FC = () => {
             </div>
           )}
         </Panel>
+        {selectedEntry && (
+          <Panel className="details">
+            <div className="preview">
+              {selectedEntry.category === 'Folder' ? <Icon icon="folder" /> : <FileIcon name={selectedEntry.name} />}
+            </div>
+            <div className="name">{selectedEntry.name}</div>
+            <div className="category">{selectedEntry.category}</div>
+            <div className="columns">
+              <div>
+                <span>Modified</span>
+                <span>{new Date(selectedEntry.modified).toLocaleString()}</span>
+              </div>
+            </div>
+          </Panel>
+        )}
       </main>
     </Layout>
   );
