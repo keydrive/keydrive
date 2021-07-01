@@ -82,4 +82,37 @@ describe('FilesPage', () => {
     await userEvent.click(screen.getByText('Ballmers Peak Label.xcf'));
     expect(screen.getByText('Ballmers Peak Label.xcf', { selector: '.details *' })).toBeDefined();
   });
+
+  it('enters a directory on double click', async () => {
+    fetchMock.getOnce(
+      {
+        url: 'path:/api/libraries/4/entries',
+        query: {
+          parent: 'Documents',
+        },
+        overwriteRoutes: false,
+      },
+      {
+        status: 200,
+        body: [
+          {
+            name: 'ClearCloud Settings.pdf',
+            parent: '/Documents',
+            modified: '2021-06-16T09:52:47.769779842+02:00',
+            category: 'Binary',
+            size: 3570049,
+          },
+        ],
+      }
+    );
+
+    await render(<FilesPage />, {
+      path: '/files/4',
+      route: '/files/:library/:path*',
+      loggedIn: true,
+    });
+
+    await userEvent.dblClick(await screen.findByText('Documents'));
+    expect(await screen.findByText('ClearCloud Settings.pdf')).toBeDefined();
+  });
 });
