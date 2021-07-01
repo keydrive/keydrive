@@ -32,7 +32,7 @@ table {
     tr {
       outline: none;
 
-      &:nth-child(2n) {
+      &:nth-child(even) {
         td {
           background-color: var(--zebra-highlight);
         }

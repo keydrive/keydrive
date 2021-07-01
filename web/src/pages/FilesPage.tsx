@@ -15,6 +15,12 @@ export const FilesPage: React.FC = () => {
   const [entries, setEntries] = useState<Entry[]>();
   const [selectedEntry, setSelectedEntry] = useState<Entry>();
 
+  // TODO: Replace this with library info from global state.
+  const [libraryName, setLibraryName] = useState('');
+  useEffect(() => {
+    libraries.getLibraryDetails(parseInt(library)).then((l) => setLibraryName(l.name));
+  }, [libraries, library]);
+
   useEffect(() => {
     libraries
       .getEntries(library, path || '')
@@ -22,9 +28,21 @@ export const FilesPage: React.FC = () => {
       .then(setEntries);
   }, [libraries, library, path]);
 
+  useEffect(() => setSelectedEntry(undefined), [path]);
+
   return (
     <Layout className="files-page">
-      <div className="top-bar" />
+      <div className="top-bar">
+        <span
+          className="parent-dir"
+          onClick={() => {
+            history.push(`/files/${library}/${parentPath(path)}`);
+          }}
+        >
+          <Icon icon="level-up-alt" />
+        </span>
+        <h1>{libraryName}</h1>
+      </div>
       <main>
         <Panel className="files">
           {entries ? (
@@ -117,4 +135,13 @@ function sortEntries(entries: Entry[]): Entry[] {
     }
     return a.name.localeCompare(b.name);
   });
+}
+
+function parentPath(path?: string): string {
+  if (!path) {
+    return '';
+  }
+
+  const lastSlash = path.lastIndexOf('/');
+  return lastSlash >= 0 ? path.substring(0, lastSlash) : '';
 }
