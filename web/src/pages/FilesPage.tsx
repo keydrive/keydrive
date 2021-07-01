@@ -107,10 +107,12 @@ export const FilesPage: React.FC = () => {
                 <span>Modified</span>
                 <span>{new Date(selectedEntry.modified).toLocaleString()}</span>
               </div>
-              <div>
-                <span>Size</span>
-                <span>{humanReadableSize(selectedEntry.size)}</span>
-              </div>
+              {selectedEntry.category !== 'Folder' && (
+                <div>
+                  <span>Size</span>
+                  <span>{humanReadableSize(selectedEntry.size)}</span>
+                </div>
+              )}
             </div>
           </Panel>
         )}
