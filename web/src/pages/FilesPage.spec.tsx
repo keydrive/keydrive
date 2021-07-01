@@ -70,7 +70,7 @@ describe('FilesPage', () => {
     expect(await screen.findByText('2.7 MB')).toBeDefined();
   });
 
-  it('shows file details on click', async () => {
+  it('shows file details', async () => {
     await render(<FilesPage />, {
       path: '/files/4',
       route: '/files/:library/:path*',
@@ -81,6 +81,8 @@ describe('FilesPage', () => {
     expect(screen.queryByText('Ballmers Peak Label.xcf', { selector: '.details *' })).toBeNull();
     await userEvent.click(screen.getByText('Ballmers Peak Label.xcf'));
     expect(screen.getByText('Ballmers Peak Label.xcf', { selector: '.details *' })).toBeDefined();
+    await userEvent.click(screen.getByLabelText('Close details'));
+    expect(screen.queryByText('Ballmers Peak Label.xcf', { selector: '.details *' })).toBeNull();
   });
 
   it('enters a directory on double click', async () => {

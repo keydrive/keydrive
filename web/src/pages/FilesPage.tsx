@@ -37,9 +37,7 @@ export const FilesPage: React.FC = () => {
       <div className="top-bar">
         <span
           className="parent-dir"
-          onClick={() => {
-            history.push(`/files/${library}${parentPath(path)}`);
-          }}
+          onClick={() => history.push(`/files/${library}${parentPath(path)}`)}
           aria-label="Parent directory"
         >
           <Icon icon="level-up-alt" />
@@ -75,9 +73,7 @@ export const FilesPage: React.FC = () => {
                         history.push(`/files/${library}${resolvePath(entry.parent, entry.name)}`);
                       }
                     }}
-                    onClick={() => {
-                      setSelectedEntry(entry);
-                    }}
+                    onClick={() => setSelectedEntry(entry)}
                   >
                     <td className="icon">
                       {entry.category === 'Folder' ? <Icon icon="folder" /> : <FileIcon name={entry.name} />}
@@ -98,6 +94,9 @@ export const FilesPage: React.FC = () => {
         </Panel>
         {selectedEntry && (
           <Panel className="details">
+            <div className="close" aria-label="Close details" onClick={() => setSelectedEntry(undefined)}>
+              <Icon icon="times" />
+            </div>
             <div className="preview">
               {selectedEntry.category === 'Folder' ? <Icon icon="folder" /> : <FileIcon name={selectedEntry.name} />}
             </div>

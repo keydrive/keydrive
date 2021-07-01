@@ -50,8 +50,24 @@
     .details {
       flex: 0 1 320px;
       margin-left: 12px;
-      padding-left: 12px;
-      padding-right: 12px;
+      padding: 12px;
+
+      .close {
+        display: inline-block;
+        width: 27px;
+        font-size: 22px;
+        text-align: center;
+        cursor: pointer;
+
+        .icon {
+          transition: color $transition-duration;
+          color: var(--light-gray);
+        }
+
+        &:hover .icon {
+          color: var(--foreground);
+        }
+      }
 
       .preview {
         margin: 12px;
