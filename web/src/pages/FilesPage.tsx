@@ -9,6 +9,7 @@ import { FileIcon } from '../components/FileIcon';
 import { humanReadableSize } from '../utils/humanReadableSize';
 import { parentPath, resolvePath } from '../utils/path';
 import { sortEntries } from '../utils/sortEntries';
+import { humanReadableDateTime } from '../utils/humanReadableDateTime';
 
 export const FilesPage: React.FC = () => {
   const libraries = useService(LibrariesService);
@@ -79,7 +80,7 @@ export const FilesPage: React.FC = () => {
                       {entry.category === 'Folder' ? <Icon icon="folder" /> : <FileIcon name={entry.name} />}
                     </td>
                     <td>{entry.name}</td>
-                    <td>{new Date(entry.modified).toLocaleString()}</td>
+                    <td>{humanReadableDateTime(entry.modified)}</td>
                     <td>{entry.category === 'Folder' ? '--' : humanReadableSize(entry.size)}</td>
                     <td>{entry.category}</td>
                   </tr>
@@ -105,7 +106,7 @@ export const FilesPage: React.FC = () => {
             <div className="columns">
               <div>
                 <span>Modified</span>
-                <span>{new Date(selectedEntry.modified).toLocaleString()}</span>
+                <span>{humanReadableDateTime(selectedEntry.modified)}</span>
               </div>
               {selectedEntry.category !== 'Folder' && (
                 <div>
