@@ -7,6 +7,7 @@ import { Entry, LibrariesService } from '../services/LibrariesService';
 import { Icon } from '../components/Icon';
 import { FileIcon } from '../components/FileIcon';
 import { humanReadableSize } from '../utils/humanReadableSize';
+import { parentPath, resolvePath } from '../utils/path';
 
 export const FilesPage: React.FC = () => {
   const libraries = useService(LibrariesService);
@@ -117,14 +118,6 @@ export const FilesPage: React.FC = () => {
   );
 };
 
-function resolvePath(parent: string, name: string): string {
-  let result = parent;
-  if (!result.endsWith('/')) {
-    result = `${result}/`;
-  }
-  return `${result}${name}`;
-}
-
 function sortEntries(entries: Entry[]): Entry[] {
   return entries.sort((a, b) => {
     if (a.category === 'Folder' && b.category !== 'Folder') {
@@ -135,13 +128,4 @@ function sortEntries(entries: Entry[]): Entry[] {
     }
     return a.name.localeCompare(b.name);
   });
-}
-
-function parentPath(path?: string): string {
-  if (!path) {
-    return '';
-  }
-
-  const lastSlash = path.lastIndexOf('/');
-  return lastSlash >= 0 ? path.substring(0, lastSlash) : '';
 }
