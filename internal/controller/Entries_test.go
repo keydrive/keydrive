@@ -130,7 +130,7 @@ func TestDownloadEntry(t *testing.T) {
 		}
 	})
 
-	t.Run("it returns 404 if no path provided", func(t *testing.T) {
+	t.Run("it returns 400 if no path provided", func(t *testing.T) {
 		setup()
 
 		recorder := httptest.NewRecorder()
@@ -138,7 +138,7 @@ func TestDownloadEntry(t *testing.T) {
 		c.Params = []gin.Param{
 			{
 				Key:   "libraryId",
-				Value: "23042",
+				Value: "387",
 			},
 		}
 		c.Set(oauth.ContextKeyUser, model.User{
@@ -147,8 +147,8 @@ func TestDownloadEntry(t *testing.T) {
 
 		controller(c)
 
-		if recorder.Code != 404 {
-			t.Errorf("Expected a 404 error but got %d instead", recorder.Code)
+		if recorder.Code != 400 {
+			t.Errorf("Expected a 400 error but got %d instead", recorder.Code)
 		}
 	})
 
@@ -171,6 +171,32 @@ func TestDownloadEntry(t *testing.T) {
 
 		if recorder.Code != 404 {
 			t.Errorf("Expected a 404 error but got %d instead", recorder.Code)
+		}
+	})
+
+	t.Run("it returns 400 if path not encoded", func(t *testing.T) {
+		setup()
+
+		recorder := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(recorder)
+		c.Params = []gin.Param{
+			{
+				Key:   "libraryId",
+				Value: "387",
+			},
+			{
+				Key:   "path",
+				Value: "wtf is this sh%t?",
+			},
+		}
+		c.Set(oauth.ContextKeyUser, model.User{
+			ID: 675,
+		})
+
+		controller(c)
+
+		if recorder.Code != 400 {
+			t.Errorf("Expected a 400 error but got %d instead", recorder.Code)
 		}
 	})
 }
