@@ -3,7 +3,8 @@ package model
 type Category string
 
 const (
-	CategoryFolder   Category = "Folder"
+	CategoryArchive  Category = "Archive"
+	CategoryBinary   Category = "Binary"
 	CategoryDocument Category = "Document"
-	CategoryUnknown  Category = "Binary"
+	CategoryFolder   Category = "Folder"
 )

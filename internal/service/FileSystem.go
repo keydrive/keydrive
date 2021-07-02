@@ -53,7 +53,7 @@ func (fs *FileSystem) getFileCategory(name string, mimeType string, isDir bool) 
 	if cat, ok := MimeToCategory[mimeType]; ok {
 		return cat, mimeType
 	}
-	return model.CategoryUnknown, mimeType
+	return model.CategoryBinary, mimeType
 }
 
 func (fs *FileSystem) GetEntriesForLibrary(library model.Library, parentPath string) ([]FileInfo, error) {
