@@ -78,7 +78,7 @@ func (s *Server) TokenEndpoint() gin.HandlerFunc {
 			)
 			return
 		}
-		c.Set(contextKeyClient, client)
+		c.Set(ContextKeyClient, client)
 
 		user := s.UserDetailsService.GetUser(c, username)
 		if user == nil {
@@ -101,7 +101,7 @@ func (s *Server) TokenEndpoint() gin.HandlerFunc {
 			)
 			return
 		}
-		c.Set(contextKeyUser, user)
+		c.Set(ContextKeyUser, user)
 
 		modelToken := s.TokenService.CreateToken(c, uuid.NewString())
 		if modelToken == nil {

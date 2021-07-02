@@ -25,7 +25,7 @@ func (u *BasicUser) GetHashedPassword() string {
 }
 
 func GetUser(ctx context.Context) UserDetails {
-	result := ctx.Value(contextKeyUser)
+	result := ctx.Value(ContextKeyUser)
 	if result == nil {
 		return nil
 	}

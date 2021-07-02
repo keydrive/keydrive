@@ -1,4 +1,4 @@
 package oauth
 
-const contextKeyClient = "context/oauth/client"
-const contextKeyUser = "context/oauth/user"
+const ContextKeyClient = "context/oauth/client"
+const ContextKeyUser = "context/oauth/user"

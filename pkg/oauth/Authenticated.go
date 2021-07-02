@@ -16,9 +16,9 @@ func Authenticate(server *Server) gin.HandlerFunc {
 			token := server.TokenService.GetToken(c, accessToken)
 			if token != nil {
 				client := token.GetClient()
-				c.Set(contextKeyClient, client)
+				c.Set(ContextKeyClient, client)
 				user := token.GetUser()
-				c.Set(contextKeyUser, user)
+				c.Set(ContextKeyUser, user)
 			}
 		}
 		c.Next()
