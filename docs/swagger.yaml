@@ -448,6 +448,27 @@ paths:
       summary: Search the collection of files and folders
       tags:
       - Files
+  /api/libraries/{libraryId}/entries/{path}/download:
+    get:
+      parameters:
+      - description: The url encoded path
+        in: path
+        name: path
+        required: true
+        type: string
+      - description: The library id
+        in: path
+        name: libraryId
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: ""
+      security:
+      - OAuth2: []
+      summary: Search the collection of files and folders
+      tags:
+      - Files
   /api/libraries/{libraryId}/shares:
     post:
       parameters:

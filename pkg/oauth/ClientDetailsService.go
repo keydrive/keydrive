@@ -11,7 +11,7 @@ type ClientDetails interface {
 }
 
 func GetClient(ctx context.Context) ClientDetails {
-	result := ctx.Value(contextKeyClient)
+	result := ctx.Value(ContextKeyClient)
 	if result == nil {
 		return nil
 	}

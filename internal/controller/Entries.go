@@ -4,11 +4,14 @@ import (
 	"clearcloud/internal/model"
 	"clearcloud/internal/service"
 	"clearcloud/pkg/oauth"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"io"
 	"mime/multipart"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 type LibraryAccess struct {
@@ -30,6 +33,25 @@ func getAccessToLib(c *gin.Context, libs *service.Library, writeAccess bool, tx 
 		return library.Library, ApiError{Status: http.StatusForbidden}
 	}
 	return library.Library, nil
+}
+
+func resolvePath(c *gin.Context, libs *service.Library, db *gorm.DB, writeAccess bool) (model.Library, string, error) {
+	library, err := getAccessToLib(c, libs, writeAccess, db)
+	if err != nil {
+		return library, "", err
+	}
+	path := c.Param("path")
+	if path == "" {
+		return library, "", ApiError{Status: http.StatusBadRequest}
+	}
+	path, err = url.QueryUnescape(path)
+	if err != nil {
+		return library, "", ApiError{
+			Status:      http.StatusBadRequest,
+			Description: "path parameter must be url encoded",
+		}
+	}
+	return library, path, nil
 }
 
 // ListEntries
@@ -69,22 +91,9 @@ func ListEntries(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin
 // @Param libraryId path int true "The library id"
 func GetEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		library, err := getAccessToLib(c, libs, false, db)
+		library, path, err := resolvePath(c, libs, db, false)
 		if err != nil {
 			writeError(c, err)
-			return
-		}
-		path := c.Param("path")
-		if path == "" {
-			simpleError(c, http.StatusBadRequest)
-			return
-		}
-		path, err = url.QueryUnescape(path)
-		if err != nil {
-			writeError(c, ApiError{
-				Status:      http.StatusBadRequest,
-				Description: "path parameter must be url encoded",
-			})
 			return
 		}
 		entry, err := fs.GetEntryMetadata(library, path)
@@ -93,6 +102,40 @@ func GetEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin.Ha
 			return
 		}
 		c.JSON(http.StatusOK, entry)
+	}
+}
+
+// DownloadEntry
+// @Tags Files
+// @Router /api/libraries/{libraryId}/entries/{path}/download [get]
+// @Summary Search the collection of files and folders
+// @Security OAuth2
+// @Success 200
+// @Param path path string true "The url encoded path"
+// @Param libraryId path int true "The library id"
+func DownloadEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		library, path, err := resolvePath(c, libs, db, false)
+		if err != nil {
+			writeError(c, err)
+			return
+		}
+		entry, err := fs.GetEntryMetadata(library, path)
+		if err != nil {
+			writeError(c, err)
+			return
+		}
+		stream, err := fs.OpenFile(library, path)
+		if err != nil {
+			writeError(c, err)
+			return
+		}
+		defer func(stream io.ReadCloser) {
+			_ = stream.Close()
+		}(stream)
+		c.Header("Content-Type", entry.MimeType)
+		c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", strings.ReplaceAll(entry.Name, "\"", "\\\"")))
+		_, _ = io.Copy(c.Writer, stream)
 	}
 }
 
@@ -168,22 +211,9 @@ func CreateEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin
 // @Param libraryId path int true "The library id"
 func DeleteEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		library, err := getAccessToLib(c, libs, true, db)
+		library, path, err := resolvePath(c, libs, db, true)
 		if err != nil {
 			writeError(c, err)
-			return
-		}
-		path := c.Param("path")
-		if path == "" {
-			simpleError(c, http.StatusBadRequest)
-			return
-		}
-		path, err = url.QueryUnescape(path)
-		if err != nil {
-			writeError(c, ApiError{
-				Status:      http.StatusBadRequest,
-				Description: "path parameter must be url encoded",
-			})
 			return
 		}
 		err = fs.DeleteEntryInLibrary(library, path)
