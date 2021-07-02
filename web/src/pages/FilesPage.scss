@@ -1,35 +1,21 @@
 .files-page {
   .top-bar {
     .parent-dir {
-      display: inline-block;
-      width: 27px;
-      font-size: 22px;
-      text-align: center;
       margin: 0 12px;
-      cursor: pointer;
-
-      .icon {
-        transition: color $transition-duration;
-        color: var(--light-gray);
-      }
-
-      &:hover .icon {
-        color: var(--foreground);
-      }
     }
   }
 
   main {
     display: flex;
 
-    .icon {
-      color: var(--primary);
-    }
-
     .files {
       flex: 1 1 auto;
       margin-left: 12px;
       overflow-y: auto;
+
+      .icon {
+        color: var(--primary);
+      }
 
       table {
         user-select: none;
@@ -57,16 +43,6 @@
         width: 27px;
         font-size: 22px;
         text-align: center;
-        cursor: pointer;
-
-        .icon {
-          transition: color $transition-duration;
-          color: var(--light-gray);
-        }
-
-        &:hover .icon {
-          color: var(--foreground);
-        }
       }
 
       .preview {
@@ -78,6 +54,7 @@
 
         .icon {
           font-size: 160px;
+          color: var(--primary);
         }
       }
 

@@ -7,7 +7,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
   border-radius: $border-radius;
 
   transition-property: background-color, border-color;
@@ -52,11 +51,5 @@
     .content {
       color: var(--primary-inverted);
     }
-  }
-
-  &.square {
-    padding: 0;
-    width: $input-height;
-    flex: 0 0 $input-height;
   }
 }

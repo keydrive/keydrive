@@ -7,7 +7,6 @@
 
   &.field-error {
     input:not(:focus) {
-      padding: 0 7px;
       border-color: var(--red);
       box-shadow: 0 0 2px var(--red);
     }
@@ -24,6 +23,12 @@
     color: var(--field-foreground);
     outline: none;
     border: 1px solid var(--field-border);
+    border-radius: $border-radius;
+    font-size: 1rem;
+    width: 100%;
+    height: $input-height;
+    padding: 0 8px;
+    transition: border-color $transition-duration;
 
     &:not(:first-child) {
       margin-left: 12px;

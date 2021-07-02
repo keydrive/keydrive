@@ -4,20 +4,14 @@ import { Icon } from './Icon';
 
 export interface Props {
   onClick?: () => void;
-  square?: boolean;
   type?: 'button' | 'submit';
   loading?: boolean;
   disabled?: boolean;
   primary?: boolean;
-  tabIndex?: number;
 }
 
-export const Button: React.FC<Props> = ({ children, square, type = 'button', loading, primary, ...props }) => (
-  <button
-    className={classNames('button', square && 'square', loading && 'loading', primary && 'primary')}
-    type={type}
-    {...props}
-  >
+export const Button: React.FC<Props> = ({ children, type = 'button', loading, primary, ...props }) => (
+  <button {...props} className={classNames('button', loading && 'loading', primary && 'primary')} type={type}>
     <span className="content">{children}</span>
     {loading && <Icon icon="spinner" pulse className="loader" />}
   </button>

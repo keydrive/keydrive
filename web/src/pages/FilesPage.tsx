@@ -12,6 +12,7 @@ import { sortEntries } from '../utils/sortEntries';
 import { humanReadableDateTime } from '../utils/humanReadableDateTime';
 import { librariesStore } from '../store/libraries';
 import { useAppSelector } from '../store';
+import { IconButton } from '../components/IconButton';
 
 export const FilesPage: React.FC = () => {
   const libraries = useService(LibrariesService);
@@ -40,13 +41,12 @@ export const FilesPage: React.FC = () => {
   return (
     <Layout className="files-page">
       <div className="top-bar">
-        <span
+        <IconButton
           className="parent-dir"
           onClick={() => history.push(`/files/${library}${parentPath(path)}`)}
           aria-label="Parent directory"
-        >
-          <Icon icon="level-up-alt" />
-        </span>
+          icon="level-up-alt"
+        />
         <h1>{libraryName}</h1>
       </div>
       <main>
@@ -110,9 +110,7 @@ interface EntryDetailsProps {
 
 const EntryDetails: React.FC<EntryDetailsProps> = ({ entry, onClose }) => (
   <Panel className="details">
-    <div className="close" aria-label="Close details" onClick={onClose}>
-      <Icon icon="times" />
-    </div>
+    <IconButton aria-label="Close details" onClick={onClose} icon="times" />
     <div className="preview">
       <EntryIcon entry={entry} />
     </div>

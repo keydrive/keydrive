@@ -14,22 +14,6 @@ body {
   min-height: 100vh;
 }
 
-input {
-  padding: 0 8px;
-  border: 1px inset var(--gray-4);
-  height: $input-height;
-  border-radius: $border-radius;
-  font-size: 1rem;
-  outline: none;
-  width: 100%;
-  background-color: var(--input-bg);
-
-  &:focus {
-    padding: 0 7px;
-    border: 2px inset var(--blue);
-  }
-}
-
 a {
   text-decoration: none;
 }
