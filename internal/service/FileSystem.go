@@ -53,6 +53,12 @@ func (fs *FileSystem) getFileCategory(name string, mimeType string, isDir bool) 
 	if cat, ok := MimeToCategory[mimeType]; ok {
 		return cat, mimeType
 	}
+	slash := strings.IndexRune(mimeType, '/')
+	if slash > 0 {
+		if cat, ok := MimeToCategory[mimeType[0:slash]]; ok {
+			return cat, mimeType
+		}
+	}
 	return model.CategoryBinary, mimeType
 }
 
