@@ -372,6 +372,40 @@ var doc = `{
                 }
             }
         },
+        "/api/libraries/{libraryId}/entries/{path}/download": {
+            "get": {
+                "security": [
+                    {
+                        "OAuth2": []
+                    }
+                ],
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Search the collection of files and folders",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The url encoded path",
+                        "name": "path",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "The library id",
+                        "name": "libraryId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/libraries/{libraryId}/shares": {
             "post": {
                 "security": [

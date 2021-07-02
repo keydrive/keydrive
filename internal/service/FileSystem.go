@@ -151,3 +151,9 @@ func (fs *FileSystem) toInfo(file os.FileInfo, parent string, mimeType string) F
 		Size:     size,
 	}
 }
+
+func (fs *FileSystem) OpenFile(library model.Library, path string) (io.ReadCloser, error) {
+	path = fs.cleanRelativePath(path)
+	target := fs.resolve(library, path)
+	return os.Open(target)
+}
