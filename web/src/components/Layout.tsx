@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import logo from '../images/logo.png';
 import { Icon } from './Icon';
 import { useService } from '../hooks/useService';
-import { LibrariesService, Library, LibraryType } from '../services/LibrariesService';
+import { LibraryType } from '../services/LibrariesService';
 import { classNames } from '../utils/classNames';
+import { librariesStore } from '../store/libraries';
+import { useAppDispatch, useAppSelector } from '../store';
 
 export interface Props {
   className?: string;
@@ -19,16 +21,18 @@ const libraryIcons: Record<LibraryType, string> = {
 };
 
 export const Layout: React.FC<Props> = ({ children, className }) => {
-  // TODO: The nav bar is flickering on navigate.
-  // We probably want to move this to global state
-  const librariesService = useService(LibrariesService);
-  const [libraries, setLibraries] = useState<Library[]>();
+  const {
+    selectors,
+    actions: { getLibrariesAsync },
+  } = useService(librariesStore);
+  const libraries = useAppSelector(selectors.libraries);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (!libraries) {
-      librariesService.listLibraries().then(setLibraries);
+      dispatch(getLibrariesAsync());
     }
-  }, [libraries, librariesService]);
+  }, [dispatch, getLibrariesAsync, libraries]);
 
   return (
     <div className={classNames('layout', className)}>

@@ -1,10 +1,16 @@
 import React from 'react';
 import { Icon } from './Icon';
 import { fileExtension } from '../utils/fileExtension';
+import { Entry } from '../services/LibrariesService';
 
 export interface Props {
-  name: string;
+  entry: Entry;
 }
+
+export const EntryIcon: React.FC<Props> = ({ entry }) => {
+  const icon = entry.category === 'Folder' ? 'folder' : icons[fileExtension(entry.name)] || 'file';
+  return <Icon icon={icon} />;
+};
 
 const icons: Record<string, string> = {
   pdf: 'file-pdf',
@@ -72,5 +78,3 @@ const icons: Record<string, string> = {
   yml: 'file-code',
   yaml: 'file-code',
 };
-
-export const FileIcon: React.FC<Props> = ({ name }) => <Icon icon={icons[fileExtension(name)] || 'file'} />;
