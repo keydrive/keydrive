@@ -29,6 +29,7 @@
     width: 100%;
     height: $input-height;
     padding: 0 8px;
+    transition: border-color $transition-duration;
 
     &:not(:first-child) {
       margin-left: 12px;
