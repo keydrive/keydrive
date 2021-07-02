@@ -31,10 +31,8 @@ export const FilesPage: React.FC = () => {
   }, [libraries, library, path]);
 
   useEffect(() => {
-    if (library) {
-      const id = parseInt(library);
-      setLibraryName(librariesList?.find((l) => l.id === id)?.name);
-    }
+    const id = parseInt(library);
+    setLibraryName(librariesList?.find((l) => l.id === id)?.name);
   }, [librariesList, library]);
 
   useEffect(() => setSelectedEntry(undefined), [path]);
