@@ -2,6 +2,7 @@ import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { classNames } from '../utils/classNames';
 import { Button } from './Button';
 import { Icon } from './Icon';
+import { IconButton } from './IconButton';
 
 export interface Props {
   onClose: () => void;
@@ -42,10 +43,7 @@ export const Modal: React.FC<Props> = ({ children, title, panelled, onClose, sho
       <div className={classNames('modal-overlay', closing && 'closing')} onClick={close} />
       <div className={classNames('modal', closing && 'closing', panelled && 'panelled')}>
         <h2>
-          {title}{' '}
-          <Button onClick={close}>
-            <Icon icon="times" />
-          </Button>
+          {title} <IconButton onClick={close} icon="times" />
         </h2>
         <div className="modal-content">{children}</div>
       </div>
