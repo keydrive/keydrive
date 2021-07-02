@@ -24,6 +24,11 @@
     color: var(--field-foreground);
     outline: none;
     border: 1px solid var(--field-border);
+    border-radius: $border-radius;
+    font-size: 1rem;
+    width: 100%;
+    height: $input-height;
+    padding: 0 8px;
 
     &:not(:first-child) {
       margin-left: 12px;
