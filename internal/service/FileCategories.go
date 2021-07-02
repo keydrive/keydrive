@@ -1,6 +1,10 @@
 package service
 
-import "clearcloud/internal/model"
+import (
+	"clearcloud/internal/model"
+	"path/filepath"
+	"strings"
+)
 
 // TODO: Collect WAY more types
 
@@ -709,4 +713,26 @@ var MimeToCategory = map[string]model.Category{
 	"image":                        model.CategoryImage,
 	"text":                         model.CategoryDocument,
 	"video":                        model.CategoryVideo,
+}
+
+func GetFileCategory(name string, mimeType string, isDir bool) (model.Category, string) {
+	if isDir {
+		return model.CategoryFolder, ""
+	}
+	if mimeType == "" || mimeType == "application/octet-stream" {
+		if trueMimeType, ok := ExtToMime[filepath.Ext(name)]; ok {
+			mimeType = trueMimeType
+		}
+	}
+
+	if cat, ok := MimeToCategory[mimeType]; ok {
+		return cat, mimeType
+	}
+	slash := strings.IndexRune(mimeType, '/')
+	if slash > 0 {
+		if cat, ok := MimeToCategory[mimeType[0:slash]]; ok {
+			return cat, mimeType
+		}
+	}
+	return model.CategoryBinary, mimeType
 }

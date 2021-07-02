@@ -40,28 +40,6 @@ func (fs *FileSystem) resolve(library model.Library, path ...string) string {
 	return filepath.Clean(filepath.Join(library.RootFolder, filepath.Join(path...)))
 }
 
-func (fs *FileSystem) getFileCategory(name string, mimeType string, isDir bool) (model.Category, string) {
-	if isDir {
-		return model.CategoryFolder, ""
-	}
-	if mimeType == "" || mimeType == "application/octet-stream" {
-		if trueMimeType, ok := ExtToMime[filepath.Ext(name)]; ok {
-			mimeType = trueMimeType
-		}
-	}
-
-	if cat, ok := MimeToCategory[mimeType]; ok {
-		return cat, mimeType
-	}
-	slash := strings.IndexRune(mimeType, '/')
-	if slash > 0 {
-		if cat, ok := MimeToCategory[mimeType[0:slash]]; ok {
-			return cat, mimeType
-		}
-	}
-	return model.CategoryBinary, mimeType
-}
-
 func (fs *FileSystem) GetEntriesForLibrary(library model.Library, parentPath string) ([]FileInfo, error) {
 	parentPath = fs.cleanRelativePath(parentPath)
 	target := fs.resolve(library, parentPath)
@@ -74,7 +52,7 @@ func (fs *FileSystem) GetEntriesForLibrary(library model.Library, parentPath str
 	output := make([]FileInfo, len(files))
 
 	for i, file := range files {
-		category, _ := fs.getFileCategory(file.Name(), "", file.IsDir())
+		category, _ := GetFileCategory(file.Name(), "", file.IsDir())
 		output[i] = FileInfo{
 			Name:     file.Name(),
 			Category: category,
@@ -158,7 +136,7 @@ func (fs *FileSystem) DeleteEntryInLibrary(library model.Library, path string) e
 
 func (fs *FileSystem) toInfo(file os.FileInfo, parent string, mimeType string) FileInfo {
 	name := file.Name()
-	category, mimeType := fs.getFileCategory(name, mimeType, file.IsDir())
+	category, mimeType := GetFileCategory(name, mimeType, file.IsDir())
 	size := file.Size()
 	if file.IsDir() {
 		size = 0
