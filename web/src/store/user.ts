@@ -6,14 +6,11 @@ import { PersistConfig } from 'redux-persist/es/types';
 import storage from 'redux-persist/lib/storage';
 import { UpdateUser, User, UserService } from '../services/UserService';
 import { ApiError } from '../services/ApiService';
+import { RootState } from './index';
 
 export interface State {
   token?: string;
   currentUser?: User;
-}
-
-interface RootState {
-  user: State;
 }
 
 const initialState: State = {};

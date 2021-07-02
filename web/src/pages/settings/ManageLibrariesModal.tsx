@@ -5,6 +5,8 @@ import { useService } from '../../hooks/useService';
 import { Form } from '../../components/input/Form';
 import { TextInput } from '../../components/input/TextInput';
 import { SelectField } from '../../components/input/SelectField';
+import { useAppDispatch } from '../../store';
+import { librariesStore } from '../../store/libraries';
 
 const CreateLibraryForm: React.FC<{ onDone: (id: number) => void }> = ({ onDone }) => {
   const [name, setName] = useState('');
@@ -85,6 +87,10 @@ export const ManageLibrariesModal: React.FC<Props> = ({ onClose }) => {
   const librariesService = useService(LibrariesService);
   const [selectedLibrary, setSelectedLibrary] = useState<number>();
   const library = libraries.find((l) => l.id === selectedLibrary);
+  const dispatch = useAppDispatch();
+  const {
+    actions: { getLibrariesAsync },
+  } = useService(librariesStore);
 
   const refreshLibraries = useCallback(
     (showId?: number) => {
@@ -92,8 +98,9 @@ export const ManageLibrariesModal: React.FC<Props> = ({ onClose }) => {
         setLibraries(libs);
         setSelectedLibrary(showId || libs[0]?.id);
       });
+      dispatch(getLibrariesAsync());
     },
-    [librariesService]
+    [dispatch, getLibrariesAsync, librariesService]
   );
 
   useEffect(() => refreshLibraries(), [refreshLibraries]);
