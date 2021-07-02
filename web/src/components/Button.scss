@@ -53,10 +53,4 @@
       color: var(--primary-inverted);
     }
   }
-
-  &.square {
-    padding: 0;
-    width: $input-height;
-    flex: 0 0 $input-height;
-  }
 }
