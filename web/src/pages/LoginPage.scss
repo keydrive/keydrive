@@ -1,12 +1,22 @@
 .login-page {
+  @media screen and (prefers-color-scheme: dark) {
+    background-image: url('../images/login_dark.jpg');
+  }
+  @media screen and (prefers-color-scheme: light) {
+    background-image: url('../images/login_light.jpg');
+  }
+  background-size: cover;
+  height: 100vh;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
 
   .login-box {
     text-align: center;
     width: 280px;
+    background-color: var(--panel-color);
+    padding: 12px;
 
     .title {
       margin-bottom: 24px;
