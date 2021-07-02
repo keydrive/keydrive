@@ -35,6 +35,25 @@ func getAccessToLib(c *gin.Context, libs *service.Library, writeAccess bool, tx 
 	return library.Library, nil
 }
 
+func resolvePath(c *gin.Context, libs *service.Library, db *gorm.DB, writeAccess bool) (model.Library, string, error) {
+	library, err := getAccessToLib(c, libs, writeAccess, db)
+	if err != nil {
+		return library, "", err
+	}
+	path := c.Param("path")
+	if path == "" {
+		return library, "", ApiError{Status: http.StatusBadRequest}
+	}
+	path, err = url.QueryUnescape(path)
+	if err != nil {
+		return library, "", ApiError{
+			Status:      http.StatusBadRequest,
+			Description: "path parameter must be url encoded",
+		}
+	}
+	return library, path, nil
+}
+
 // ListEntries
 // @Tags Files
 // @Router /api/libraries/{libraryId}/entries [get]
@@ -72,22 +91,9 @@ func ListEntries(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin
 // @Param libraryId path int true "The library id"
 func GetEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		library, err := getAccessToLib(c, libs, false, db)
+		library, path, err := resolvePath(c, libs, db, false)
 		if err != nil {
 			writeError(c, err)
-			return
-		}
-		path := c.Param("path")
-		if path == "" {
-			simpleError(c, http.StatusBadRequest)
-			return
-		}
-		path, err = url.QueryUnescape(path)
-		if err != nil {
-			writeError(c, ApiError{
-				Status:      http.StatusBadRequest,
-				Description: "path parameter must be url encoded",
-			})
 			return
 		}
 		entry, err := fs.GetEntryMetadata(library, path)
@@ -109,22 +115,9 @@ func GetEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin.Ha
 // @Param libraryId path int true "The library id"
 func DownloadEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		library, err := getAccessToLib(c, libs, false, db)
+		library, path, err := resolvePath(c, libs, db, false)
 		if err != nil {
 			writeError(c, err)
-			return
-		}
-		path := c.Param("path")
-		if path == "" {
-			simpleError(c, http.StatusBadRequest)
-			return
-		}
-		path, err = url.QueryUnescape(path)
-		if err != nil {
-			writeError(c, ApiError{
-				Status:      http.StatusBadRequest,
-				Description: "path parameter must be url encoded",
-			})
 			return
 		}
 		entry, err := fs.GetEntryMetadata(library, path)
@@ -218,22 +211,9 @@ func CreateEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin
 // @Param libraryId path int true "The library id"
 func DeleteEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		library, err := getAccessToLib(c, libs, true, db)
+		library, path, err := resolvePath(c, libs, db, true)
 		if err != nil {
 			writeError(c, err)
-			return
-		}
-		path := c.Param("path")
-		if path == "" {
-			simpleError(c, http.StatusBadRequest)
-			return
-		}
-		path, err = url.QueryUnescape(path)
-		if err != nil {
-			writeError(c, ApiError{
-				Status:      http.StatusBadRequest,
-				Description: "path parameter must be url encoded",
-			})
 			return
 		}
 		err = fs.DeleteEntryInLibrary(library, path)
