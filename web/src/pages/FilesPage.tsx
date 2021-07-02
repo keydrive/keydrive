@@ -5,7 +5,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import { useService } from '../hooks/useService';
 import { Entry, LibrariesService } from '../services/LibrariesService';
 import { Icon } from '../components/Icon';
-import { FileIcon } from '../components/FileIcon';
+import { EntryIcon } from '../components/EntryIcon';
 import { humanReadableSize } from '../utils/humanReadableSize';
 import { parentPath, resolvePath } from '../utils/path';
 import { sortEntries } from '../utils/sortEntries';
@@ -83,7 +83,7 @@ export const FilesPage: React.FC = () => {
                     onClick={() => setSelectedEntry(entry)}
                   >
                     <td className="icon">
-                      {entry.category === 'Folder' ? <Icon icon="folder" /> : <FileIcon name={entry.name} />}
+                      <EntryIcon entry={entry} />
                     </td>
                     <td>{entry.name}</td>
                     <td>{humanReadableDateTime(entry.modified)}</td>
@@ -116,7 +116,7 @@ const EntryDetails: React.FC<EntryDetailsProps> = ({ entry, onClose }) => (
       <Icon icon="times" />
     </div>
     <div className="preview">
-      {entry.category === 'Folder' ? <Icon icon="folder" /> : <FileIcon name={entry.name} />}
+      <EntryIcon entry={entry} />
     </div>
     <div className="name">{entry.name}</div>
     <div className="category">{entry.category}</div>
