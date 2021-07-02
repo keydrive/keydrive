@@ -1,34 +1,28 @@
 import { checkPendingMocks } from '../__testutils__/checkPendingMocks';
 import fetchMock from 'fetch-mock';
-import { render } from '../__testutils__/render';
+import { ReallyDeepPartial, render } from '../__testutils__/render';
 import { FilesPage } from './FilesPage';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { RootState } from '../store';
 
-describe('FilesPage', () => {
-  afterEach(checkPendingMocks);
-
-  beforeEach(() => {
-    fetchMock.getOnce('path:/api/libraries/', {
-      status: 200,
-      body: [
-        {
-          id: 4,
-          name: 'Mock Library',
-          type: 'generic',
-          canWrite: true,
-        },
-      ],
-    });
-    fetchMock.getOnce('path:/api/libraries/4', {
-      status: 200,
-      body: {
+const initialState: ReallyDeepPartial<RootState> = {
+  libraries: {
+    libraries: [
+      {
         id: 4,
         name: 'Mock Library',
         type: 'generic',
         canWrite: true,
       },
-    });
+    ],
+  },
+};
+
+describe('FilesPage', () => {
+  afterEach(checkPendingMocks);
+
+  beforeEach(() => {
     fetchMock.getOnce(
       {
         url: 'path:/api/libraries/4/entries',
@@ -63,6 +57,7 @@ describe('FilesPage', () => {
       path: '/files/4',
       route: '/files/:library/:path*',
       loggedIn: true,
+      initialState,
     });
 
     expect(await screen.findByText('Mock Library', { selector: 'h1' })).toBeDefined();
@@ -75,6 +70,7 @@ describe('FilesPage', () => {
       path: '/files/4',
       route: '/files/:library/:path*',
       loggedIn: true,
+      initialState,
     });
 
     expect(await screen.findByText('Ballmers Peak Label.xcf')).toBeDefined();
@@ -112,6 +108,7 @@ describe('FilesPage', () => {
       path: '/files/4',
       route: '/files/:library/:path*',
       loggedIn: true,
+      initialState,
     });
 
     await userEvent.dblClick(await screen.findByText('Documents'));
@@ -146,6 +143,7 @@ describe('FilesPage', () => {
       path: '/files/4/Documents',
       route: '/files/:library/:path*',
       loggedIn: true,
+      initialState,
     });
 
     expect(await screen.findByText('ClearCloud Settings.pdf')).toBeDefined();

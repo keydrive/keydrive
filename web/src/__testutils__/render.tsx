@@ -6,7 +6,7 @@ import { Provider } from 'react-redux';
 import { initializeStore, RootState } from '../store';
 import { render as rtlRender } from '@testing-library/react';
 
-type ReallyDeepPartial<T> = {
+export type ReallyDeepPartial<T> = {
   // eslint-disable-next-line @typescript-eslint/ban-types
   [K in keyof T]?: T[K] extends object | undefined ? ReallyDeepPartial<T[K]> : T[K];
 };

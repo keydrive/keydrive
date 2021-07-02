@@ -10,6 +10,8 @@ import { humanReadableSize } from '../utils/humanReadableSize';
 import { parentPath, resolvePath } from '../utils/path';
 import { sortEntries } from '../utils/sortEntries';
 import { humanReadableDateTime } from '../utils/humanReadableDateTime';
+import { librariesStore } from '../store/libraries';
+import { useAppSelector } from '../store';
 
 export const FilesPage: React.FC = () => {
   const libraries = useService(LibrariesService);
@@ -17,12 +19,9 @@ export const FilesPage: React.FC = () => {
   const history = useHistory();
   const [entries, setEntries] = useState<Entry[]>();
   const [selectedEntry, setSelectedEntry] = useState<Entry>();
-
-  // TODO: Replace this with library info from global state.
-  const [libraryName, setLibraryName] = useState('');
-  useEffect(() => {
-    libraries.getLibraryDetails(parseInt(library)).then((l) => setLibraryName(l.name));
-  }, [libraries, library]);
+  const [libraryName, setLibraryName] = useState<string>();
+  const { selectors } = useService(librariesStore);
+  const librariesList = useAppSelector(selectors.libraries);
 
   useEffect(() => {
     libraries
@@ -30,6 +29,13 @@ export const FilesPage: React.FC = () => {
       .then(sortEntries)
       .then(setEntries);
   }, [libraries, library, path]);
+
+  useEffect(() => {
+    if (library) {
+      const id = parseInt(library);
+      setLibraryName(librariesList?.find((l) => l.id === id)?.name);
+    }
+  }, [librariesList, library]);
 
   useEffect(() => setSelectedEntry(undefined), [path]);
 
@@ -93,31 +99,38 @@ export const FilesPage: React.FC = () => {
             </div>
           )}
         </Panel>
-        {selectedEntry && (
-          <Panel className="details">
-            <div className="close" aria-label="Close details" onClick={() => setSelectedEntry(undefined)}>
-              <Icon icon="times" />
-            </div>
-            <div className="preview">
-              {selectedEntry.category === 'Folder' ? <Icon icon="folder" /> : <FileIcon name={selectedEntry.name} />}
-            </div>
-            <div className="name">{selectedEntry.name}</div>
-            <div className="category">{selectedEntry.category}</div>
-            <div className="columns">
-              <div>
-                <span>Modified</span>
-                <span>{humanReadableDateTime(selectedEntry.modified)}</span>
-              </div>
-              {selectedEntry.category !== 'Folder' && (
-                <div>
-                  <span>Size</span>
-                  <span>{humanReadableSize(selectedEntry.size)}</span>
-                </div>
-              )}
-            </div>
-          </Panel>
-        )}
+        {selectedEntry && <EntryDetails entry={selectedEntry} onClose={() => setSelectedEntry(undefined)} />}
       </main>
     </Layout>
   );
 };
+
+interface EntryDetailsProps {
+  entry: Entry;
+  onClose: () => void;
+}
+
+const EntryDetails: React.FC<EntryDetailsProps> = ({ entry, onClose }) => (
+  <Panel className="details">
+    <div className="close" aria-label="Close details" onClick={onClose}>
+      <Icon icon="times" />
+    </div>
+    <div className="preview">
+      {entry.category === 'Folder' ? <Icon icon="folder" /> : <FileIcon name={entry.name} />}
+    </div>
+    <div className="name">{entry.name}</div>
+    <div className="category">{entry.category}</div>
+    <div className="columns">
+      <div>
+        <span>Modified</span>
+        <span>{humanReadableDateTime(entry.modified)}</span>
+      </div>
+      {entry.category !== 'Folder' && (
+        <div>
+          <span>Size</span>
+          <span>{humanReadableSize(entry.size)}</span>
+        </div>
+      )}
+    </div>
+  </Panel>
+);
