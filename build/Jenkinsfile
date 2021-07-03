@@ -40,7 +40,7 @@ pipeline {
         docker {
           label 'docker && linux && amd64'
           image 'golang:1.16'
-          args '-v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
+          args '-v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock'
         }
       }
       environment {
