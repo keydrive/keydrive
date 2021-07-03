@@ -50,7 +50,7 @@ pipeline {
 
         // Test the backend
         script {
-          docker.image('postgres:13').withRun('-e POSTGRES_USER=postgres POSTGRES_PASSWORD=postgres') { c ->
+          docker.image('postgres:13').withRun('-e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres') { c ->
             unstash 'frontend-build'
             sh 'go get -u github.com/jstemmer/go-junit-report'
             def postgresIp = waitForContainer(c, 5432)
