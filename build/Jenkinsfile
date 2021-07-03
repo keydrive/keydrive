@@ -54,7 +54,7 @@ pipeline {
             unstash 'frontend-build'
             sh 'go get -u github.com/jstemmer/go-junit-report'
             def postgresIp = waitForContainer(c, 5432)
-            sh "POSTGRES_HOST=${postgresID} go test -v -coverprofile=coverage.out ./... 2>&1 | go-junit-report > junit.xml"
+            sh "POSTGRES_HOST=${postgresIp} go test -v -coverprofile=coverage.out ./... 2>&1 | go-junit-report > junit.xml"
           }
         }
         junit checksName: 'Go Tests', testResults: 'junit.xml'
