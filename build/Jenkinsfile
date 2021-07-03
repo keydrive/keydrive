@@ -49,11 +49,13 @@ pipeline {
       steps {
 
         // Test the backend
-        docker.image('postgres:13').withRun('-e "POSTGRES_USER=postgres POSTGRES_PASSWORD=postgres') { c ->
+        script {
+          docker.image('postgres:13').withRun('-e "POSTGRES_USER=postgres POSTGRES_PASSWORD=postgres') { c ->
             unstash 'frontend-build'
             sh 'go get -u github.com/jstemmer/go-junit-report'
             def postgresIp = waitForContainer(c, 5432)
             sh "POSTGRES_HOST=${postgresID} go test -v -coverprofile=coverage.out ./... 2>&1 | go-junit-report > junit.xml"
+          }
         }
         junit checksName: 'Go Tests', testResults: 'junit.xml'
         stash includes: 'coverage.out,junit.xml', name: 'backend-tests', useDefaultExcludes: false
