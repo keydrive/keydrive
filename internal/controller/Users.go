@@ -3,7 +3,6 @@ package controller
 import (
 	"clearcloud/internal/model"
 	"clearcloud/internal/service"
-	"clearcloud/pkg/oauth"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
@@ -54,7 +53,7 @@ type CreateUserDTO struct {
 // @Param body body CreateUserDTO true "The new user"
 // @Success 201 {object} model.User
 // @Failure 409 {object} ApiError "This username is already taken"
-func CreateUser(db *gorm.DB, pwdEnc oauth.PasswordEncoder) gin.HandlerFunc {
+func CreateUser(db *gorm.DB, pwdEnc *service.BcryptEncoder) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var create CreateUserDTO
 		if err := c.ShouldBindJSON(&create); err != nil {
@@ -115,7 +114,7 @@ type UpdateUserDTO struct {
 // @Param body body UpdateUserDTO true "The changes"
 // @Param userId path int true "The user id"
 // @Success 200 {object} model.User
-func UpdateUser(db *gorm.DB, users *service.User, pwdEnc oauth.PasswordEncoder) gin.HandlerFunc {
+func UpdateUser(db *gorm.DB, users *service.User, pwdEnc *service.BcryptEncoder) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userId, ok := intParam(c, "userId")
 		if !ok {
