@@ -3,7 +3,6 @@ package controller
 import (
 	"clearcloud/internal/model"
 	"clearcloud/internal/service"
-	"clearcloud/pkg/oauth"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -36,7 +35,7 @@ type LibraryPage struct {
 func ListLibraries(db *gorm.DB, libs *service.Library) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var page LibraryPage
-		user := oauth.GetUser(c).(model.User)
+		user, _ := GetAuthenticatedUser(c)
 		query := libs.GetLibrariesWithAccessForUser(user, db)
 		returnPage(c, query, &page, &page.TotalElements, &page.Elements)
 	}
@@ -112,7 +111,7 @@ func UpdateLibrary(db *gorm.DB, libs *service.Library) gin.HandlerFunc {
 			simpleError(c, http.StatusNotFound)
 			return
 		}
-		user := oauth.GetUser(c).(model.User)
+		user, _ := GetAuthenticatedUser(c)
 
 		var update UpdateLibraryDTO
 		if err := c.ShouldBindJSON(&update); err != nil {
@@ -161,7 +160,7 @@ func GetLibrary(db *gorm.DB, libs *service.Library) gin.HandlerFunc {
 			simpleError(c, http.StatusNotFound)
 			return
 		}
-		user := oauth.GetUser(c).(model.User)
+		user, _ := GetAuthenticatedUser(c)
 		var library LibraryDetails
 		if result := libs.GetLibrariesForUser(user, db).Take(&library, libraryId); result.Error != nil {
 			writeError(c, result.Error)
@@ -192,7 +191,7 @@ func DeleteLibrary(db *gorm.DB, libs *service.Library) gin.HandlerFunc {
 			c.JSON(http.StatusNotFound, nil)
 			return
 		}
-		user := oauth.GetUser(c).(model.User)
+		user, _ := GetAuthenticatedUser(c)
 
 		err := db.Transaction(func(tx *gorm.DB) error {
 			result := db.Where("library_id = ?", libraryId).Delete(model.CanAccessLibrary{})
@@ -242,7 +241,7 @@ func ShareLibrary(db *gorm.DB, libs *service.Library, users *service.User) gin.H
 			return
 		}
 
-		user := oauth.GetUser(c).(model.User)
+		user, _ := GetAuthenticatedUser(c)
 		var targetUser model.User
 		var targetLibrary model.Library
 

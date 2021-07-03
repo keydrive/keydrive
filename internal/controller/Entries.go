@@ -3,7 +3,6 @@ package controller
 import (
 	"clearcloud/internal/model"
 	"clearcloud/internal/service"
-	"clearcloud/pkg/oauth"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -25,7 +24,7 @@ func getAccessToLib(c *gin.Context, libs *service.Library, writeAccess bool, tx 
 	if !ok {
 		return library.Library, ApiError{Status: http.StatusNotFound}
 	}
-	user := oauth.GetUser(c).(model.User)
+	user, _ := GetAuthenticatedUser(c)
 	if err := libs.GetLibrariesWithAccessForUser(user, tx).Take(&library, libraryId).Error; err != nil {
 		return library.Library, ApiError{Status: http.StatusNotFound}
 	}
