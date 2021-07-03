@@ -1,11 +1,15 @@
 package controller
 
 import (
+	"clearcloud/internal/model"
 	"database/sql"
 	"fmt"
+	"github.com/google/uuid"
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"gorm.io/driver/postgres"
+	"io"
 	"math/rand"
+	"net/http"
 	"os"
 	"testing"
 	"time"
@@ -90,9 +94,38 @@ func createTestContext() App {
 }
 
 var testApp App
+var adminToken string
+var lonelyToken string
 
 func TestMain(m *testing.M) {
 	testApp = createTestContext()
+	var admin model.User
+	testApp.DB.Model(&model.User{}).Where(&model.User{Username: "admin"}).Take(&admin)
+	adminToken = uuid.NewString()
+	testApp.Tokens.CreateToken(admin, adminToken)
+
+	lonelyUser := model.User{
+		Username:       "no-access",
+		FirstName:      "I have",
+		LastName:       "access to nothing",
+		HashedPassword: "4fr0u892430u82t8u0tu2308t20u9",
+	}
+	testApp.DB.Create(&lonelyUser)
+	lonelyToken = uuid.NewString()
+	testApp.Tokens.CreateToken(lonelyUser, lonelyToken)
+
 	defer testApp.Close()
 	m.Run()
+}
+
+func adminRequest(method, url string, body io.Reader) *http.Request {
+	req, _ := http.NewRequest(method, url, body)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", adminToken))
+	return req
+}
+
+func noAccessUserRequest(method, url string, body io.Reader) *http.Request {
+	req, _ := http.NewRequest(method, url, body)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", lonelyToken))
+	return req
 }
