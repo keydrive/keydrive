@@ -9,6 +9,10 @@ table {
   td,
   th {
     padding: 2px 6px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 0;
+    white-space: nowrap;
 
     &.icon {
       text-align: center;
