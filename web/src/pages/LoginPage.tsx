@@ -5,7 +5,7 @@ import { userStore } from '../store/user';
 import { useAppDispatch } from '../store';
 import { useService } from '../hooks/useService';
 import { PasswordInput } from '../components/input/PasswordInput';
-import logo from '../images/logo.png';
+import logo from '../images/logo.svg';
 
 export const LoginPage: React.FC = () => {
   const dispatch = useAppDispatch();
