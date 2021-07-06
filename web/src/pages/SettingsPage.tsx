@@ -8,7 +8,6 @@ import { Tag } from '../components/Tag';
 import { SettingButton } from '../components/SettingButton';
 import { ChangePasswordModal } from './settings/ChangePasswordModal';
 import { EditProfileModal } from './settings/EditProfileModal';
-import { ManageUsersModal } from './settings/ManageUsersModal';
 import { ManageLibrariesModal } from './settings/ManageLibrariesModal';
 import { useHistory, useParams } from 'react-router-dom';
 
@@ -38,9 +37,6 @@ export const SettingsPage: React.FC = () => {
       break;
     case 'libraries':
       Modal = ManageLibrariesModal;
-      break;
-    case 'users':
-      Modal = ManageUsersModal;
       break;
   }
   return (
