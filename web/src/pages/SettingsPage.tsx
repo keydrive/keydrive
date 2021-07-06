@@ -75,11 +75,11 @@ export const SettingsPage: React.FC = () => {
             <SettingButton icon="user-lock" label="Change Password" onClick={() => showModal('password')} />
             {user?.isAdmin && (
               <>
-                <SettingButton icon="users" label="Manage Users" onClick={() => showModal('users')} />
+                {/*<SettingButton icon="users" label="Manage Users" onClick={() => showModal('users')} />*/}
                 <SettingButton icon="folder" label="Manage Libraries" onClick={() => showModal('libraries')} />
-                <SettingButton disabled icon="align-justify" label="System Logs" onClick={() => undefined} />
-                <SettingButton disabled icon="sync" label="Check for Updates" onClick={() => undefined} />
-                <SettingButton disabled icon="user-shield" label="Security & Privacy" onClick={() => undefined} />
+                {/*<SettingButton disabled icon="align-justify" label="System Logs" onClick={() => undefined} />*/}
+                {/*<SettingButton disabled icon="sync" label="Check for Updates" onClick={() => undefined} />*/}
+                {/*<SettingButton disabled icon="user-shield" label="Security & Privacy" onClick={() => undefined} />*/}
               </>
             )}
           </div>
