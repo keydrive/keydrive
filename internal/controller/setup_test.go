@@ -96,6 +96,8 @@ func createTestContext() App {
 var testApp App
 var adminToken string
 var lonelyToken string
+var regularToken string
+var regularUser model.User
 
 func TestMain(m *testing.M) {
 	testApp = createTestContext()
@@ -114,6 +116,16 @@ func TestMain(m *testing.M) {
 	lonelyToken = uuid.NewString()
 	testApp.Tokens.CreateToken(lonelyUser, lonelyToken)
 
+	regularUser = model.User{
+		Username:       "simple-access",
+		FirstName:      "I have",
+		LastName:       "access to some stuff",
+		HashedPassword: "4fr0u892430u82t8u0tu2308t20u9",
+	}
+	testApp.DB.Create(&regularUser)
+	regularToken = uuid.NewString()
+	testApp.Tokens.CreateToken(regularUser, regularToken)
+
 	defer testApp.Close()
 	m.Run()
 }
@@ -121,6 +133,12 @@ func TestMain(m *testing.M) {
 func adminRequest(method, url string, body io.Reader) *http.Request {
 	req, _ := http.NewRequest(method, url, body)
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", adminToken))
+	return req
+}
+
+func regularUserRequest(method, url string, body io.Reader) *http.Request {
+	req, _ := http.NewRequest(method, url, body)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", regularToken))
 	return req
 }
 
