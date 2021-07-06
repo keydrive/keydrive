@@ -5,6 +5,7 @@ import { userStore } from '../store/user';
 import { useAppDispatch } from '../store';
 import { useService } from '../hooks/useService';
 import { PasswordInput } from '../components/input/PasswordInput';
+import logo from '../images/logo.png';
 
 export const LoginPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -19,7 +20,9 @@ export const LoginPage: React.FC = () => {
   return (
     <div className="login-page">
       <div className="login-box">
-        <div className="title">Welcome to ClearCloud</div>
+        <div className="title">
+          <img src={logo} alt="ClearCloud" />
+        </div>
         <Form
           onSubmit={async () => {
             setError(false);

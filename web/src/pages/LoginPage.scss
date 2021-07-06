@@ -20,6 +20,11 @@
 
     .title {
       margin-bottom: 24px;
+      padding: 12px;
+
+      img {
+        width: 100%;
+      }
     }
 
     button[type='submit'] {
