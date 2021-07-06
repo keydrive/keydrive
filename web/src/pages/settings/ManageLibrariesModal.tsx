@@ -1,22 +1,23 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Modal, ModalLeftPanel, ModalRightPanel } from '../../components/Modal';
-import { LibrariesService, LibraryDetails } from '../../services/LibrariesService';
+import { BrowseResponse, LibrariesService, LibraryDetails } from '../../services/LibrariesService';
 import { useService } from '../../hooks/useService';
 import { Form } from '../../components/input/Form';
 import { TextInput } from '../../components/input/TextInput';
 import { SelectField } from '../../components/input/SelectField';
+import { IconButton } from '../../components/IconButton';
 import { useAppDispatch } from '../../store';
 import { librariesStore } from '../../store/libraries';
+import { Modal, ModalLeftPanel, ModalRightPanel } from '../../components/Modal';
 
 const CreateLibraryForm: React.FC<{ onDone: (id: number) => void }> = ({ onDone }) => {
   const [name, setName] = useState('');
   const [folder, setFolder] = useState('');
-  const [subFolders, setSubFolders] = useState<string[]>([]);
+  const [browseSet, setBrowseSet] = useState<BrowseResponse>();
   const librariesService = useService(LibrariesService);
   const [error, setError] = useState<string>();
 
   useEffect(() => {
-    librariesService.getSubFolders(folder).then(setSubFolders);
+    librariesService.getSubFolders(folder).then(setBrowseSet);
   }, [folder, librariesService]);
   return (
     <>
@@ -39,8 +40,31 @@ const CreateLibraryForm: React.FC<{ onDone: (id: number) => void }> = ({ onDone 
         submitLabel="Create"
       >
         <TextInput required label="Name:" value={name} onChange={setName} id="name" />
-        <TextInput required label="Folder:" value={folder} onChange={setFolder} id="name" />
-        <SelectField options={subFolders} onSelect={setFolder} id="subfolders" />
+        <TextInput
+          required
+          label={
+            <>
+              <IconButton
+                className="parent-dir"
+                type="button"
+                disabled={!browseSet || browseSet.parent === browseSet.path}
+                onClick={() => {
+                  console.log(browseSet);
+                  if (browseSet) {
+                    setFolder(browseSet.parent);
+                  }
+                }}
+                aria-label="Parent directory"
+                icon="level-up-alt"
+              />{' '}
+              Folder:
+            </>
+          }
+          value={folder}
+          onChange={setFolder}
+          id="name"
+        />
+        <SelectField options={browseSet?.folders?.map((f) => f.path) || []} onSelect={setFolder} id="subfolders" />
       </Form>
     </>
   );

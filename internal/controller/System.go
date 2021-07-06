@@ -75,6 +75,7 @@ type BrowseResponseFolder struct {
 
 type BrowseResponse struct {
 	Path    string                 `json:"path"`
+	Parent  string                 `json:"parent"`
 	Folders []BrowseResponseFolder `json:"folders"`
 }
 
@@ -128,6 +129,7 @@ func SystemBrowse(fs *service.FileSystem) gin.HandlerFunc {
 
 		response := BrowseResponse{
 			Path:    normalizedPath,
+			Parent:  filepath.Dir(normalizedPath),
 			Folders: make([]BrowseResponseFolder, len(folders)),
 		}
 		for i, folder := range folders {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { Field, Props as FieldProps } from './Field';
 
 export interface Props extends FieldProps {
@@ -9,7 +9,7 @@ export interface Props extends FieldProps {
   className?: string;
   autoFocus?: boolean;
   required?: boolean;
-  label?: string;
+  label?: string | ReactElement;
 }
 
 export const TextInput: React.FC<Props> = ({ type = 'text', onChange, error, className, label, ...props }) => (

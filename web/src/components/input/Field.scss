@@ -4,6 +4,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+  position: relative;
 
   &.field-error {
     input:not(:focus) {
@@ -16,6 +17,10 @@
     width: 100px;
     text-align: right;
     flex-shrink: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
   }
 
   input {
