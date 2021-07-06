@@ -49,7 +49,6 @@ const CreateLibraryForm: React.FC<{ onDone: (id: number) => void }> = ({ onDone 
                 type="button"
                 disabled={!browseSet || browseSet.parent === browseSet.path}
                 onClick={() => {
-                  console.log(browseSet);
                   if (browseSet) {
                     setFolder(browseSet.parent);
                   }
@@ -135,10 +134,12 @@ export const ManageLibrariesModal: React.FC<Props> = ({ onClose }) => {
         items={libraries}
         selected={selectedLibrary}
         onSelect={setSelectedLibrary}
+        onDeleteLabel="Delete Library"
         onDelete={async (id) => {
           await librariesService.deleteLibrary(id);
           refreshLibraries();
         }}
+        onAddLabel="Add Library"
         onAdd={() => {
           setSelectedLibrary(undefined);
         }}

@@ -55,7 +55,9 @@ export interface LeftPanelProps<T extends { id: number }> {
   items: T[];
   onSelect: (id: number) => void;
   selected?: number;
+  onDeleteLabel?: string;
   onDelete: (id: number) => Promise<void>;
+  onAddLabel?: string;
   onAdd: () => void;
   children: (element: T) => ReactElement;
 }
@@ -65,7 +67,9 @@ export const ModalLeftPanel = <T extends { id: number }>({
   children,
   onSelect,
   selected,
+  onAddLabel,
   onAdd,
+  onDeleteLabel,
   onDelete,
 }: LeftPanelProps<T>): ReactElement => {
   const [deleting, setDeleting] = useState(false);
@@ -85,12 +89,13 @@ export const ModalLeftPanel = <T extends { id: number }>({
         ))}
       </div>
       <div className="actions">
-        <Button onClick={onAdd}>
+        <Button aria-label={onAddLabel} onClick={onAdd}>
           <Icon icon="plus" />
         </Button>
         <Button
           loading={deleting}
           disabled={!selected}
+          aria-label={onDeleteLabel}
           onClick={async () => {
             if (!selected) {
               return;
