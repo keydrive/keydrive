@@ -13,6 +13,7 @@ import { humanReadableDateTime } from '../utils/humanReadableDateTime';
 import { librariesStore } from '../store/libraries';
 import { useAppSelector } from '../store';
 import { IconButton } from '../components/IconButton';
+import { Button } from '../components/Button';
 
 export const FilesPage: React.FC = () => {
   const libraries = useService(LibrariesService);
@@ -41,13 +42,23 @@ export const FilesPage: React.FC = () => {
   return (
     <Layout className="files-page">
       <div className="top-bar">
-        <IconButton
-          className="parent-dir"
-          onClick={() => history.push(`/files/${library}${parentPath(path)}`)}
-          aria-label="Parent directory"
-          icon="level-up-alt"
-        />
-        <h1>{libraryName}</h1>
+        <div>
+          <IconButton
+            className="parent-dir"
+            onClick={() => history.push(`/files/${library}${parentPath(path)}`)}
+            aria-label="Parent directory"
+            icon="level-up-alt"
+          />
+          <h1>{libraryName}</h1>
+        </div>
+        <div className="actions">
+          <Button>
+            <Icon icon="upload" /> Upload
+          </Button>
+          <Button>
+            <Icon icon="folder-plus" /> New Folder
+          </Button>
+        </div>
       </div>
       <main>
         <Panel className="files">

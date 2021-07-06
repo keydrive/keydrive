@@ -1,7 +1,24 @@
 .files-page {
   .top-bar {
+    justify-content: space-between;
+
+    > div {
+      display: flex;
+      align-items: center;
+    }
+
     .parent-dir {
       margin: 0 12px;
+    }
+
+    .actions {
+      .button {
+        margin-left: 12px;
+
+        .icon {
+          margin-right: 6px;
+        }
+      }
     }
   }
 
