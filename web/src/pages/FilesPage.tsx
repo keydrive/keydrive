@@ -15,6 +15,7 @@ import { useAppSelector } from '../store';
 import { IconButton } from '../components/IconButton';
 import { Button } from '../components/Button';
 import { classNames } from '../utils/classNames';
+import { TextInput } from '../components/input/TextInput';
 
 export const FilesPage: React.FC = () => {
   const libraries = useService(LibrariesService);
@@ -26,12 +27,14 @@ export const FilesPage: React.FC = () => {
   const { selectors } = useService(librariesStore);
   const librariesList = useAppSelector(selectors.libraries);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [newFolderName, setNewFolderName] = useState<string>();
 
   const refresh = useCallback(() => {
     libraries
       .getEntries(library, path || '')
       .then(sortEntries)
       .then(setEntries);
+    setNewFolderName(undefined);
   }, [libraries, library, path]);
 
   useEffect(refresh, [refresh]);
@@ -58,6 +61,15 @@ export const FilesPage: React.FC = () => {
     [libraries, library, path, refresh]
   );
 
+  const createFolder = useCallback(
+    async (name: string) => {
+      await libraries.createFolder(library, path || '', name);
+      setNewFolderName(undefined);
+      refresh();
+    },
+    [libraries, library, path, refresh]
+  );
+
   return (
     <Layout className="files-page">
       <div className="top-bar">
@@ -75,15 +87,30 @@ export const FilesPage: React.FC = () => {
           <Button onClick={() => fileInputRef.current?.click()}>
             <Icon icon="upload" /> Upload
           </Button>
-          <Button
-            onClick={async () => {
-              // TODO: folder name.
-              await libraries.createFolder(library, path || '', 'dir');
-              refresh();
-            }}
-          >
-            <Icon icon="folder-plus" /> New Folder
-          </Button>
+          {newFolderName != null ? (
+            <div>
+              <TextInput
+                autoFocus
+                id="new-folder-name"
+                value={newFolderName}
+                onChange={setNewFolderName}
+                iconButton="folder-plus"
+                onButtonClick={() => createFolder(newFolderName)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') {
+                    setNewFolderName(undefined);
+                  }
+                  if (e.key === 'Enter') {
+                    createFolder(newFolderName);
+                  }
+                }}
+              />
+            </div>
+          ) : (
+            <Button onClick={() => setNewFolderName('')}>
+              <Icon icon="folder-plus" /> New Folder
+            </Button>
+          )}
         </div>
       </div>
       <main>

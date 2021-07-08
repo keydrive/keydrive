@@ -12,12 +12,18 @@
     }
 
     .actions {
-      .button {
-        margin-left: 12px;
+      > :not(:last-child) {
+        margin-right: 12px;
+      }
 
+      > .button {
         .icon {
           margin-right: 6px;
         }
+      }
+
+      .field {
+        margin-bottom: 0;
       }
     }
   }
