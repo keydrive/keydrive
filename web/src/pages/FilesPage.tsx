@@ -75,7 +75,13 @@ export const FilesPage: React.FC = () => {
           <Button onClick={() => fileInputRef.current?.click()}>
             <Icon icon="upload" /> Upload
           </Button>
-          <Button>
+          <Button
+            onClick={async () => {
+              // TODO: folder name.
+              await libraries.createFolder(library, path || '', 'dir');
+              refresh();
+            }}
+          >
             <Icon icon="folder-plus" /> New Folder
           </Button>
         </div>

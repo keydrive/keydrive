@@ -92,4 +92,11 @@ export class LibrariesService {
       data: file,
     });
   }
+
+  public createFolder(libraryId: number | string, parent: string, name: string): Promise<Entry> {
+    return this.api.formPost(`/libraries/${libraryId}/entries`, {
+      parent,
+      name,
+    });
+  }
 }
