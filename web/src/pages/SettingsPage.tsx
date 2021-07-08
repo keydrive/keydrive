@@ -27,8 +27,6 @@ export const SettingsPage: React.FC = () => {
 
   let Modal: React.FC<ModalProps> | undefined = undefined;
   switch (activeSetting) {
-    default:
-      break;
     case 'profile':
       Modal = EditProfileModal;
       break;
@@ -37,6 +35,8 @@ export const SettingsPage: React.FC = () => {
       break;
     case 'libraries':
       Modal = ManageLibrariesModal;
+      break;
+    default:
       break;
   }
   return (
