@@ -27,9 +27,10 @@ export interface TestAPI {
 export async function render(element: ReactElement, options: RenderOptions = {}): Promise<TestAPI> {
   const combinedInitialState = options.initialState || {};
   if (options.loggedIn) {
-    combinedInitialState.user = {
-      token: 'mock-token',
-    };
+    if (!combinedInitialState.user) {
+      combinedInitialState.user = {};
+    }
+    combinedInitialState.user.token = 'mock-token';
   }
 
   const injector = new Injector();
