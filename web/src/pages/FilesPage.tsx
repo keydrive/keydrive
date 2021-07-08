@@ -27,12 +27,14 @@ export const FilesPage: React.FC = () => {
   const librariesList = useAppSelector(selectors.libraries);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
+  const refresh = useCallback(() => {
     libraries
       .getEntries(library, path || '')
       .then(sortEntries)
       .then(setEntries);
   }, [libraries, library, path]);
+
+  useEffect(refresh, [refresh]);
 
   useEffect(() => {
     const id = parseInt(library);
@@ -41,15 +43,20 @@ export const FilesPage: React.FC = () => {
 
   useEffect(() => setSelectedEntry(undefined), [path]);
 
-  const uploadFile = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    const files = e.currentTarget.files;
-    if (!files || files.length === 0) {
-      return;
-    }
+  const uploadFile = useCallback(
+    async (e: ChangeEvent<HTMLInputElement>) => {
+      const files = e.currentTarget.files;
+      if (!files || files.length === 0) {
+        return;
+      }
 
-    // TODO
-    console.log(files);
-  }, []);
+      for (let i = 0; i < files.length; i++) {
+        await libraries.uploadFile(library, path || '', files[i]);
+        refresh();
+      }
+    },
+    [libraries, library, path, refresh]
+  );
 
   return (
     <Layout className="files-page">

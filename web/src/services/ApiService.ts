@@ -29,6 +29,17 @@ export class ApiService {
 
   public constructor(private readonly injector: Injector) {}
 
+  private static async handleResponse<T>(resPromise: Promise<Response>): Promise<T> {
+    const response = await resPromise;
+    const responseBody = response.status === 204 ? undefined : await response.json();
+
+    if (response.status >= 400) {
+      throw responseBody;
+    }
+
+    return responseBody;
+  }
+
   public jsonGet<T>(path: string, params?: Record<string, string>): Promise<T> {
     return this.jsonRequest('GET', path, undefined, params);
   }
@@ -64,35 +75,43 @@ export class ApiService {
     return result;
   }
 
+  public async formPost<T>(path: string, body: Record<string, string | Blob>): Promise<T> {
+    const formBody = new FormData();
+    for (const key in body) {
+      if (body.hasOwnProperty(key)) {
+        formBody.set(key, body[key]);
+      }
+    }
+
+    return ApiService.handleResponse(
+      fetch(`/api${path}`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: formBody,
+      })
+    );
+  }
+
   private async jsonRequest<T>(
     method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
     path: string,
     body?: unknown,
     params?: Record<string, string>
   ): Promise<T> {
-    const headers: HeadersInit = {
-      Authorization: `Bearer ${this.getToken()}`,
-      Accept: 'application/json',
-    };
-
+    const headers = this.getHeaders();
     if (body) {
       headers['Content-Type'] = 'application/json';
     }
 
     const paramString = params ? `?${new URLSearchParams(params)}` : '';
 
-    const response = await fetch(`/api${path}${paramString}`, {
-      method,
-      headers,
-      body: body ? JSON.stringify(body) : undefined,
-    });
-    const responseBody = response.status === 204 ? undefined : await response.json();
-
-    if (response.status >= 400) {
-      throw responseBody;
-    }
-
-    return responseBody;
+    return ApiService.handleResponse(
+      fetch(`/api${path}${paramString}`, {
+        method,
+        headers,
+        body: body ? JSON.stringify(body) : undefined,
+      })
+    );
   }
 
   private getToken(): string {
@@ -108,5 +127,12 @@ export class ApiService {
       this.store = this.injector.resolve(initializeStore);
     }
     return this.store;
+  }
+
+  private getHeaders(): Record<string, string> {
+    return {
+      Authorization: `Bearer ${this.getToken()}`,
+      Accept: 'application/json',
+    };
   }
 }
