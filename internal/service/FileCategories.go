@@ -324,6 +324,7 @@ var ExtToMime = map[string]string{
 	".mods":        "application/mods+xml",
 	".mov":         "video/quicktime",
 	".movie":       "video/x-sgi-movie",
+	".mp3":         "audio/mpeg",
 	".mp4":         "video/mp4",
 	".mp4a":        "audio/mp4",
 	".mpc":         "application/vnd.mophun.certificate",

@@ -1,80 +1,41 @@
 import React from 'react';
 import { Icon } from './Icon';
 import { fileExtension } from '../utils/fileExtension';
-import { Entry } from '../services/LibrariesService';
+import { Category, Entry } from '../services/LibrariesService';
 
 export interface Props {
   entry: Entry;
 }
 
 export const EntryIcon: React.FC<Props> = ({ entry }) => {
-  const icon = entry.category === 'Folder' ? 'folder' : icons[fileExtension(entry.name)] || 'file';
+  const icon =
+    entry.category === 'Folder' ? 'folder' : extensionIcons[fileExtension(entry.name)] || categoryIcons[entry.category];
   return <Icon icon={icon} />;
 };
 
-const icons: Record<string, string> = {
-  pdf: 'file-pdf',
-  // Text
-  adoc: 'file-alt',
-  log: 'file-alt',
-  md: 'file-alt',
-  txt: 'file-alt',
-  // Archives
-  '7z': 'file-archive',
-  gz: 'file-archive',
-  rar: 'file-archive',
-  tar: 'file-archive',
-  zip: 'file-archive',
-  // Office
+const categoryIcons: Record<Category, string> = {
+  Archive: 'file-archive',
+  Audio: 'file-audio',
+  Binary: 'file',
+  Document: 'file-alt',
+  Folder: 'folder',
+  Image: 'file-image',
+  Video: 'file-video',
+  'Source Code': 'file-code',
+};
+
+const extensionIcons: Record<string, string> = {
+  csv: 'file-csv',
   doc: 'file-word',
   docx: 'file-word',
-  odt: 'file-word',
-  xls: 'file-excel',
-  xlsx: 'file-excel',
+  odp: 'file-powerpoint',
   ods: 'file-excel',
-  ppt: 'file-powerpoint',
-  pptx: 'file-powerpoint',
+  odt: 'file-word',
+  pdf: 'file-pdf',
   pps: 'file-powerpoint',
   ppsx: 'file-powerpoint',
-  odp: 'file-powerpoint',
-  csv: 'file-csv',
-  // Audio
-  aiff: 'file-audio',
-  alac: 'file-audio',
-  flac: 'file-audio',
-  m4a: 'file-audio',
-  mp3: 'file-audio',
-  ogg: 'file-audio',
-  wav: 'file-audio',
-  // Video
-  avi: 'file-video',
-  mkv: 'file-video',
-  mov: 'file-video',
-  mp4: 'file-video',
-  webm: 'file-video',
-  wmv: 'file-video',
-  // Pictures
-  bmp: 'file-image',
-  gif: 'file-image',
-  jpg: 'file-image',
-  jpeg: 'file-image',
-  png: 'file-image',
-  tiff: 'file-image',
-  webp: 'file-image',
-  // Code
-  bat: 'file-code',
-  cpp: 'file-code',
-  cs: 'file-code',
-  go: 'file-code',
-  h: 'file-code',
-  java: 'file-code',
-  js: 'file-code',
-  json: 'file-code',
-  jsx: 'file-code',
-  php: 'file-code',
-  sh: 'file-code',
-  ts: 'file-code',
-  tsx: 'file-code',
-  yml: 'file-code',
-  yaml: 'file-code',
+  ppt: 'file-powerpoint',
+  pptx: 'file-powerpoint',
+  xls: 'file-excel',
+  xlsx: 'file-excel',
 };
