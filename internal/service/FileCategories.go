@@ -176,6 +176,7 @@ var ExtToMime = map[string]string{
 	".fg5":         "application/vnd.fujitsu.oasysgp",
 	".fh":          "image/x-freehand",
 	".fig":         "application/x-xfig",
+	".flac":        "audio/flac",
 	".fli":         "video/x-fli",
 	".flo":         "application/vnd.micrografx.flo",
 	".flv":         "video/x-flv",
