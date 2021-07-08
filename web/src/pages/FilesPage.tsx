@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Layout } from '../components/Layout';
 import { Panel } from '../components/Panel';
 import { useHistory, useParams } from 'react-router-dom';
@@ -25,6 +25,7 @@ export const FilesPage: React.FC = () => {
   const [libraryName, setLibraryName] = useState<string>();
   const { selectors } = useService(librariesStore);
   const librariesList = useAppSelector(selectors.libraries);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     libraries
@@ -40,6 +41,16 @@ export const FilesPage: React.FC = () => {
 
   useEffect(() => setSelectedEntry(undefined), [path]);
 
+  const uploadFile = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const files = e.currentTarget.files;
+    if (!files || files.length === 0) {
+      return;
+    }
+
+    // TODO
+    console.log(files);
+  }, []);
+
   return (
     <Layout className="files-page">
       <div className="top-bar">
@@ -53,7 +64,8 @@ export const FilesPage: React.FC = () => {
           <h1>{libraryName}</h1>
         </div>
         <div className="actions">
-          <Button>
+          <input ref={fileInputRef} hidden type="file" onChange={uploadFile} multiple />
+          <Button onClick={() => fileInputRef.current?.click()}>
             <Icon icon="upload" /> Upload
           </Button>
           <Button>
