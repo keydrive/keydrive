@@ -50,8 +50,8 @@ export const FilesPage: React.FC = () => {
         return;
       }
 
-      for (let i = 0; i < files.length; i++) {
-        await libraries.uploadFile(library, path || '', files[i]);
+      for (const file of Array.from(files)) {
+        await libraries.uploadFile(library, path || '', file);
         refresh();
       }
     },
