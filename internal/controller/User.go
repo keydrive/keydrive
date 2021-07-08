@@ -1,23 +1,22 @@
 package controller
 
 import (
-	"clearcloud/internal/model"
-	"clearcloud/pkg/oauth"
+	"clearcloud/internal/service"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
 )
 
-// GetAuthenticatedUser
+// GetAuthenticatedUserInfo
 // @Tags Authentication
 // @Router /api/user [get]
 // @Summary Get the currently authenticated user information
 // @Security OAuth2
 // @Produce  json
 // @Success 200 {object} model.User
-func GetAuthenticatedUser() gin.HandlerFunc {
+func GetAuthenticatedUserInfo() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		user := oauth.GetUser(c)
+		user, _ := GetAuthenticatedUser(c)
 		c.JSON(http.StatusOK, user)
 	}
 }
@@ -30,14 +29,13 @@ func GetAuthenticatedUser() gin.HandlerFunc {
 // @Produce  json
 // @Param body body UpdateUserDTO true "The changes"
 // @Success 200 {object} model.User
-func UpdateAuthenticatedUser(db *gorm.DB, pwdEnc oauth.PasswordEncoder) gin.HandlerFunc {
+func UpdateAuthenticatedUser(db *gorm.DB, pwdEnc *service.BcryptEncoder) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		userC := oauth.GetUser(c)
-		if userC == nil {
+		user, found := GetAuthenticatedUser(c)
+		if !found {
 			simpleError(c, http.StatusInternalServerError)
 			return
 		}
-		user := userC.(model.User)
 
 		var update UpdateUserDTO
 		if err := c.ShouldBindJSON(&update); err != nil {
