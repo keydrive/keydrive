@@ -38,7 +38,7 @@ pipeline {
         }
       }
       environment {
-        CGO_ENABLE = "0"
+        CGO_ENABLED = "0"
       }
       steps {
         unstash 'frontend-build'
