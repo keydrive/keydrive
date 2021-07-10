@@ -24,7 +24,7 @@ table {
   }
 
   thead {
-    border-bottom: 1px solid var(--dark-gray);
+    border-bottom: 2px solid var(--background);
 
     th {
       font-weight: 500;
@@ -62,11 +62,13 @@ table {
     tbody {
       tr {
         &:hover,
-        &:focus {
+        &:focus,
+        &.is-selected {
           td {
             background-color: var(--primary-highlight);
           }
         }
+        cursor: pointer;
       }
     }
   }

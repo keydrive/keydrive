@@ -13,6 +13,7 @@ import { humanReadableDateTime } from '../utils/humanReadableDateTime';
 import { librariesStore } from '../store/libraries';
 import { useAppSelector } from '../store';
 import { IconButton } from '../components/IconButton';
+import { classNames } from '../utils/classNames';
 
 export const FilesPage: React.FC = () => {
   const libraries = useService(LibrariesService);
@@ -79,6 +80,7 @@ export const FilesPage: React.FC = () => {
                       }
                     }}
                     onClick={() => setSelectedEntry(entry)}
+                    className={classNames(selectedEntry === entry && 'is-selected')}
                   >
                     <td className="icon">
                       <EntryIcon entry={entry} />

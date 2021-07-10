@@ -1,12 +1,69 @@
-package oauth
+package controller
 
 import (
+	"clearcloud/internal/model"
+	"clearcloud/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"net/http"
+	"strings"
 )
 
-func (s *Server) TokenEndpoint() gin.HandlerFunc {
+func GetAuthenticatedUser(ctx *gin.Context) (user model.User, found bool) {
+	result := ctx.Value(ContextKeyUser)
+	if result == nil {
+		return model.User{}, false
+	}
+	return result.(model.User), true
+}
+
+func Authenticate(tokens *service.Token) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authHeader := c.GetHeader("authorization")
+		if strings.HasPrefix(strings.ToLower(authHeader), "bearer ") {
+			// this is a token!
+			startOfToken := strings.LastIndex(authHeader, " ")
+			accessToken := authHeader[startOfToken+1:]
+			token, foundToken := tokens.GetToken(c, accessToken)
+			if foundToken {
+				client := token.GetClient()
+				c.Set(ContextKeyClient, client)
+				c.Set(ContextKeyUser, token.User)
+			}
+		}
+		c.Next()
+	}
+}
+
+func RequireAuthentication() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		_, found := GetAuthenticatedUser(c)
+		if !found {
+			c.AbortWithStatusJSON(
+				http.StatusUnauthorized,
+				ApiError{Status: http.StatusUnauthorized},
+			)
+			return
+		}
+		c.Next()
+	}
+}
+
+func RequireAdmin() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		user, found := GetAuthenticatedUser(c)
+		if found && user.IsAdmin {
+			c.Next()
+			return
+		}
+		c.AbortWithStatusJSON(
+			http.StatusForbidden,
+			ApiError{Status: http.StatusForbidden},
+		)
+	}
+}
+
+func Token(users *service.User, clients *model.ClientDetailsService, tokens *service.Token, passwordEncoder *service.BcryptEncoder) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		clientId := c.PostForm("client_id")
 		grantType := c.PostForm("grant_type")
@@ -67,7 +124,7 @@ func (s *Server) TokenEndpoint() gin.HandlerFunc {
 			return
 		}
 
-		client := s.ClientDetailsService.GetClient(c, clientId)
+		client := clients.GetClient(c, clientId)
 		if client == nil {
 			c.JSON(
 				http.StatusUnauthorized,
@@ -80,8 +137,8 @@ func (s *Server) TokenEndpoint() gin.HandlerFunc {
 		}
 		c.Set(ContextKeyClient, client)
 
-		user := s.UserDetailsService.GetUser(c, username)
-		if user == nil {
+		user, foundUser := users.GetUser(username)
+		if !foundUser {
 			c.JSON(
 				http.StatusBadRequest,
 				TokenError{
@@ -91,7 +148,7 @@ func (s *Server) TokenEndpoint() gin.HandlerFunc {
 			)
 			return
 		}
-		if !s.PasswordEncoder.Compare(password, user.GetHashedPassword()) {
+		if !passwordEncoder.Compare(password, user.GetHashedPassword()) {
 			c.JSON(
 				http.StatusBadRequest,
 				TokenError{
@@ -103,7 +160,7 @@ func (s *Server) TokenEndpoint() gin.HandlerFunc {
 		}
 		c.Set(ContextKeyUser, user)
 
-		modelToken := s.TokenService.CreateToken(c, uuid.NewString())
+		modelToken := tokens.CreateToken(user, uuid.NewString())
 		if modelToken == nil {
 			c.JSON(
 				http.StatusBadRequest,
@@ -115,7 +172,7 @@ func (s *Server) TokenEndpoint() gin.HandlerFunc {
 			return
 		}
 		tokenResponse := &TokenResponse{
-			AccessToken: modelToken.GetAccessToken(),
+			AccessToken: modelToken.AccessToken,
 			TokenType:   "bearer",
 		}
 		c.JSON(http.StatusOK, tokenResponse)

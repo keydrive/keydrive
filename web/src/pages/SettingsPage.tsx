@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Layout } from '../components/Layout';
 import { Panel } from '../components/Panel';
 import { useAppDispatch, useAppSelector } from '../store';
@@ -8,8 +8,8 @@ import { Tag } from '../components/Tag';
 import { SettingButton } from '../components/SettingButton';
 import { ChangePasswordModal } from './settings/ChangePasswordModal';
 import { EditProfileModal } from './settings/EditProfileModal';
-import { ManageUsersModal } from './settings/ManageUsersModal';
 import { ManageLibrariesModal } from './settings/ManageLibrariesModal';
+import { useHistory, useParams } from 'react-router-dom';
 
 interface ModalProps {
   onClose: () => void;
@@ -20,14 +20,13 @@ export const SettingsPage: React.FC = () => {
     selectors: { currentUser },
     actions: { logout },
   } = useService(userStore);
-  const [modal, showModal] = useState<'profile' | 'password' | 'libraries' | 'users'>();
   const user = useAppSelector(currentUser);
   const dispatch = useAppDispatch();
+  const { setting: activeSetting } = useParams<{ setting?: string }>();
+  const history = useHistory();
 
   let Modal: React.FC<ModalProps> | undefined = undefined;
-  switch (modal) {
-    case undefined:
-      break;
+  switch (activeSetting) {
     case 'profile':
       Modal = EditProfileModal;
       break;
@@ -37,13 +36,12 @@ export const SettingsPage: React.FC = () => {
     case 'libraries':
       Modal = ManageLibrariesModal;
       break;
-    case 'users':
-      Modal = ManageUsersModal;
+    default:
       break;
   }
   return (
     <>
-      {Modal && <Modal onClose={() => showModal(undefined)} />}
+      {Modal && <Modal onClose={() => history.push('/settings')} />}
       <Layout className="settings-page">
         <div className="top-bar">
           <h1>Settings</h1>
@@ -61,7 +59,7 @@ export const SettingsPage: React.FC = () => {
               </div>
             </div>
             <div className="profile-buttons">
-              <SettingButton icon="user-edit" label="Edit Profile" onClick={() => showModal('profile')} />
+              <SettingButton icon="user-edit" label="Edit Profile" onClick={() => history.push('/settings/profile')} />
               <SettingButton
                 icon="sign-out-alt"
                 label="Sign Out"
@@ -72,14 +70,18 @@ export const SettingsPage: React.FC = () => {
             </div>
           </Panel>
           <div className="settings">
-            <SettingButton icon="user-lock" label="Change Password" onClick={() => showModal('password')} />
+            <SettingButton
+              icon="user-lock"
+              label="Change Password"
+              onClick={() => history.push('/settings/password')}
+            />
             {user?.isAdmin && (
               <>
-                <SettingButton icon="users" label="Manage Users" onClick={() => showModal('users')} />
-                <SettingButton icon="folder" label="Manage Libraries" onClick={() => showModal('libraries')} />
-                <SettingButton disabled icon="align-justify" label="System Logs" onClick={() => undefined} />
-                <SettingButton disabled icon="sync" label="Check for Updates" onClick={() => undefined} />
-                <SettingButton disabled icon="user-shield" label="Security & Privacy" onClick={() => undefined} />
+                <SettingButton
+                  icon="folder"
+                  label="Manage Libraries"
+                  onClick={() => history.push('/settings/libraries')}
+                />
               </>
             )}
           </div>
