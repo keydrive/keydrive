@@ -5,6 +5,12 @@ def binary(goopts, folder) {
   sh "chmod +x ${folder}/clearcloud"
 }
 
+String waitForContainer(Object container, int port) {
+  def ip = sh(returnStdout: true, script: "docker inspect -f '{{ .NetworkSettings.IPAddress }}' ${container.id}").trim()
+  sh "while ! bash -c 'echo > /dev/tcp/${ip}/${port}'; do sleep 4; done"
+  return ip
+}
+
 pipeline {
   agent none
   environment {
@@ -34,18 +40,23 @@ pipeline {
         docker {
           label 'docker && linux && amd64'
           image 'golang:1.16'
-          args '-v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache'
+          args '-v /root/go/pkg/mod/cache:/root/go/pkg/mod/cache -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock'
         }
       }
       environment {
-        CGO_ENABLE = "0"
+        CGO_ENABLED = "0"
       }
       steps {
-        unstash 'frontend-build'
 
         // Test the backend
-        sh 'go get -u github.com/jstemmer/go-junit-report'
-        sh "go test -v -coverprofile=coverage.out ./... 2>&1 | go-junit-report > junit.xml"
+        script {
+          docker.image('postgres:13').withRun('-e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres') { c ->
+            unstash 'frontend-build'
+            sh 'go get -u github.com/jstemmer/go-junit-report'
+            def postgresIp = waitForContainer(c, 5432)
+            sh "POSTGRES_HOST=${postgresIp} go test -v -coverprofile=coverage.out ./... 2>&1 | go-junit-report > junit.xml"
+          }
+        }
         junit checksName: 'Go Tests', testResults: 'junit.xml'
         stash includes: 'coverage.out,junit.xml', name: 'backend-tests', useDefaultExcludes: false
 

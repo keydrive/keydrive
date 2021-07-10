@@ -1,7 +1,6 @@
 package model
 
 import (
-	"clearcloud/pkg/oauth"
 	"context"
 )
 
@@ -16,7 +15,7 @@ func (c *Client) GetID() string {
 type ClientDetailsService struct {
 }
 
-func (c *ClientDetailsService) GetClient(ctx context.Context, clientId string) oauth.ClientDetails {
+func (c *ClientDetailsService) GetClient(ctx context.Context, clientId string) *Client {
 	if clientId == "web" {
 		return &Client{
 			ID: "web",
