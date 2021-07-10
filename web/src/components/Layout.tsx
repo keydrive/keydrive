@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import logo from '../images/logo.png';
+import logo from '../images/logo.svg';
 import { Icon } from './Icon';
 import { useService } from '../hooks/useService';
 import { LibraryType } from '../services/LibrariesService';
