@@ -19,6 +19,7 @@ const CreateLibraryForm: React.FC<{ onDone: (id: number) => void }> = ({ onDone 
   useEffect(() => {
     librariesService.getSubFolders(folder).then(setBrowseSet);
   }, [folder, librariesService]);
+
   return (
     <>
       <h2>New Library</h2>
@@ -61,7 +62,7 @@ const CreateLibraryForm: React.FC<{ onDone: (id: number) => void }> = ({ onDone 
           }
           value={folder}
           onChange={setFolder}
-          id="name"
+          id="folder"
         />
         <SelectField options={browseSet?.folders?.map((f) => f.path) || []} onSelect={setFolder} id="subfolders" />
       </Form>
