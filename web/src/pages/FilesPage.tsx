@@ -65,7 +65,10 @@ export const FilesPage: React.FC = () => {
 
   const createFolder = useCallback(
     async (name: string) => {
-      await libraries.createFolder(library, path || '', name).then(refresh);
+      await libraries
+        .createFolder(library, path || '', name)
+        .then(setSelectedEntry)
+        .then(refresh);
       setNewFolderName(undefined);
     },
     [libraries, library, path, refresh]
