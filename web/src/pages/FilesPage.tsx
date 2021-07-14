@@ -47,12 +47,14 @@ export const FilesPage: React.FC = () => {
 
   useEffect(() => setSelectedEntry(undefined), [path]);
 
-  const uploadFile = useCallback(
+  const uploadFiles = useCallback(
     async (e: ChangeEvent<HTMLInputElement>) => {
       const files = e.currentTarget.files;
       if (!files || files.length === 0) {
         return;
       }
+
+      // TODO: Check for already existing file names, modal with skip/overwrite/cancel.
 
       for (const file of Array.from(files)) {
         await libraries.uploadFile(library, path || '', file).then(refresh);
@@ -82,7 +84,7 @@ export const FilesPage: React.FC = () => {
           <h1>{libraryName}</h1>
         </div>
         <div className="actions">
-          <input ref={fileInputRef} hidden type="file" onChange={uploadFile} multiple />
+          <input ref={fileInputRef} hidden type="file" onChange={uploadFiles} multiple data-testid="file-input" />
           <Button onClick={() => fileInputRef.current?.click()}>
             <Icon icon="upload" /> Upload
           </Button>
