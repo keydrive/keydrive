@@ -6,11 +6,21 @@ export interface Props {
   id: string;
   className?: string;
   error?: boolean | ApiError;
+  onFieldBlur?: () => void;
 }
 
-export const Field: React.FC<Props> = ({ children, id, className, error }) => {
-  return <div className={classNames('field', className, hasError(id, error) && 'field-error')}>{children}</div>;
-};
+export const Field: React.FC<Props> = ({ children, id, className, error, onFieldBlur }) => (
+  <div
+    className={classNames('field', className, hasError(id, error) && 'field-error')}
+    onBlur={(e) => {
+      if (!(e.relatedTarget instanceof Node) || !e.currentTarget.contains(e.relatedTarget)) {
+        onFieldBlur && onFieldBlur();
+      }
+    }}
+  >
+    {children}
+  </div>
+);
 
 function hasError(id: string, error?: unknown): boolean {
   if (error === true) {

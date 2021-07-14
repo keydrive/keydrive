@@ -30,14 +30,15 @@ export const FilesPage: React.FC = () => {
   const [newFolderName, setNewFolderName] = useState<string>();
 
   const refresh = useCallback(() => {
-    libraries
+    return libraries
       .getEntries(library, path || '')
       .then(sortEntries)
       .then(setEntries);
-    setNewFolderName(undefined);
   }, [libraries, library, path]);
 
-  useEffect(refresh, [refresh]);
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   useEffect(() => {
     const id = parseInt(library);
@@ -54,8 +55,7 @@ export const FilesPage: React.FC = () => {
       }
 
       for (const file of Array.from(files)) {
-        await libraries.uploadFile(library, path || '', file);
-        refresh();
+        await libraries.uploadFile(library, path || '', file).then(refresh);
       }
     },
     [libraries, library, path, refresh]
@@ -63,9 +63,8 @@ export const FilesPage: React.FC = () => {
 
   const createFolder = useCallback(
     async (name: string) => {
-      await libraries.createFolder(library, path || '', name);
+      await libraries.createFolder(library, path || '', name).then(refresh);
       setNewFolderName(undefined);
-      refresh();
     },
     [libraries, library, path, refresh]
   );
@@ -87,30 +86,9 @@ export const FilesPage: React.FC = () => {
           <Button onClick={() => fileInputRef.current?.click()}>
             <Icon icon="upload" /> Upload
           </Button>
-          {newFolderName != null ? (
-            <div>
-              <TextInput
-                autoFocus
-                id="new-folder-name"
-                value={newFolderName}
-                onChange={setNewFolderName}
-                iconButton="folder-plus"
-                onButtonClick={() => createFolder(newFolderName)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Escape') {
-                    setNewFolderName(undefined);
-                  }
-                  if (e.key === 'Enter') {
-                    createFolder(newFolderName);
-                  }
-                }}
-              />
-            </div>
-          ) : (
-            <Button onClick={() => setNewFolderName('')}>
-              <Icon icon="folder-plus" /> New Folder
-            </Button>
-          )}
+          <Button onClick={() => setNewFolderName('New Folder')}>
+            <Icon icon="folder-plus" /> New Folder
+          </Button>
         </div>
       </div>
       <main>
@@ -134,6 +112,34 @@ export const FilesPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
+                {newFolderName != null && (
+                  <tr>
+                    <td className="icon" />
+                    <td>
+                      <TextInput
+                        autoFocus
+                        id="new-folder-name"
+                        value={newFolderName}
+                        onChange={setNewFolderName}
+                        iconButton="folder-plus"
+                        onButtonClick={() => createFolder(newFolderName)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Escape') {
+                            setNewFolderName(undefined);
+                          }
+                          if (e.key === 'Enter') {
+                            createFolder(newFolderName);
+                          }
+                        }}
+                        onFocus={(e) => e.currentTarget.select()}
+                        onFieldBlur={() => setNewFolderName(undefined)}
+                      />
+                    </td>
+                    <td />
+                    <td />
+                    <td />
+                  </tr>
+                )}
                 {entries.map((entry) => (
                   <tr
                     key={entry.name}
