@@ -4,6 +4,8 @@ import { User } from './UserService';
 
 export type LibraryType = 'generic' | 'books' | 'movies' | 'shows' | 'music';
 
+export type Category = 'Archive' | 'Audio' | 'Binary' | 'Document' | 'Folder' | 'Image' | 'Video' | 'Source Code';
+
 export interface Library {
   id: number;
   name: string;
@@ -35,7 +37,7 @@ export interface Entry {
   name: string;
   parent: string;
   modified: string;
-  category: string;
+  category: Category;
   size: number;
 }
 
