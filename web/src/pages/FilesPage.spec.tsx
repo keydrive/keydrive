@@ -76,9 +76,9 @@ describe('FilesPage', () => {
 
     expect(await screen.findByText('Ballmers Peak Label.xcf')).toBeDefined();
     expect(screen.queryByText('Ballmers Peak Label.xcf', { selector: '.details *' })).toBeNull();
-    await userEvent.click(screen.getByText('Ballmers Peak Label.xcf'));
+    userEvent.click(screen.getByText('Ballmers Peak Label.xcf'));
     expect(screen.getByText('Ballmers Peak Label.xcf', { selector: '.details *' })).toBeDefined();
-    await userEvent.click(screen.getByLabelText('Close details'));
+    userEvent.click(screen.getByLabelText('Close details'));
     expect(screen.queryByText('Ballmers Peak Label.xcf', { selector: '.details *' })).toBeNull();
   });
 
@@ -112,7 +112,7 @@ describe('FilesPage', () => {
       initialState,
     });
 
-    await userEvent.dblClick(await screen.findByText('Documents'));
+    userEvent.dblClick(await screen.findByText('Documents'));
     expect(await screen.findByText('ClearCloud Settings.pdf')).toBeDefined();
     expect(navigation.pathname).toBe('/files/4/Documents');
   });
@@ -148,7 +148,7 @@ describe('FilesPage', () => {
     });
 
     expect(await screen.findByText('ClearCloud Settings.pdf')).toBeDefined();
-    await userEvent.click(screen.getByLabelText('Parent directory'));
+    userEvent.click(screen.getByLabelText('Parent directory'));
     expect(await screen.findByText('Documents')).toBeDefined();
     expect(navigation.pathname).toBe('/files/4');
   });
@@ -234,12 +234,67 @@ describe('FilesPage', () => {
       initialState,
     });
 
-    fireEvent.change(screen.getByTestId('file-input'), {
-      target: {
-        files: [fileOne, fileTwo],
-      },
-    });
+    userEvent.upload(screen.getByTestId('file-input'), [fileOne, fileTwo]);
     await screen.findByText('upload.txt');
     await screen.findByText('another.zip');
+  });
+
+  it('creates a new folder', async () => {
+    fetchMock.postOnce(
+      {
+        url: 'path:/api/libraries/4/entries',
+        matcher: formDataMatcher({
+          name: 'Create Me',
+          parent: '',
+        }),
+      },
+      {
+        status: 201,
+        body: {
+          name: 'Folder Details Pane',
+          modified: '2021-03-26T23:32:42.139992387+01:00',
+          parent: '/',
+          category: 'Folder',
+          size: 0,
+        },
+      }
+    );
+    fetchMock.getOnce(
+      {
+        url: 'path:/api/libraries/4/entries',
+        query: {
+          parent: '',
+        },
+        overwriteRoutes: false,
+      },
+      {
+        status: 200,
+        body: [
+          {
+            name: 'I Am Of Exist',
+            modified: '2021-03-26T23:32:42.139992387+01:00',
+            parent: '/',
+            category: 'Folder',
+            size: 0,
+          },
+        ],
+      }
+    );
+
+    await render(<FilesPage />, {
+      path: '/files/4',
+      route: '/files/:library/:path*',
+      loggedIn: true,
+      initialState,
+    });
+
+    await screen.findByText('Documents');
+    userEvent.click(screen.getByText('New Folder'));
+    userEvent.keyboard('Create Me');
+    fireEvent.keyDown(screen.getByDisplayValue('Create Me'), {
+      key: 'Enter',
+    });
+    await screen.findByText('Folder Details Pane');
+    await screen.findByText('I Am Of Exist');
   });
 });
