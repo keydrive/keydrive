@@ -51,7 +51,9 @@ export class LibrariesService {
   }
 
   public listLibraries(): Promise<Library[]> {
-    return this.api.getAllPages('/libraries/');
+    return this.api
+      .getAllPages<Library>('/libraries/')
+      .then((l) => [...l].sort((a, b) => a.name.localeCompare(b.name)));
   }
 
   public createLibrary(library: CreateLibrary): Promise<Library> {
