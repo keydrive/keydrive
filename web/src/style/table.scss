@@ -20,7 +20,7 @@ table {
   }
 
   tr {
-    height: calc(#{$input-height} + 4px);
+    height: $input-height + 4px;
   }
 
   thead {

@@ -75,7 +75,7 @@ export class ApiService {
     return result;
   }
 
-  public async formPost<T>(path: string, body: Record<string, string | Blob>): Promise<T> {
+  public formPost<T>(path: string, body: Record<string, string | Blob>): Promise<T> {
     const formBody = new FormData();
     for (const key in body) {
       if (body.hasOwnProperty(key)) {
@@ -92,7 +92,7 @@ export class ApiService {
     );
   }
 
-  private async jsonRequest<T>(
+  private jsonRequest<T>(
     method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
     path: string,
     body?: unknown,
