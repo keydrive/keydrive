@@ -239,7 +239,7 @@ describe('FilesPage', () => {
     await screen.findByText('another.zip');
   });
 
-  it('creates a new folder', async () => {
+  it('creates a new folder on enter', async () => {
     fetchMock.postOnce(
       {
         url: 'path:/api/libraries/4/entries',
@@ -296,5 +296,96 @@ describe('FilesPage', () => {
     });
     await screen.findByText('Folder Details Pane');
     await screen.findByText('I Am Of Exist');
+  });
+
+  it('creates a new folder on clicking the button', async () => {
+    fetchMock.postOnce(
+      {
+        url: 'path:/api/libraries/4/entries',
+        matcher: formDataMatcher({
+          name: 'Create Me',
+          parent: '',
+        }),
+      },
+      {
+        status: 201,
+        body: {
+          name: 'Folder Details Pane',
+          modified: '2021-03-26T23:32:42.139992387+01:00',
+          parent: '/',
+          category: 'Folder',
+          size: 0,
+        },
+      }
+    );
+    fetchMock.getOnce(
+      {
+        url: 'path:/api/libraries/4/entries',
+        query: {
+          parent: '',
+        },
+        overwriteRoutes: false,
+      },
+      {
+        status: 200,
+        body: [
+          {
+            name: 'I Am Of Exist',
+            modified: '2021-03-26T23:32:42.139992387+01:00',
+            parent: '/',
+            category: 'Folder',
+            size: 0,
+          },
+        ],
+      }
+    );
+
+    await render(<FilesPage />, {
+      path: '/files/4',
+      route: '/files/:library/:path*',
+      loggedIn: true,
+      initialState,
+    });
+
+    await screen.findByText('Documents');
+    userEvent.click(screen.getByText('New Folder'));
+    userEvent.keyboard('Create Me');
+    userEvent.click(screen.getByDisplayValue('Create Me').nextElementSibling as Element);
+    await screen.findByText('Folder Details Pane');
+    await screen.findByText('I Am Of Exist');
+  });
+
+  it('cancels creating the folder when blurring the input', async () => {
+    await render(<FilesPage />, {
+      path: '/files/4',
+      route: '/files/:library/:path*',
+      loggedIn: true,
+      initialState,
+    });
+
+    await screen.findByText('Documents');
+    userEvent.click(screen.getByText('New Folder'));
+    userEvent.keyboard('Hold On');
+    fireEvent.blur(screen.getByDisplayValue('Hold On'));
+    expect(screen.queryByDisplayValue('Hold On')).toBeNull();
+    expect(screen.queryByText('Hold On')).toBeNull();
+  });
+
+  it('cancels creating the folder when pressing escape', async () => {
+    await render(<FilesPage />, {
+      path: '/files/4',
+      route: '/files/:library/:path*',
+      loggedIn: true,
+      initialState,
+    });
+
+    await screen.findByText('Documents');
+    userEvent.click(screen.getByText('New Folder'));
+    userEvent.keyboard('Hold On');
+    fireEvent.keyDown(screen.getByDisplayValue('Hold On'), {
+      key: 'Escape',
+    });
+    expect(screen.queryByDisplayValue('Hold On')).toBeNull();
+    expect(screen.queryByText('Hold On')).toBeNull();
   });
 });
