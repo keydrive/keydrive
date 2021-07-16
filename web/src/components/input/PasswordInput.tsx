@@ -1,21 +1,17 @@
 import React, { useState } from 'react';
-import { Props as TextInputProps } from './TextInput';
-import { Button } from '../Button';
-import { Icon } from '../Icon';
-import { Field } from './Field';
+import { Props as TextInputProps, TextInput } from './TextInput';
 
-export type Props = Omit<TextInputProps, 'type'>;
+export type Props = Omit<TextInputProps, 'type' | 'iconButton' | 'onButtonClick'>;
 
-export const PasswordInput: React.FC<Props> = ({ label, onChange, ...props }) => {
+export const PasswordInput: React.FC<Props> = (props) => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <Field className="password-input" id={props.id} error={props.error}>
-      {label && <label htmlFor={props.id}>{label}</label>}
-      <input type={showPassword ? 'text' : 'password'} onChange={(e) => onChange(e.currentTarget.value)} {...props} />
-      <Button onClick={() => setShowPassword(!showPassword)}>
-        <Icon icon={showPassword ? 'eye-slash' : 'eye'} />
-      </Button>
-    </Field>
+    <TextInput
+      {...props}
+      type={showPassword ? 'text' : 'password'}
+      iconButton={showPassword ? 'eye-slash' : 'eye'}
+      onButtonClick={() => setShowPassword(!showPassword)}
+    />
   );
 };

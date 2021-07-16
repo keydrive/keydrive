@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Layout } from '../components/Layout';
 import { Panel } from '../components/Panel';
 import { useHistory, useParams } from 'react-router-dom';
@@ -13,7 +13,9 @@ import { humanReadableDateTime } from '../utils/humanReadableDateTime';
 import { librariesStore } from '../store/libraries';
 import { useAppSelector } from '../store';
 import { IconButton } from '../components/IconButton';
+import { Button } from '../components/Button';
 import { classNames } from '../utils/classNames';
+import { TextInput } from '../components/input/TextInput';
 
 export const FilesPage: React.FC = () => {
   const libraries = useService(LibrariesService);
@@ -24,13 +26,19 @@ export const FilesPage: React.FC = () => {
   const [libraryName, setLibraryName] = useState<string>();
   const { selectors } = useService(librariesStore);
   const librariesList = useAppSelector(selectors.libraries);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [newFolderName, setNewFolderName] = useState<string>();
 
-  useEffect(() => {
-    libraries
+  const refresh = useCallback(() => {
+    return libraries
       .getEntries(library, path || '')
       .then(sortEntries)
       .then(setEntries);
   }, [libraries, library, path]);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   useEffect(() => {
     const id = parseInt(library);
@@ -39,16 +47,54 @@ export const FilesPage: React.FC = () => {
 
   useEffect(() => setSelectedEntry(undefined), [path]);
 
+  const uploadFiles = useCallback(
+    async (e: ChangeEvent<HTMLInputElement>) => {
+      const files = e.currentTarget.files;
+      if (!files || files.length === 0) {
+        return;
+      }
+
+      // TODO: Check for already existing file names, modal with skip/overwrite/cancel.
+
+      for (const file of Array.from(files)) {
+        await libraries.uploadFile(library, path || '', file).then(refresh);
+      }
+    },
+    [libraries, library, path, refresh]
+  );
+
+  const createFolder = useCallback(
+    async (name: string) => {
+      await libraries
+        .createFolder(library, path || '', name)
+        .then(setSelectedEntry)
+        .then(refresh);
+      setNewFolderName(undefined);
+    },
+    [libraries, library, path, refresh]
+  );
+
   return (
     <Layout className="files-page">
       <div className="top-bar">
-        <IconButton
-          className="parent-dir"
-          onClick={() => history.push(`/files/${library}${parentPath(path)}`)}
-          aria-label="Parent directory"
-          icon="level-up-alt"
-        />
-        <h1>{libraryName}</h1>
+        <div>
+          <IconButton
+            className="parent-dir"
+            onClick={() => history.push(`/files/${library}${parentPath(path)}`)}
+            aria-label="Parent directory"
+            icon="level-up-alt"
+          />
+          <h1>{libraryName}</h1>
+        </div>
+        <div className="actions">
+          <input ref={fileInputRef} hidden type="file" onChange={uploadFiles} multiple data-testid="file-input" />
+          <Button onClick={() => fileInputRef.current?.click()}>
+            <Icon icon="upload" /> Upload
+          </Button>
+          <Button onClick={() => setNewFolderName('New Folder')}>
+            <Icon icon="folder-plus" /> New Folder
+          </Button>
+        </div>
       </div>
       <main>
         <Panel className="files">
@@ -71,6 +117,34 @@ export const FilesPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
+                {newFolderName != null && (
+                  <tr>
+                    <td className="icon" />
+                    <td>
+                      <TextInput
+                        autoFocus
+                        id="new-folder-name"
+                        value={newFolderName}
+                        onChange={setNewFolderName}
+                        iconButton="folder-plus"
+                        onButtonClick={() => createFolder(newFolderName)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Escape') {
+                            setNewFolderName(undefined);
+                          }
+                          if (e.key === 'Enter') {
+                            createFolder(newFolderName);
+                          }
+                        }}
+                        onFocus={(e) => e.currentTarget.select()}
+                        onFieldBlur={() => setNewFolderName(undefined)}
+                      />
+                    </td>
+                    <td />
+                    <td />
+                    <td />
+                  </tr>
+                )}
                 {entries.map((entry) => (
                   <tr
                     key={entry.name}
