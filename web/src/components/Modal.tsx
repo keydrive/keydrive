@@ -41,7 +41,14 @@ export const Modal: React.FC<Props> = ({ children, title, panelled, onClose, sho
   return (
     <>
       <div className={classNames('modal-overlay', closing && 'closing')} onClick={close} />
-      <div className={classNames('modal', closing && 'closing', panelled && 'panelled')}>
+      <div
+        className={classNames(
+          'modal',
+          closing && 'closing',
+          panelled && 'panelled',
+          title.toLowerCase().replaceAll(' ', '-')
+        )}
+      >
         <h2>
           {title} <IconButton role="close" onClick={close} icon="times" />
         </h2>
@@ -55,7 +62,9 @@ export interface LeftPanelProps<T extends { id: number }> {
   items: T[];
   onSelect: (id: number) => void;
   selected?: number;
+  onDeleteLabel?: string;
   onDelete: (id: number) => Promise<void>;
+  onAddLabel?: string;
   onAdd: () => void;
   children: (element: T) => ReactElement;
 }
@@ -65,7 +74,9 @@ export const ModalLeftPanel = <T extends { id: number }>({
   children,
   onSelect,
   selected,
+  onAddLabel,
   onAdd,
+  onDeleteLabel,
   onDelete,
 }: LeftPanelProps<T>): ReactElement => {
   const [deleting, setDeleting] = useState(false);
@@ -85,12 +96,13 @@ export const ModalLeftPanel = <T extends { id: number }>({
         ))}
       </div>
       <div className="actions">
-        <Button onClick={onAdd}>
+        <Button aria-label={onAddLabel} onClick={onAdd}>
           <Icon icon="plus" />
         </Button>
         <Button
           loading={deleting}
           disabled={!selected}
+          aria-label={onDeleteLabel}
           onClick={async () => {
             if (!selected) {
               return;

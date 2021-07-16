@@ -1,4 +1,4 @@
-import React, { DetailedHTMLProps, InputHTMLAttributes } from 'react';
+import React, { ReactElement, DetailedHTMLProps, InputHTMLAttributes } from 'react';
 import { Field, Props as FieldProps } from './Field';
 import { Icon } from '../Icon';
 import { Button } from '../Button';
@@ -10,7 +10,11 @@ export interface Props extends FieldProps, InputProps {
   value: string;
   onChange: (value: string) => void;
   type?: 'text' | 'password';
-  label?: string;
+  placeholder?: string;
+  className?: string;
+  autoFocus?: boolean;
+  required?: boolean;
+  label?: string | ReactElement;
   iconButton?: string;
   onButtonClick?: () => void;
 }

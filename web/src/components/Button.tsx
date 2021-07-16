@@ -8,6 +8,7 @@ export interface Props {
   loading?: boolean;
   disabled?: boolean;
   primary?: boolean;
+  'aria-label'?: string;
 }
 
 export const Button: React.FC<Props> = ({ children, type = 'button', loading, primary, ...props }) => (

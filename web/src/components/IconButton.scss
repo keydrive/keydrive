@@ -14,7 +14,12 @@
     color: var(--light-gray);
   }
 
-  &:hover .icon {
+  &:not(:disabled):hover .icon {
     color: var(--foreground);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    background-color: var(--gray-6);
   }
 }

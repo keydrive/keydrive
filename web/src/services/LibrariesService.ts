@@ -41,9 +41,14 @@ export interface Entry {
   size: number;
 }
 
+export interface BrowseResponse {
+  path: string;
+  parent: string;
+  folders: { path: string }[];
+}
+
 export class LibrariesService {
   public static readonly NAME = 'LibrariesService';
-
   private readonly api: ApiService;
 
   public constructor(injector: Injector) {
@@ -77,12 +82,10 @@ export class LibrariesService {
     return this.api.delete(`/libraries/${id}`);
   }
 
-  public async getSubFolders(path: string): Promise<string[]> {
-    const response = await this.api.jsonPost<{ path: string }, { folders: { path: string }[] }>(`/system/browse`, {
+  public async getSubFolders(path: string): Promise<BrowseResponse> {
+    return this.api.jsonPost<{ path: string }, BrowseResponse>(`/system/browse`, {
       path,
     });
-
-    return response.folders.map((f) => f.path);
   }
 
   public getEntries(libraryId: number | string, parent: string): Promise<Entry[]> {
