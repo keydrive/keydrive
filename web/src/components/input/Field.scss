@@ -1,6 +1,5 @@
 .field {
   width: 100%;
-  margin-bottom: 12px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -10,6 +9,25 @@
     input:not(:focus) {
       border-color: var(--red);
       box-shadow: 0 0 2px var(--red);
+    }
+  }
+
+  &.has-icon-button {
+    input {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      border-right-width: 0;
+    }
+
+    .button {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      border-color: var(--field-border);
+
+      padding: 0;
+      // We set both width and flex, otherwise the content jumps slightly when toggling the button.
+      width: $input-height;
+      flex: 0 0 $input-height;
     }
   }
 

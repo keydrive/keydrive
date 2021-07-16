@@ -91,4 +91,19 @@ export class LibrariesService {
   public getEntries(libraryId: number | string, parent: string): Promise<Entry[]> {
     return this.api.jsonGet(`/libraries/${libraryId}/entries`, { parent });
   }
+
+  public uploadFile(libraryId: number | string, parent: string, file: File): Promise<Entry> {
+    return this.api.formPost(`/libraries/${libraryId}/entries`, {
+      parent,
+      name: file.name,
+      data: file,
+    });
+  }
+
+  public createFolder(libraryId: number | string, parent: string, name: string): Promise<Entry> {
+    return this.api.formPost(`/libraries/${libraryId}/entries`, {
+      parent,
+      name,
+    });
+  }
 }

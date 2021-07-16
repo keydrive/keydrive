@@ -31,7 +31,7 @@ describe('Layout', () => {
     });
 
     expect(screen.getByText('Documents')).toBeDefined();
-    await userEvent.click(screen.getByText('Movies'));
+    userEvent.click(screen.getByText('Movies'));
     expect(navigation.pathname).toBe('/files/2');
   });
 
