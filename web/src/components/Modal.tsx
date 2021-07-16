@@ -41,7 +41,14 @@ export const Modal: React.FC<Props> = ({ children, title, panelled, onClose, sho
   return (
     <>
       <div className={classNames('modal-overlay', closing && 'closing')} onClick={close} />
-      <div className={classNames('modal', closing && 'closing', panelled && 'panelled')}>
+      <div
+        className={classNames(
+          'modal',
+          closing && 'closing',
+          panelled && 'panelled',
+          title.toLowerCase().replaceAll(' ', '-')
+        )}
+      >
         <h2>
           {title} <IconButton role="close" onClick={close} icon="times" />
         </h2>

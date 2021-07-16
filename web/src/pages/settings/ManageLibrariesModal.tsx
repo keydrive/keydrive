@@ -48,7 +48,7 @@ const CreateLibraryForm: React.FC<{ onDone: (id: number) => void }> = ({ onDone 
               <IconButton
                 className="parent-dir"
                 type="button"
-                disabled={!browseSet || browseSet.parent === browseSet.path}
+                disabled={!browseSet || !browseSet.path || browseSet.parent === browseSet.path}
                 onClick={() => {
                   if (browseSet) {
                     setFolder(browseSet.parent);
