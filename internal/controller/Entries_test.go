@@ -72,6 +72,19 @@ func TestListEntries(t *testing.T) {
 		}
 	})
 
+	t.Run("it returns an empty list when querying the root path", func(t *testing.T) {
+		req := adminRequest("GET", fmt.Sprintf("/api/libraries/%d/entries?path=", lib.ID), nil)
+		recorder := httptest.NewRecorder()
+		testApp.Router.ServeHTTP(recorder, req)
+
+		assertStatus(t, recorder, 200)
+		var body []interface{}
+		assertJsonUnmarshal(t, recorder, &body)
+		if len(body) > 0 {
+			t.Errorf("Expected an empty list but got: %s", recorder.Body.String())
+		}
+	})
+
 	t.Run("it requires authentication", func(t *testing.T) {
 		req, _ := http.NewRequest("GET", fmt.Sprintf("/api/libraries/%d/entries?path=root.txt", lib.ID), nil)
 		recorder := httptest.NewRecorder()
