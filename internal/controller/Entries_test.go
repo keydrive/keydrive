@@ -2,13 +2,69 @@ package controller
 
 import (
 	"clearcloud/internal/model"
+	"clearcloud/internal/service"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"path/filepath"
 	"testing"
 )
+
+func TestListEntries(t *testing.T) {
+	tempDir := t.TempDir()
+	subDir := filepath.Join(tempDir, "sub")
+	_ = os.WriteFile(filepath.Join(tempDir, "root.txt"), []byte("Root file\n"), 0777)
+	_ = os.Mkdir(subDir, 0777)
+	_ = os.WriteFile(filepath.Join(subDir, "foo.txt"), []byte("I am foo\n"), 0777)
+	_ = os.WriteFile(filepath.Join(subDir, "bar.txt"), []byte("I am bar\n"), 0777)
+
+	lib := model.Library{
+		Type:       model.TypeGeneric,
+		Name:       "Test Library",
+		RootFolder: tempDir,
+	}
+	testApp.DB.Create(&lib)
+
+	t.Run("it lists files when querying a parent", func(t *testing.T) {
+		req := adminRequest("GET", fmt.Sprintf("/api/libraries/%d/entries?parent=%s", lib.ID, url.QueryEscape("/sub")), nil)
+		recorder := httptest.NewRecorder()
+		testApp.Router.ServeHTTP(recorder, req)
+
+		if recorder.Code != 200 {
+			t.Errorf("Expected 200 but got: %d", recorder.Code)
+		}
+		var body []service.FileInfo
+		if err := json.Unmarshal(recorder.Body.Bytes(), &body); err != nil {
+			t.Errorf("Invalid response body: %s", err)
+		}
+		if len(body) != 2 {
+			t.Errorf("Expected 2 files, but got %d", len(body))
+		}
+		if body[0].Name != "bar.txt" || body[1].Name != "foo.txt" {
+			t.Errorf("Expected bar.txt and foo.txt, but got: %s and %s", body[0].Name, body[1].Name)
+		}
+	})
+
+	t.Run("it returns an empty list when querying a path that does not exist", func(t *testing.T) {
+		req := adminRequest("GET", fmt.Sprintf("/api/libraries/%d/entries?path=%s", lib.ID, url.QueryEscape("/no/file/here")), nil)
+		recorder := httptest.NewRecorder()
+		testApp.Router.ServeHTTP(recorder, req)
+
+		if recorder.Code != 200 {
+			t.Errorf("Expected 200 but got: %d", recorder.Code)
+		}
+		var body []interface{}
+		if err := json.Unmarshal(recorder.Body.Bytes(), &body); err != nil {
+			t.Errorf("Invalid response body: %s", err)
+		}
+		if len(body) > 0 {
+			t.Errorf("Expected an empty list but got: %s", recorder.Body.String())
+		}
+	})
+}
 
 func TestDownloadEntry(t *testing.T) {
 	// Prep filesystem
