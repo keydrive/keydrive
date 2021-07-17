@@ -3,11 +3,11 @@ import { Layout } from '../components/Layout';
 import { Panel } from '../components/Panel';
 import { useHistory, useParams } from 'react-router-dom';
 import { useService } from '../hooks/useService';
-import { Entry, LibrariesService } from '../services/LibrariesService';
+import { Entry, LibrariesService, Library } from '../services/LibrariesService';
 import { Icon } from '../components/Icon';
 import { EntryIcon } from '../components/EntryIcon';
 import { humanReadableSize } from '../utils/humanReadableSize';
-import { parentPath, resolvePath } from '../utils/path';
+import { resolvePath } from '../utils/path';
 import { sortEntries } from '../utils/sortEntries';
 import { humanReadableDateTime } from '../utils/humanReadableDateTime';
 import { librariesStore } from '../store/libraries';
@@ -19,23 +19,17 @@ import { TextInput } from '../components/input/TextInput';
 
 export const FilesPage: React.FC = () => {
   const libraries = useService(LibrariesService);
-  const { library, path } = useParams<{ library: string; path?: string }>();
+  const { library: libraryId, path: encodedPath } = useParams<{ library: string; path?: string }>();
+  const path = decodeURIComponent(encodedPath || '');
   const history = useHistory();
 
   // Current directory info and details.
   const [entries, setEntries] = useState<Entry[]>();
   const [selectedEntry, setSelectedEntry] = useState<Entry>();
-  // TODO: Maybe allow this to be undefined?
-  const [currentDir, setCurrentDir] = useState<Entry>({
-    category: 'Folder',
-    name: '',
-    size: 0,
-    parent: '',
-    modified: new Date().toISOString(),
-  });
+  const [currentDir, setCurrentDir] = useState<Entry>();
 
   // Current library info.
-  const [libraryName, setLibraryName] = useState<string>();
+  const [library, setLibrary] = useState<Library>();
   const { selectors } = useService(librariesStore);
   const librariesList = useAppSelector(selectors.libraries);
 
@@ -44,20 +38,20 @@ export const FilesPage: React.FC = () => {
   const [newFolderName, setNewFolderName] = useState<string>();
 
   const refresh = useCallback(() => {
-    return libraries
-      .getEntries(library, path || '')
-      .then(sortEntries)
-      .then(setEntries);
-  }, [libraries, library, path]);
+    return Promise.all([
+      libraries.getEntries(libraryId, path).then(sortEntries).then(setEntries),
+      libraries.getEntry(libraryId, path).then(setCurrentDir),
+    ]);
+  }, [libraries, libraryId, path]);
 
   useEffect(() => {
     refresh();
   }, [refresh]);
 
   useEffect(() => {
-    const id = parseInt(library);
-    setLibraryName(librariesList?.find((l) => l.id === id)?.name);
-  }, [librariesList, library]);
+    const id = parseInt(libraryId);
+    setLibrary(librariesList?.find((l) => l.id === id));
+  }, [librariesList, libraryId]);
 
   useEffect(() => setSelectedEntry(undefined), [path]);
 
@@ -71,21 +65,18 @@ export const FilesPage: React.FC = () => {
       // TODO: Check for already existing file names, modal with skip/overwrite/cancel.
 
       for (const file of Array.from(files)) {
-        await libraries.uploadFile(library, path || '', file).then(refresh);
+        await libraries.uploadFile(libraryId, path, file).then(refresh);
       }
     },
-    [libraries, library, path, refresh]
+    [libraries, libraryId, path, refresh]
   );
 
   const createFolder = useCallback(
     async (name: string) => {
-      await libraries
-        .createFolder(library, path || '', name)
-        .then(setSelectedEntry)
-        .then(refresh);
+      await libraries.createFolder(libraryId, path, name).then(setSelectedEntry).then(refresh);
       setNewFolderName(undefined);
     },
-    [libraries, library, path, refresh]
+    [libraries, libraryId, path, refresh]
   );
 
   return (
@@ -94,11 +85,11 @@ export const FilesPage: React.FC = () => {
         <div>
           <IconButton
             className="parent-dir"
-            onClick={() => history.push(`/files/${library}${parentPath(path)}`)}
+            onClick={() => history.push(`/files/${libraryId}/${encodeURIComponent(currentDir?.parent || '')}`)}
             aria-label="Parent directory"
             icon="level-up-alt"
           />
-          <h1>{libraryName}</h1>
+          <h1>{library?.name}</h1>
         </div>
         <div className="actions">
           <input ref={fileInputRef} hidden type="file" onChange={uploadFiles} multiple data-testid="file-input" />
@@ -164,7 +155,10 @@ export const FilesPage: React.FC = () => {
                     key={entry.name}
                     onDoubleClick={() => {
                       if (entry.category === 'Folder') {
-                        history.push(`/files/${library}${resolvePath(entry.parent, entry.name)}`);
+                        history.push(
+                          `/files/${libraryId}/${encodeURIComponent(resolvePath(entry.parent, entry.name))}`
+                        );
+                        setCurrentDir(entry);
                       }
                     }}
                     onClick={() => setSelectedEntry(entry)}
@@ -187,17 +181,17 @@ export const FilesPage: React.FC = () => {
             </div>
           )}
         </Panel>
-        <EntryDetails entry={selectedEntry || currentDir} />
+        {selectedEntry || currentDir ? (
+          <EntryDetails entry={(selectedEntry || currentDir) as Entry} />
+        ) : (
+          <Panel className="details" />
+        )}
       </main>
     </Layout>
   );
 };
 
-interface EntryDetailsProps {
-  entry: Entry;
-}
-
-const EntryDetails: React.FC<EntryDetailsProps> = ({ entry }) => (
+const EntryDetails: React.FC<{ entry: Entry }> = ({ entry }) => (
   <Panel className="details">
     <div className="preview">
       <EntryIcon entry={entry} />

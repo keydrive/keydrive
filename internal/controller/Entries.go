@@ -10,6 +10,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 )
 
@@ -61,6 +62,7 @@ func resolvePath(c *gin.Context, libs *service.Library, db *gorm.DB, writeAccess
 // @Produce  json
 // @Success 200 {array} service.FileInfo
 // @Param parent query string false "The parent folder"
+// @Param path query string false "The entry path. If this value is set, all other parameters are ignored and a maximum of 1 value is returned."
 // @Param libraryId path int true "The library id"
 func ListEntries(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -69,6 +71,21 @@ func ListEntries(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin
 			writeError(c, err)
 			return
 		}
+
+		if path, ok := c.GetQuery("path"); ok {
+			entry, err := fs.GetEntryMetadata(library, path)
+			if err == nil {
+				c.JSON(http.StatusOK, []service.FileInfo{entry})
+				return
+			}
+			if os.IsNotExist(err) {
+				c.JSON(http.StatusOK, []service.FileInfo{})
+				return
+			}
+			writeError(c, err)
+			return
+		}
+
 		parentPath := c.DefaultQuery("parent", "")
 		entries, err := fs.GetEntriesForLibrary(library, parentPath)
 		if err != nil {
@@ -76,31 +93,6 @@ func ListEntries(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin
 			return
 		}
 		c.JSON(http.StatusOK, entries)
-	}
-}
-
-// GetEntry
-// @Tags Files
-// @Router /api/libraries/{libraryId}/entries/{path} [get]
-// @Summary Search the collection of files and folders
-// @Security OAuth2
-// @Produce  json
-// @Success 200 {object} service.FileInfo
-// @Param path path string true "The url encoded path"
-// @Param libraryId path int true "The library id"
-func GetEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		library, path, err := resolvePath(c, libs, db, false)
-		if err != nil {
-			writeError(c, err)
-			return
-		}
-		entry, err := fs.GetEntryMetadata(library, path)
-		if err != nil {
-			writeError(c, err)
-			return
-		}
-		c.JSON(http.StatusOK, entry)
 	}
 }
 

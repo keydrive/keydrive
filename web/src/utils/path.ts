@@ -1,3 +1,4 @@
+// TODO: We shouldn't need this function.
 export function resolvePath(parent: string, name: string): string {
   let result = parent;
   if (!result.endsWith('/')) {
@@ -7,16 +8,4 @@ export function resolvePath(parent: string, name: string): string {
     result = `/${result}`;
   }
   return `${result}${name}`;
-}
-
-export function parentPath(path?: string): string {
-  if (!path || path === '/') {
-    return '';
-  }
-
-  let result = path;
-  if (!result.startsWith('/')) {
-    result = `/${result}`;
-  }
-  return result.substring(0, result.lastIndexOf('/'));
 }
