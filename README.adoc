@@ -4,6 +4,7 @@
 
 image:https://img.shields.io/jenkins/build?jobUrl=https%3A%2F%2Fjenkins.chapp.io%2Fjob%2FTocabi%2Fjob%2Fclearcloud%2Fjob%2Fmain[Jenkins,link="https://jenkins.chapp.io/blue/organizations/jenkins/Tocabi%2Fclearcloud/branches"]
 image:https://img.shields.io/github/license/Tocabi/clearcloud[License,link="https://github.com/Tocabi/clearcloud/blob/main/LICENSE"]
+image:https://img.shields.io/docker/pulls/tocabi/clearcloud[Docker Pulls,link="https://hub.docker.com/r/tocabi/clearcloud"]
 
 A personal file management and sharing application.
 
@@ -19,7 +20,7 @@ image:docs/screenshot_files.png[ClearCloud file browser]
 
 === Docker
 
-Docker is probably the easiest way to install ClearCloud.
+Docker is probably the easiest way to install ClearCloud. You can find the image on Docker Hub: https://hub.docker.com/r/tocabi/clearcloud[tocabi/clearcloud].
 
 1. https://docs.docker.com/engine/install[Install Docker]
 2. Create a `docker-compose.yml` file:
@@ -57,7 +58,7 @@ services:
       POSTGRES_DB: clearcloud
       POSTGRES_USER: clearcloud
       POSTGRES_PASSWORD: "ChangeMeToASecurePassword"
-      
+
 networks:
   default:
 ----
