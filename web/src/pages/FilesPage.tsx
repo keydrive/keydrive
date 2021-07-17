@@ -169,7 +169,7 @@ export const FilesPage: React.FC = () => {
                       }
                     }}
                     onClick={() => setSelectedEntry(entry)}
-                    className={classNames(selectedEntry === entry && 'is-selected')}
+                    className={classNames(selectedEntry?.name === entry.name && 'is-selected')}
                   >
                     <td className="icon">
                       <EntryIcon entry={entry} />
