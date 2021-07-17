@@ -3,7 +3,6 @@ package controller
 import (
 	"clearcloud/internal/model"
 	"clearcloud/internal/service"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -35,9 +34,7 @@ func TestListEntries(t *testing.T) {
 
 		assertStatus(t, recorder, 200)
 		var body []service.FileInfo
-		if err := json.Unmarshal(recorder.Body.Bytes(), &body); err != nil {
-			t.Errorf("Invalid response body: %s", err)
-		}
+		assertJsonUnmarshal(t, recorder, &body)
 		if len(body) != 2 {
 			t.Errorf("Expected 2 files, but got %d", len(body))
 		}
@@ -53,9 +50,7 @@ func TestListEntries(t *testing.T) {
 
 		assertStatus(t, recorder, 200)
 		var body []interface{}
-		if err := json.Unmarshal(recorder.Body.Bytes(), &body); err != nil {
-			t.Errorf("Invalid response body: %s", err)
-		}
+		assertJsonUnmarshal(t, recorder, &body)
 		if len(body) > 0 {
 			t.Errorf("Expected an empty list but got: %s", recorder.Body.String())
 		}

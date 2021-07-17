@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"encoding/json"
 	"net/http/httptest"
 	"strings"
 	"testing"
@@ -26,7 +25,7 @@ func TestToken(t *testing.T) {
 			t.Errorf("Expected text/plain but got: %s", contentType)
 		}
 		body := map[string]interface{}{}
-		_ = json.Unmarshal(recorder.Body.Bytes(), &body)
+		assertJsonUnmarshal(t, recorder, &body)
 		if body["access_token"] == nil {
 			t.Errorf("Expected to find an access_token instead got: %s", recorder.Body.String())
 		}
@@ -49,7 +48,7 @@ func TestToken(t *testing.T) {
 			t.Errorf("Expected text/plain but got: %s", contentType)
 		}
 		body := map[string]interface{}{}
-		_ = json.Unmarshal(recorder.Body.Bytes(), &body)
+		assertJsonUnmarshal(t, recorder, &body)
 		if body["access_token"] == nil {
 			t.Errorf("Expected to find an access_token instead got: %s", recorder.Body.String())
 		}

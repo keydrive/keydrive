@@ -2,7 +2,6 @@ package controller
 
 import (
 	"clearcloud/internal/model"
-	"encoding/json"
 	"fmt"
 	"net/http/httptest"
 	"testing"
@@ -43,7 +42,7 @@ func TestGetLibrary(t *testing.T) {
 
 		assertStatus(t, recorder, 200)
 		body := map[string]interface{}{}
-		_ = json.Unmarshal(recorder.Body.Bytes(), &body)
+		assertJsonUnmarshal(t, recorder, &body)
 		if body["sharedWith"].([]interface{})[0].(map[string]interface{})["username"] == "simple-access" {
 			t.Errorf("Expected a share but instead got: %s", recorder.Body.String())
 		}
