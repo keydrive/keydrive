@@ -21,11 +21,25 @@ export const FilesPage: React.FC = () => {
   const libraries = useService(LibrariesService);
   const { library, path } = useParams<{ library: string; path?: string }>();
   const history = useHistory();
+
+  // Current directory info and details.
   const [entries, setEntries] = useState<Entry[]>();
   const [selectedEntry, setSelectedEntry] = useState<Entry>();
+  // TODO: Maybe allow this to be undefined?
+  const [currentDir, setCurrentDir] = useState<Entry>({
+    category: 'Folder',
+    name: '',
+    size: 0,
+    parent: '',
+    modified: new Date().toISOString(),
+  });
+
+  // Current library info.
   const [libraryName, setLibraryName] = useState<string>();
   const { selectors } = useService(librariesStore);
   const librariesList = useAppSelector(selectors.libraries);
+
+  // File and folder operations.
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [newFolderName, setNewFolderName] = useState<string>();
 
@@ -173,7 +187,7 @@ export const FilesPage: React.FC = () => {
             </div>
           )}
         </Panel>
-        {selectedEntry && <EntryDetails entry={selectedEntry} onClose={() => setSelectedEntry(undefined)} />}
+        <EntryDetails entry={selectedEntry || currentDir} />
       </main>
     </Layout>
   );
@@ -181,12 +195,10 @@ export const FilesPage: React.FC = () => {
 
 interface EntryDetailsProps {
   entry: Entry;
-  onClose: () => void;
 }
 
-const EntryDetails: React.FC<EntryDetailsProps> = ({ entry, onClose }) => (
+const EntryDetails: React.FC<EntryDetailsProps> = ({ entry }) => (
   <Panel className="details">
-    <IconButton aria-label="Close details" onClick={onClose} icon="times" />
     <div className="preview">
       <EntryIcon entry={entry} />
     </div>
