@@ -71,6 +71,16 @@ func TestListEntries(t *testing.T) {
 			t.Errorf("Expected an empty list but got: %s", recorder.Body.String())
 		}
 	})
+
+	t.Run("it requires authentication", func(t *testing.T) {
+		req, _ := http.NewRequest("GET", fmt.Sprintf("/api/libraries/%d/entries?path=root.txt", lib.ID), nil)
+		recorder := httptest.NewRecorder()
+		testApp.Router.ServeHTTP(
+			recorder,
+			req,
+		)
+		assertStatus(t, recorder, 401)
+	})
 }
 
 func TestDownloadEntry(t *testing.T) {
@@ -146,5 +156,78 @@ func TestDownloadEntry(t *testing.T) {
 			req,
 		)
 		assertStatus(t, recorder, 401)
+	})
+}
+
+func TestDeleteEntry(t *testing.T) {
+	tempDir := t.TempDir()
+	rootFile := filepath.Join(tempDir, "root.txt")
+	_ = os.WriteFile(rootFile, []byte("I am root\n"), 0777)
+
+	lib := model.Library{
+		Type:       model.TypeGeneric,
+		Name:       "Test Library",
+		RootFolder: tempDir,
+	}
+	testApp.DB.Create(&lib)
+
+	t.Run("it requires authentication", func(t *testing.T) {
+		req, _ := http.NewRequest("DELETE", fmt.Sprintf("/api/libraries/%d/entries?path=root.txt", lib.ID), nil)
+		recorder := httptest.NewRecorder()
+		testApp.Router.ServeHTTP(
+			recorder,
+			req,
+		)
+
+		assertStatus(t, recorder, 401)
+		if _, err := os.Stat(rootFile); err != nil {
+			t.Errorf("File does not exist: %s", err)
+		}
+	})
+
+	t.Run("it deletes a file", func(t *testing.T) {
+		deleteFile := filepath.Join(tempDir, "delete_me.txt")
+		_ = os.WriteFile(deleteFile, []byte("Delete me plz\n"), 0777)
+
+		req := adminRequest("DELETE", fmt.Sprintf("/api/libraries/%d/entries?path=delete_me.txt", lib.ID), nil)
+		recorder := httptest.NewRecorder()
+		testApp.Router.ServeHTTP(
+			recorder,
+			req,
+		)
+
+		assertStatus(t, recorder, 204)
+		if _, err := os.Stat(deleteFile); !os.IsNotExist(err) {
+			t.Errorf("File still exists")
+		}
+	})
+
+	t.Run("it deletes a folder", func(t *testing.T) {
+		dir := filepath.Join(tempDir, "dir")
+		_ = os.Mkdir(dir, 0777)
+		_ = os.WriteFile(filepath.Join(tempDir, "delete_me.txt"), []byte("File in dir\n"), 0777)
+
+		req := adminRequest("DELETE", fmt.Sprintf("/api/libraries/%d/entries?path=dir", lib.ID), nil)
+		recorder := httptest.NewRecorder()
+		testApp.Router.ServeHTTP(
+			recorder,
+			req,
+		)
+
+		assertStatus(t, recorder, 204)
+		if _, err := os.Stat(dir); !os.IsNotExist(err) {
+			t.Errorf("Folder still exists")
+		}
+	})
+
+	t.Run("it does not error if the path does not exist", func(t *testing.T) {
+		req := adminRequest("DELETE", fmt.Sprintf("/api/libraries/%d/entries?path=nope", lib.ID), nil)
+		recorder := httptest.NewRecorder()
+		testApp.Router.ServeHTTP(
+			recorder,
+			req,
+		)
+
+		assertStatus(t, recorder, 204)
 	})
 }
