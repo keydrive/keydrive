@@ -30,10 +30,7 @@ func TestGetLibrary(t *testing.T) {
 			req,
 		)
 
-		status := recorder.Code
-		if status != 403 {
-			t.Errorf("Expected forbidden (403) but got: %d", status)
-		}
+		assertStatus(t, recorder, 403)
 	})
 
 	t.Run("returns shares", func(t *testing.T) {
@@ -43,6 +40,8 @@ func TestGetLibrary(t *testing.T) {
 			recorder,
 			req,
 		)
+
+		assertStatus(t, recorder, 200)
 		body := map[string]interface{}{}
 		_ = json.Unmarshal(recorder.Body.Bytes(), &body)
 		if body["sharedWith"].([]interface{})[0].(map[string]interface{})["username"] == "simple-access" {

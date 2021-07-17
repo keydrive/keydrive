@@ -33,9 +33,7 @@ func TestListEntries(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		testApp.Router.ServeHTTP(recorder, req)
 
-		if recorder.Code != 200 {
-			t.Errorf("Expected 200 but got: %d", recorder.Code)
-		}
+		assertStatus(t, recorder, 200)
 		var body []service.FileInfo
 		if err := json.Unmarshal(recorder.Body.Bytes(), &body); err != nil {
 			t.Errorf("Invalid response body: %s", err)
@@ -53,9 +51,7 @@ func TestListEntries(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		testApp.Router.ServeHTTP(recorder, req)
 
-		if recorder.Code != 200 {
-			t.Errorf("Expected 200 but got: %d", recorder.Code)
-		}
+		assertStatus(t, recorder, 200)
 		var body []interface{}
 		if err := json.Unmarshal(recorder.Body.Bytes(), &body); err != nil {
 			t.Errorf("Invalid response body: %s", err)
@@ -108,10 +104,7 @@ func TestDownloadEntry(t *testing.T) {
 			recorder,
 			req,
 		)
-		status := recorder.Code
-		if status != 404 {
-			t.Errorf("Expected 404 but got: %d", status)
-		}
+		assertStatus(t, recorder, 404)
 	})
 
 	t.Run("it returns 404 if no access to library", func(t *testing.T) {
@@ -121,10 +114,7 @@ func TestDownloadEntry(t *testing.T) {
 			recorder,
 			req,
 		)
-		status := recorder.Code
-		if status != 404 {
-			t.Errorf("Expected 404 but got: %d", status)
-		}
+		assertStatus(t, recorder, 404)
 	})
 
 	t.Run("it returns 400 if no path provided", func(t *testing.T) {
@@ -134,10 +124,7 @@ func TestDownloadEntry(t *testing.T) {
 			recorder,
 			req,
 		)
-		status := recorder.Code
-		if status != 400 {
-			t.Errorf("Expected 400 but got: %d", status)
-		}
+		assertStatus(t, recorder, 400)
 	})
 
 	t.Run("it returns 400 if path not encoded", func(t *testing.T) {
@@ -148,10 +135,7 @@ func TestDownloadEntry(t *testing.T) {
 			recorder,
 			req,
 		)
-		status := recorder.Code
-		if status != 400 {
-			t.Errorf("Expected 400 but got: %d", status)
-		}
+		assertStatus(t, recorder, 400)
 	})
 
 	t.Run("it requires authentication", func(t *testing.T) {
@@ -162,9 +146,6 @@ func TestDownloadEntry(t *testing.T) {
 			recorder,
 			req,
 		)
-		status := recorder.Code
-		if status != 401 {
-			t.Errorf("Expected 401 but got: %d", status)
-		}
+		assertStatus(t, recorder, 401)
 	})
 }
