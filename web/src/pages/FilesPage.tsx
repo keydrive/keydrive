@@ -94,6 +94,7 @@ export const FilesPage: React.FC = () => {
             onClick={() => history.push(`/files/${libraryId}/${encodeURIComponent(currentDir?.parent || '')}`)}
             aria-label="Parent directory"
             icon="level-up-alt"
+            disabled={!currentDir}
           />
           <h1>{library?.name}</h1>
         </div>
