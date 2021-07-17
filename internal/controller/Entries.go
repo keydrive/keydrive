@@ -99,7 +99,7 @@ func ListEntries(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin
 // DownloadEntry
 // @Tags Files
 // @Router /api/libraries/{libraryId}/entries/{path}/download [get]
-// @Summary Search the collection of files and folders
+// @Summary Download a file
 // @Security OAuth2
 // @Success 200
 // @Param path path string true "The url encoded path"

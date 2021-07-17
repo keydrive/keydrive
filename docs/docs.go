@@ -350,7 +350,7 @@ var doc = `{
                 "tags": [
                     "Files"
                 ],
-                "summary": "Search the collection of files and folders",
+                "summary": "Download a file",
                 "parameters": [
                     {
                         "type": "string",

@@ -449,7 +449,7 @@ paths:
           description: ""
       security:
       - OAuth2: []
-      summary: Search the collection of files and folders
+      summary: Download a file
       tags:
       - Files
   /api/libraries/{libraryId}/shares:
