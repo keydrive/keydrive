@@ -66,7 +66,7 @@ describe('FilesPage', () => {
     expect(await screen.findByText('2.7 MB')).toBeDefined();
   });
 
-  it('shows file details', async () => {
+  it('shows library and file details', async () => {
     await render(<FilesPage />, {
       path: '/files/4',
       route: '/files/:library/:path?',
@@ -74,20 +74,19 @@ describe('FilesPage', () => {
       initialState,
     });
 
+    expect(screen.getByText('Mock Library', { selector: '.details *' })).toBeDefined();
     expect(await screen.findByText('Ballmers Peak Label.xcf')).toBeDefined();
     expect(screen.queryByText('Ballmers Peak Label.xcf', { selector: '.details *' })).toBeNull();
     userEvent.click(screen.getByText('Ballmers Peak Label.xcf'));
     expect(screen.getByText('Ballmers Peak Label.xcf', { selector: '.details *' })).toBeDefined();
-    userEvent.click(screen.getByLabelText('Close details'));
-    expect(screen.queryByText('Ballmers Peak Label.xcf', { selector: '.details *' })).toBeNull();
   });
 
-  it('enters a directory on double click', async () => {
+  it('enters a directory on double click and shows the folder details', async () => {
     fetchMock.getOnce(
       {
         url: 'path:/api/libraries/4/entries',
         query: {
-          parent: 'Documents',
+          parent: '/Documents',
         },
         overwriteRoutes: false,
       },
@@ -100,6 +99,27 @@ describe('FilesPage', () => {
             modified: '2021-06-16T09:52:47.769779842+02:00',
             category: 'Binary',
             size: 3570049,
+          },
+        ],
+      }
+    );
+    fetchMock.getOnce(
+      {
+        url: 'path:/api/libraries/4/entries',
+        query: {
+          path: '/Documents',
+        },
+        overwriteRoutes: false,
+      },
+      {
+        status: 200,
+        body: [
+          {
+            name: 'Documents',
+            parent: '/',
+            modified: '2021-07-01T19:35:16.658563977+02:00',
+            category: 'Folder',
+            size: 4096,
           },
         ],
       }
@@ -114,7 +134,8 @@ describe('FilesPage', () => {
 
     userEvent.dblClick(await screen.findByText('Documents'));
     expect(await screen.findByText('ClearCloud Settings.pdf')).toBeDefined();
-    expect(navigation.pathname).toBe('/files/4/Documents');
+    expect(navigation.pathname).toBe('/files/4/%2FDocuments');
+    expect(screen.getByText('Documents', { selector: '.details *' })).toBeDefined();
   });
 
   it('enters the parent directory when going up', async () => {
@@ -122,7 +143,7 @@ describe('FilesPage', () => {
       {
         url: 'path:/api/libraries/4/entries',
         query: {
-          parent: 'Documents',
+          parent: '/Documents',
         },
         overwriteRoutes: false,
       },
@@ -139,9 +160,58 @@ describe('FilesPage', () => {
         ],
       }
     );
+    fetchMock.getOnce(
+      {
+        url: 'path:/api/libraries/4/entries',
+        query: {
+          path: '/Documents',
+        },
+        overwriteRoutes: false,
+      },
+      {
+        status: 200,
+        body: [
+          {
+            name: 'Documents',
+            parent: '/',
+            modified: '2021-07-01T19:35:16.658563977+02:00',
+            category: 'Folder',
+            size: 4096,
+          },
+        ],
+      }
+    );
+    fetchMock.getOnce(
+      {
+        url: 'path:/api/libraries/4/entries',
+        query: {
+          parent: '/',
+        },
+        overwriteRoutes: false,
+      },
+      {
+        status: 200,
+        body: [
+          {
+            name: 'Ballmers Peak Label.xcf',
+            parent: '/',
+            modified: '2021-03-26T23:32:42.139992387+01:00',
+            category: 'Binary',
+            size: 2785246,
+          },
+          {
+            name: 'Documents',
+            parent: '/',
+            modified: '2021-07-01T19:35:16.658563977+02:00',
+            category: 'Folder',
+            size: 4096,
+          },
+        ],
+      }
+    );
 
     const { navigation } = await render(<FilesPage />, {
-      path: '/files/4/Documents',
+      path: '/files/4/%2FDocuments',
       route: '/files/:library/:path?',
       loggedIn: true,
       initialState,
@@ -150,7 +220,7 @@ describe('FilesPage', () => {
     expect(await screen.findByText('ClearCloud Settings.pdf')).toBeDefined();
     userEvent.click(screen.getByLabelText('Parent directory'));
     expect(await screen.findByText('Documents')).toBeDefined();
-    expect(navigation.pathname).toBe('/files/4');
+    expect(navigation.pathname).toBe('/files/4/%2F');
   });
 
   it('uploads files', async () => {

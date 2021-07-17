@@ -38,9 +38,15 @@ export const FilesPage: React.FC = () => {
   const [newFolderName, setNewFolderName] = useState<string>();
 
   const refresh = useCallback(() => {
+    // If the path is falsy or '/' we're at the library root, so no need for an extra call.
+    const pathIsRoot = !path || path === '/';
+    if (pathIsRoot) {
+      setCurrentDir(undefined);
+    }
+
     return Promise.all([
       libraries.getEntries(libraryId, path).then(sortEntries).then(setEntries),
-      libraries.getEntry(libraryId, path).then(setCurrentDir),
+      pathIsRoot ? undefined : libraries.getEntry(libraryId, path).then(setCurrentDir),
     ]);
   }, [libraries, libraryId, path]);
 
