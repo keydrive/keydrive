@@ -9,7 +9,6 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
-	"net/url"
 	"os"
 	"strings"
 )
@@ -36,21 +35,21 @@ func getAccessToLib(c *gin.Context, libs *service.Library, writeAccess bool, tx 
 }
 
 func resolvePath(c *gin.Context, libs *service.Library, db *gorm.DB, writeAccess bool) (model.Library, string, error) {
+	// Check if we have access to the library.
 	library, err := getAccessToLib(c, libs, writeAccess, db)
 	if err != nil {
 		return library, "", err
 	}
-	path := c.Param("path")
-	if path == "" {
-		return library, "", ApiError{Status: http.StatusBadRequest}
-	}
-	path, err = url.QueryUnescape(path)
-	if err != nil {
+
+	// Check if the path query parameter is set.
+	path, ok := c.GetQuery("path")
+	if !ok {
 		return library, "", ApiError{
 			Status:      http.StatusBadRequest,
-			Description: "path parameter must be url encoded",
+			Description: "no path query parameter given",
 		}
 	}
+
 	return library, path, nil
 }
 
@@ -86,7 +85,7 @@ func ListEntries(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin
 			return
 		}
 
-		parentPath := c.DefaultQuery("parent", "")
+		parentPath := c.Query("parent")
 		entries, err := fs.GetEntriesForLibrary(library, parentPath)
 		if err != nil {
 			writeError(c, err)
@@ -98,11 +97,11 @@ func ListEntries(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin
 
 // DownloadEntry
 // @Tags Files
-// @Router /api/libraries/{libraryId}/entries/{path}/download [get]
+// @Router /api/libraries/{libraryId}/entries/download [get]
 // @Summary Download a file
 // @Security OAuth2
 // @Success 200
-// @Param path path string true "The url encoded path"
+// @Param path query string true "The file path"
 // @Param libraryId path int true "The library id"
 func DownloadEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -193,12 +192,12 @@ func CreateEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin
 
 // DeleteEntry
 // @Tags Files
-// @Router /api/libraries/{libraryId}/entries/{path} [delete]
+// @Router /api/libraries/{libraryId}/entries [delete]
 // @Summary Delete a file or folder
 // @Security OAuth2
 // @Produce  json
 // @Success 204
-// @Param path path string true "The url encoded path"
+// @Param path query string true "The url encoded path"
 // @Param libraryId path int true "The library id"
 func DeleteEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin.HandlerFunc {
 	return func(c *gin.Context) {

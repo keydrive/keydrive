@@ -283,9 +283,7 @@
                         }
                     }
                 }
-            }
-        },
-        "/api/libraries/{libraryId}/entries/{path}": {
+            },
             "delete": {
                 "security": [
                     {
@@ -304,7 +302,7 @@
                         "type": "string",
                         "description": "The url encoded path",
                         "name": "path",
-                        "in": "path",
+                        "in": "query",
                         "required": true
                     },
                     {
@@ -322,7 +320,7 @@
                 }
             }
         },
-        "/api/libraries/{libraryId}/entries/{path}/download": {
+        "/api/libraries/{libraryId}/entries/download": {
             "get": {
                 "security": [
                     {
@@ -336,9 +334,9 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "The url encoded path",
+                        "description": "The file path",
                         "name": "path",
-                        "in": "path",
+                        "in": "query",
                         "required": true
                     },
                     {

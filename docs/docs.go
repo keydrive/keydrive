@@ -301,9 +301,7 @@ var doc = `{
                         }
                     }
                 }
-            }
-        },
-        "/api/libraries/{libraryId}/entries/{path}": {
+            },
             "delete": {
                 "security": [
                     {
@@ -322,7 +320,7 @@ var doc = `{
                         "type": "string",
                         "description": "The url encoded path",
                         "name": "path",
-                        "in": "path",
+                        "in": "query",
                         "required": true
                     },
                     {
@@ -340,7 +338,7 @@ var doc = `{
                 }
             }
         },
-        "/api/libraries/{libraryId}/entries/{path}/download": {
+        "/api/libraries/{libraryId}/entries/download": {
             "get": {
                 "security": [
                     {
@@ -354,9 +352,9 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "The url encoded path",
+                        "description": "The file path",
                         "name": "path",
-                        "in": "path",
+                        "in": "query",
                         "required": true
                     },
                     {

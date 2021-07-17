@@ -71,7 +71,7 @@ func TestDownloadEntry(t *testing.T) {
 
 	// Go!
 	t.Run("it downloads a file", func(t *testing.T) {
-		req := adminRequest("GET", fmt.Sprintf("/api/libraries/%d/entries/gimme.txt/download", lib.ID), nil)
+		req := adminRequest("GET", fmt.Sprintf("/api/libraries/%d/entries/download?path=gimme.txt", lib.ID), nil)
 		recorder := httptest.NewRecorder()
 		testApp.Router.ServeHTTP(
 			recorder,
@@ -93,7 +93,7 @@ func TestDownloadEntry(t *testing.T) {
 	})
 
 	t.Run("it returns 404 if file not found", func(t *testing.T) {
-		req := adminRequest("GET", fmt.Sprintf("/api/libraries/%d/entries/nope.txt/download", lib.ID), nil)
+		req := adminRequest("GET", fmt.Sprintf("/api/libraries/%d/entries/download?path=nope.txt", lib.ID), nil)
 		recorder := httptest.NewRecorder()
 		testApp.Router.ServeHTTP(
 			recorder,
@@ -103,7 +103,7 @@ func TestDownloadEntry(t *testing.T) {
 	})
 
 	t.Run("it returns 404 if no access to library", func(t *testing.T) {
-		req := noAccessUserRequest("GET", fmt.Sprintf("/api/libraries/%d/entries/gimme.txt/download", lib.ID), nil)
+		req := noAccessUserRequest("GET", fmt.Sprintf("/api/libraries/%d/entries/download?path=gimme.txt", lib.ID), nil)
 		recorder := httptest.NewRecorder()
 		testApp.Router.ServeHTTP(
 			recorder,
@@ -113,18 +113,7 @@ func TestDownloadEntry(t *testing.T) {
 	})
 
 	t.Run("it returns 400 if no path provided", func(t *testing.T) {
-		req := adminRequest("GET", fmt.Sprintf("/api/libraries/%d/entries//download", lib.ID), nil)
-		recorder := httptest.NewRecorder()
-		testApp.Router.ServeHTTP(
-			recorder,
-			req,
-		)
-		assertStatus(t, recorder, 400)
-	})
-
-	t.Run("it returns 400 if path not encoded", func(t *testing.T) {
-		req := adminRequest("GET", "/simple", nil)
-		req.URL.Path = fmt.Sprintf("/api/libraries/%d/entries/what is this sh%%it!/download", lib.ID)
+		req := adminRequest("GET", fmt.Sprintf("/api/libraries/%d/entries/download", lib.ID), nil)
 		recorder := httptest.NewRecorder()
 		testApp.Router.ServeHTTP(
 			recorder,
@@ -134,8 +123,7 @@ func TestDownloadEntry(t *testing.T) {
 	})
 
 	t.Run("it requires authentication", func(t *testing.T) {
-		req, _ := http.NewRequest("GET", "/simple", nil)
-		req.URL.Path = fmt.Sprintf("/api/libraries/%d/entries/what is this sh%%it!/download", lib.ID)
+		req, _ := http.NewRequest("GET", fmt.Sprintf("/api/libraries/%d/entries/download?path=not_allowed", lib.ID), nil)
 		recorder := httptest.NewRecorder()
 		testApp.Router.ServeHTTP(
 			recorder,

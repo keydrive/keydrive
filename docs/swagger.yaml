@@ -344,6 +344,28 @@ paths:
       tags:
       - Files
   /api/libraries/{libraryId}/entries:
+    delete:
+      parameters:
+      - description: The url encoded path
+        in: query
+        name: path
+        required: true
+        type: string
+      - description: The library id
+        in: path
+        name: libraryId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      security:
+      - OAuth2: []
+      summary: Delete a file or folder
+      tags:
+      - Files
     get:
       parameters:
       - description: The parent folder
@@ -408,34 +430,11 @@ paths:
       summary: Create a new file or folder
       tags:
       - Files
-  /api/libraries/{libraryId}/entries/{path}:
-    delete:
-      parameters:
-      - description: The url encoded path
-        in: path
-        name: path
-        required: true
-        type: string
-      - description: The library id
-        in: path
-        name: libraryId
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: ""
-      security:
-      - OAuth2: []
-      summary: Delete a file or folder
-      tags:
-      - Files
-  /api/libraries/{libraryId}/entries/{path}/download:
+  /api/libraries/{libraryId}/entries/download:
     get:
       parameters:
-      - description: The url encoded path
-        in: path
+      - description: The file path
+        in: query
         name: path
         required: true
         type: string
