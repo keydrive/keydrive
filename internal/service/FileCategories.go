@@ -704,17 +704,21 @@ var ExtToMime = map[string]string{
 }
 
 var MimeToCategory = map[string]model.Category{
-	"application/gzip":             model.CategoryArchive,
-	"application/octet-stream":     model.CategoryBinary,
-	"application/pdf":              model.CategoryDocument,
-	"application/x-7z-compressed":  model.CategoryArchive,
-	"application/x-rar-compressed": model.CategoryArchive,
-	"application/x-tar":            model.CategoryArchive,
-	"application/zip":              model.CategoryArchive,
-	"audio":                        model.CategoryAudio,
-	"image":                        model.CategoryImage,
-	"text":                         model.CategoryDocument,
-	"video":                        model.CategoryVideo,
+	"audio": model.CategoryAudio,
+	"image": model.CategoryImage,
+	"text":  model.CategoryDocument,
+	"video": model.CategoryVideo,
+
+	"application/gzip":                                model.CategoryArchive,
+	"application/octet-stream":                        model.CategoryBinary,
+	"application/pdf":                                 model.CategoryDocument,
+	"application/vnd.oasis.opendocument.presentation": model.CategoryDocument,
+	"application/vnd.oasis.opendocument.spreadsheet":  model.CategoryDocument,
+	"application/vnd.oasis.opendocument.text":         model.CategoryDocument,
+	"application/x-7z-compressed":                     model.CategoryArchive,
+	"application/x-rar-compressed":                    model.CategoryArchive,
+	"application/x-tar":                               model.CategoryArchive,
+	"application/zip":                                 model.CategoryArchive,
 }
 
 func GetFileCategory(name string, mimeType string, isDir bool) (model.Category, string) {

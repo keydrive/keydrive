@@ -56,7 +56,7 @@ describe('FilesPage', () => {
   it('shows the files', async () => {
     await render(<FilesPage />, {
       path: '/files/4',
-      route: '/files/:library/:path*',
+      route: '/files/:library/:path?',
       loggedIn: true,
       initialState,
     });
@@ -69,7 +69,7 @@ describe('FilesPage', () => {
   it('shows file details', async () => {
     await render(<FilesPage />, {
       path: '/files/4',
-      route: '/files/:library/:path*',
+      route: '/files/:library/:path?',
       loggedIn: true,
       initialState,
     });
@@ -107,7 +107,7 @@ describe('FilesPage', () => {
 
     const { navigation } = await render(<FilesPage />, {
       path: '/files/4',
-      route: '/files/:library/:path*',
+      route: '/files/:library/:path?',
       loggedIn: true,
       initialState,
     });
@@ -142,7 +142,7 @@ describe('FilesPage', () => {
 
     const { navigation } = await render(<FilesPage />, {
       path: '/files/4/Documents',
-      route: '/files/:library/:path*',
+      route: '/files/:library/:path?',
       loggedIn: true,
       initialState,
     });
@@ -229,7 +229,7 @@ describe('FilesPage', () => {
 
     await render(<FilesPage />, {
       path: '/files/4',
-      route: '/files/:library/:path*',
+      route: '/files/:library/:path?',
       loggedIn: true,
       initialState,
     });
@@ -283,7 +283,7 @@ describe('FilesPage', () => {
 
     await render(<FilesPage />, {
       path: '/files/4',
-      route: '/files/:library/:path*',
+      route: '/files/:library/:path?',
       loggedIn: true,
       initialState,
     });
@@ -342,7 +342,7 @@ describe('FilesPage', () => {
 
     await render(<FilesPage />, {
       path: '/files/4',
-      route: '/files/:library/:path*',
+      route: '/files/:library/:path?',
       loggedIn: true,
       initialState,
     });
@@ -358,7 +358,7 @@ describe('FilesPage', () => {
   it('cancels creating the folder when blurring the input', async () => {
     await render(<FilesPage />, {
       path: '/files/4',
-      route: '/files/:library/:path*',
+      route: '/files/:library/:path?',
       loggedIn: true,
       initialState,
     });
@@ -374,7 +374,7 @@ describe('FilesPage', () => {
   it('cancels creating the folder when pressing escape', async () => {
     await render(<FilesPage />, {
       path: '/files/4',
-      route: '/files/:library/:path*',
+      route: '/files/:library/:path?',
       loggedIn: true,
       initialState,
     });

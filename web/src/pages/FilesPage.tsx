@@ -181,34 +181,48 @@ export const FilesPage: React.FC = () => {
             </div>
           )}
         </Panel>
-        {selectedEntry || currentDir ? (
-          <EntryDetails entry={(selectedEntry || currentDir) as Entry} />
-        ) : (
-          <Panel className="details" />
-        )}
+        <DetailsPanel entry={selectedEntry || currentDir} library={library} />
       </main>
     </Layout>
   );
 };
 
-const EntryDetails: React.FC<{ entry: Entry }> = ({ entry }) => (
-  <Panel className="details">
-    <div className="preview">
-      <EntryIcon entry={entry} />
-    </div>
-    <div className="name">{entry.name}</div>
-    <div className="category">{entry.category}</div>
-    <div className="columns">
-      <div>
-        <span>Modified</span>
-        <span>{humanReadableDateTime(entry.modified)}</span>
-      </div>
-      {entry.category !== 'Folder' && (
-        <div>
-          <span>Size</span>
-          <span>{humanReadableSize(entry.size)}</span>
+const DetailsPanel: React.FC<{ entry?: Entry; library?: Library }> = ({ entry, library }) => {
+  if (entry) {
+    return (
+      <Panel className="details">
+        <div className="preview">
+          <EntryIcon entry={entry} />
         </div>
-      )}
-    </div>
-  </Panel>
-);
+        <div className="name">{entry.name}</div>
+        <div className="category">{entry.category}</div>
+        <div className="columns">
+          <div>
+            <span>Modified</span>
+            <span>{humanReadableDateTime(entry.modified)}</span>
+          </div>
+          {entry.category !== 'Folder' && (
+            <div>
+              <span>Size</span>
+              <span>{humanReadableSize(entry.size)}</span>
+            </div>
+          )}
+        </div>
+      </Panel>
+    );
+  }
+
+  if (library) {
+    return (
+      <Panel className="details">
+        <div className="preview">
+          <Icon icon="folder" />
+        </div>
+        <div className="name">{library.name}</div>
+        <div className="category">Library: {library.type}</div>
+      </Panel>
+    );
+  }
+
+  return <Panel className="details" />;
+};
