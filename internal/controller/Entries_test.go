@@ -43,6 +43,22 @@ func TestListEntries(t *testing.T) {
 		}
 	})
 
+	t.Run("it returns a single entry when querying a path", func(t *testing.T) {
+		req := adminRequest("GET", fmt.Sprintf("/api/libraries/%d/entries?path=root.txt", lib.ID), nil)
+		recorder := httptest.NewRecorder()
+		testApp.Router.ServeHTTP(recorder, req)
+
+		assertStatus(t, recorder, 200)
+		var body []service.FileInfo
+		assertJsonUnmarshal(t, recorder, &body)
+		if len(body) != 1 {
+			t.Errorf("Expected 1 file, but got %d", len(body))
+		}
+		if body[0].Name != "root.txt" {
+			t.Errorf("Expected root.txt, but got: %s", body[0].Name)
+		}
+	})
+
 	t.Run("it returns an empty list when querying a path that does not exist", func(t *testing.T) {
 		req := adminRequest("GET", fmt.Sprintf("/api/libraries/%d/entries?path=%s", lib.ID, url.QueryEscape("/no/file/here")), nil)
 		recorder := httptest.NewRecorder()
