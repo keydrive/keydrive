@@ -28,8 +28,10 @@ export const FilesPage: React.FC = () => {
   const [entries, setEntries] = useState<Entry[]>();
   const [currentDir, setCurrentDir] = useState<Entry>();
   const goTo = useCallback(
-    (path: string | Entry) => {
-      history.push(`/files/${libraryId}/${encodeURIComponent(typeof path === 'string' ? path : resolvePath(path))}`);
+    (target: string | Entry) => {
+      history.push(
+        `/files/${libraryId}/${encodeURIComponent(typeof target === 'string' ? target : resolvePath(target))}`
+      );
     },
     [history, libraryId]
   );
@@ -60,7 +62,7 @@ export const FilesPage: React.FC = () => {
 
   useEffect(() => {
     refresh().catch((e) => {
-      console.log(e);
+      console.error(e);
     });
   }, [refresh]);
 
@@ -151,8 +153,8 @@ export const FilesPage: React.FC = () => {
                             setNewFolderName(undefined);
                           }
                           if (e.key === 'Enter') {
-                            createFolder(newFolderName).catch((e) => {
-                              console.error(e);
+                            createFolder(newFolderName).catch((err) => {
+                              console.error(err);
                             });
                           }
                         }}
