@@ -16,6 +16,7 @@ import { IconButton } from '../components/IconButton';
 import { Button } from '../components/Button';
 import { classNames } from '../utils/classNames';
 import { TextInput } from '../components/input/TextInput';
+import { KeyCode, useKeyBind } from '../hooks/useKeyBind';
 
 export const FilesPage: React.FC = () => {
   const libraries = useService(LibrariesService);
@@ -85,13 +86,73 @@ export const FilesPage: React.FC = () => {
     [libraries, libraryId, path, refresh]
   );
 
+  const goTo = useCallback(
+    (path: string | Entry) => {
+      history.push(`/files/${libraryId}/${encodeURIComponent(typeof path === 'string' ? path : resolvePath(path))}`);
+    },
+    [history, libraryId]
+  );
+
+  const shiftSelectToFirst = useCallback(() => {
+    if (entries && entries.length > 0) {
+      setSelectedEntry(entries[0]);
+    }
+  }, [entries]);
+
+  const shiftSelectToLast = useCallback(() => {
+    if (entries && entries.length > 0) {
+      setSelectedEntry(entries[entries.length - 1]);
+    }
+  }, [entries]);
+
+  const shiftSelect = useCallback(
+    (delta: -1 | 1) => {
+      if (!entries || entries.length === 0) {
+        return;
+      }
+      if (selectedEntry) {
+        const currentIndex = entries.indexOf(selectedEntry);
+        const desiredIndex = Math.min(Math.max(currentIndex + delta, 0), entries.length - 1);
+        setSelectedEntry(entries[desiredIndex]);
+      } else if (delta === 1) {
+        // we have no selection so we select the top item to be able to scroll down
+        shiftSelectToFirst();
+      } else if (delta === -1) {
+        // we have no selection so we select the bottom item to be able to scroll up
+        shiftSelectToLast();
+      }
+    },
+    [entries, selectedEntry, shiftSelectToFirst, shiftSelectToLast]
+  );
+
+  useKeyBind(KeyCode.Enter, () => {
+    if (selectedEntry && selectedEntry.category === 'Folder') {
+      goTo(selectedEntry);
+    }
+  });
+  useKeyBind(KeyCode.Escape, () => {
+    setSelectedEntry(undefined);
+  });
+  useKeyBind(KeyCode.ArrowUp, () => {
+    shiftSelect(-1);
+  });
+  useKeyBind(KeyCode.ArrowDown, () => {
+    shiftSelect(+1);
+  });
+  useKeyBind(KeyCode.Home, () => {
+    shiftSelectToFirst();
+  });
+  useKeyBind(KeyCode.End, () => {
+    shiftSelectToLast();
+  });
+
   return (
     <Layout className="files-page">
       <div className="top-bar">
         <div>
           <IconButton
             className="parent-dir"
-            onClick={() => history.push(`/files/${libraryId}/${encodeURIComponent(currentDir?.parent || '')}`)}
+            onClick={() => goTo(currentDir?.parent || '')}
             aria-label="Parent directory"
             icon="level-up-alt"
             disabled={!currentDir}
@@ -141,6 +202,7 @@ export const FilesPage: React.FC = () => {
                         iconButton="folder-plus"
                         onButtonClick={() => createFolder(newFolderName)}
                         onKeyDown={(e) => {
+                          e.stopPropagation();
                           if (e.key === 'Escape') {
                             setNewFolderName(undefined);
                           }
@@ -162,10 +224,7 @@ export const FilesPage: React.FC = () => {
                     key={entry.name}
                     onDoubleClick={() => {
                       if (entry.category === 'Folder') {
-                        history.push(
-                          `/files/${libraryId}/${encodeURIComponent(resolvePath(entry.parent, entry.name))}`
-                        );
-                        setCurrentDir(entry);
+                        goTo(entry);
                       }
                     }}
                     onClick={() => setSelectedEntry(entry)}
