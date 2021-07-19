@@ -29,7 +29,6 @@ export const FilesPage: React.FC = () => {
   const [currentDir, setCurrentDir] = useState<Entry>();
   const onClickEntry = useCallback(
     (target: string | Entry) => {
-      console.log(target);
       if (typeof target === 'string') {
         history.push(`/files/${libraryId}/${encodeURIComponent(target)}`);
       } else if (target.category === 'Folder') {
