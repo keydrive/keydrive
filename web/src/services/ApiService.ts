@@ -22,6 +22,30 @@ export interface ApiErrorDetails {
   codes: string[];
 }
 
+export function getFileName(contentDispositionHeader: string | null): string {
+  if (contentDispositionHeader) {
+    let startFileName = contentDispositionHeader.indexOf('filename=');
+    if (startFileName >= 0) {
+      startFileName = startFileName + 'filename='.length;
+      let fileName = contentDispositionHeader.substring(startFileName);
+      if (fileName.startsWith('"')) {
+        const textWithQuotesAndEscapeSupport = /"[^"\\]*(?:\\.[^"\\]*)*"/;
+        const fileNameMatch = fileName.match(textWithQuotesAndEscapeSupport);
+        if (fileNameMatch) {
+          fileName = JSON.parse(fileNameMatch[0]);
+        }
+      } else {
+        const firstSpace = fileName.indexOf(' ');
+        if (firstSpace >= 0) {
+          fileName = fileName.substring(0, firstSpace);
+        }
+      }
+      return fileName;
+    }
+  }
+  return 'download';
+}
+
 export class ApiService {
   public static readonly NAME = 'ApiService';
 
@@ -90,6 +114,34 @@ export class ApiService {
         body: formBody,
       })
     );
+  }
+
+  async download(path: string, params?: Record<string, string>): Promise<void> {
+    const paramString = params ? `?${new URLSearchParams(params)}` : '';
+    const response = await fetch(`/api${path}${paramString}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${this.getToken()}`,
+      },
+    });
+    if (response.status !== 200) {
+      throw new Error('download failure');
+    }
+    const fileName = getFileName(response.headers.get('Content-Disposition'));
+
+    const file = new File([await response.blob()], fileName, {
+      type: response.headers.get('Content-Type') || 'application/octet-stream',
+    });
+    const downloadUrl = URL.createObjectURL(file);
+    try {
+      const downloadA = document.createElement('a');
+
+      downloadA.href = downloadUrl;
+      downloadA.download = file.name;
+      downloadA.click();
+    } finally {
+      URL.revokeObjectURL(downloadUrl);
+    }
   }
 
   private jsonRequest<T>(

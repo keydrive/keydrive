@@ -27,15 +27,20 @@ export const FilesPage: React.FC = () => {
   // Current directory info and details.
   const [entries, setEntries] = useState<Entry[]>();
   const [currentDir, setCurrentDir] = useState<Entry>();
-  const goTo = useCallback(
+  const onClickEntry = useCallback(
     (target: string | Entry) => {
-      history.push(
-        `/files/${libraryId}/${encodeURIComponent(typeof target === 'string' ? target : resolvePath(target))}`
-      );
+      console.log(target);
+      if (typeof target === 'string') {
+        history.push(`/files/${libraryId}/${encodeURIComponent(target)}`);
+      } else if (target.category === 'Folder') {
+        history.push(`/files/${libraryId}/${encodeURIComponent(resolvePath(target))}`);
+      } else {
+        libraries.download(libraryId, resolvePath(target));
+      }
     },
-    [history, libraryId]
+    [history, libraries, libraryId]
   );
-  const { selectedEntry, setSelectedEntry } = useFileNavigator(entries, goTo);
+  const { selectedEntry, setSelectedEntry } = useFileNavigator(entries, onClickEntry);
 
   // Current library info.
   const {
@@ -98,7 +103,7 @@ export const FilesPage: React.FC = () => {
         <div>
           <IconButton
             className="parent-dir"
-            onClick={() => goTo(currentDir?.parent || '')}
+            onClick={() => onClickEntry(currentDir?.parent || '')}
             aria-label="Parent directory"
             icon="level-up-alt"
             disabled={!currentDir}
@@ -171,9 +176,7 @@ export const FilesPage: React.FC = () => {
                   <tr
                     key={entry.name}
                     onDoubleClick={() => {
-                      if (entry.category === 'Folder') {
-                        goTo(entry);
-                      }
+                      onClickEntry(entry);
                     }}
                     onClick={() => setSelectedEntry(entry)}
                     className={classNames(selectedEntry?.name === entry.name && 'is-selected')}

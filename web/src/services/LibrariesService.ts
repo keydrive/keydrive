@@ -110,4 +110,10 @@ export class LibrariesService {
       name,
     });
   }
+
+  public async download(libraryId: string, path: string): Promise<void> {
+    await this.api.download(`/libraries/${libraryId}/entries/download`, {
+      path,
+    });
+  }
 }

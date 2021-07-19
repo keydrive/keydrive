@@ -40,7 +40,7 @@ export const useFileNavigator = (
   );
 
   useKeyBind(KeyCode.Enter, () => {
-    if (selectedEntry && selectedEntry.category === 'Folder') {
+    if (selectedEntry) {
       onActivateEntry(selectedEntry);
     }
   });
