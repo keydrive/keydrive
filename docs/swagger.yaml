@@ -21,6 +21,8 @@ definitions:
         items:
           $ref: '#/definitions/controller.BrowseResponseFolder'
         type: array
+      parent:
+        type: string
       path:
         type: string
     type: object
@@ -342,11 +344,38 @@ paths:
       tags:
       - Files
   /api/libraries/{libraryId}/entries:
+    delete:
+      parameters:
+      - description: The url encoded path
+        in: query
+        name: path
+        required: true
+        type: string
+      - description: The library id
+        in: path
+        name: libraryId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      security:
+      - OAuth2: []
+      summary: Delete a file or folder
+      tags:
+      - Files
     get:
       parameters:
       - description: The parent folder
         in: query
         name: parent
+        type: string
+      - description: The entry path. If this value is set, all other parameters are
+          ignored and a maximum of 1 value is returned.
+        in: query
+        name: path
         type: string
       - description: The library id
         in: path
@@ -401,58 +430,11 @@ paths:
       summary: Create a new file or folder
       tags:
       - Files
-  /api/libraries/{libraryId}/entries/{path}:
-    delete:
-      parameters:
-      - description: The url encoded path
-        in: path
-        name: path
-        required: true
-        type: string
-      - description: The library id
-        in: path
-        name: libraryId
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: ""
-      security:
-      - OAuth2: []
-      summary: Delete a file or folder
-      tags:
-      - Files
+  /api/libraries/{libraryId}/entries/download:
     get:
       parameters:
-      - description: The url encoded path
-        in: path
-        name: path
-        required: true
-        type: string
-      - description: The library id
-        in: path
-        name: libraryId
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/service.FileInfo'
-      security:
-      - OAuth2: []
-      summary: Search the collection of files and folders
-      tags:
-      - Files
-  /api/libraries/{libraryId}/entries/{path}/download:
-    get:
-      parameters:
-      - description: The url encoded path
-        in: path
+      - description: The file path
+        in: query
         name: path
         required: true
         type: string
@@ -466,7 +448,7 @@ paths:
           description: ""
       security:
       - OAuth2: []
-      summary: Search the collection of files and folders
+      summary: Download a file
       tags:
       - Files
   /api/libraries/{libraryId}/shares:

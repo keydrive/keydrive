@@ -8,15 +8,3 @@ export function resolvePath(parent: string, name: string): string {
   }
   return `${result}${name}`;
 }
-
-export function parentPath(path?: string): string {
-  if (!path || path === '/') {
-    return '';
-  }
-
-  let result = path;
-  if (!result.startsWith('/')) {
-    result = `/${result}`;
-  }
-  return result.substring(0, result.lastIndexOf('/'));
-}

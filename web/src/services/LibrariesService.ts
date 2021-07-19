@@ -92,6 +92,10 @@ export class LibrariesService {
     return this.api.jsonGet(`/libraries/${libraryId}/entries`, { parent });
   }
 
+  public async getEntry(libraryId: number | string, path: string): Promise<Entry | undefined> {
+    return (await this.api.jsonGet<Entry[]>(`/libraries/${libraryId}/entries`, { path }))[0];
+  }
+
   public uploadFile(libraryId: number | string, parent: string, file: File): Promise<Entry> {
     return this.api.formPost(`/libraries/${libraryId}/entries`, {
       parent,

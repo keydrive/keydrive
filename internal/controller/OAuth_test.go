@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"encoding/json"
 	"net/http/httptest"
 	"strings"
 	"testing"
@@ -26,14 +25,11 @@ func TestToken(t *testing.T) {
 			t.Errorf("Expected text/plain but got: %s", contentType)
 		}
 		body := map[string]interface{}{}
-		_ = json.Unmarshal(recorder.Body.Bytes(), &body)
+		assertJsonUnmarshal(t, recorder, &body)
 		if body["access_token"] == nil {
 			t.Errorf("Expected to find an access_token instead got: %s", recorder.Body.String())
 		}
-		status := recorder.Code
-		if status != 200 {
-			t.Errorf("Expected status 200 but got %d", status)
-		}
+		assertStatus(t, recorder, 200)
 	})
 
 	t.Run("the username is case insensitive", func(t *testing.T) {
@@ -52,14 +48,11 @@ func TestToken(t *testing.T) {
 			t.Errorf("Expected text/plain but got: %s", contentType)
 		}
 		body := map[string]interface{}{}
-		_ = json.Unmarshal(recorder.Body.Bytes(), &body)
+		assertJsonUnmarshal(t, recorder, &body)
 		if body["access_token"] == nil {
 			t.Errorf("Expected to find an access_token instead got: %s", recorder.Body.String())
 		}
-		status := recorder.Code
-		if status != 200 {
-			t.Errorf("Expected status 200 but got %d", status)
-		}
+		assertStatus(t, recorder, 200)
 	})
 
 	t.Run("invalid credentials are rejected", func(t *testing.T) {
@@ -73,10 +66,7 @@ func TestToken(t *testing.T) {
 			req,
 		)
 
-		status := recorder.Code
-		if status != 400 {
-			t.Errorf("Expected status 400 but got %d", status)
-		}
+		assertStatus(t, recorder, 400)
 	})
 
 	t.Run("the password is case sensitive", func(t *testing.T) {
@@ -89,10 +79,7 @@ func TestToken(t *testing.T) {
 			recorder,
 			req,
 		)
-		status := recorder.Code
-		if status != 400 {
-			t.Errorf("Expected status 400 but got %d", status)
-		}
+		assertStatus(t, recorder, 400)
 	})
 
 	t.Run("client_id is required", func(t *testing.T) {
@@ -105,10 +92,7 @@ func TestToken(t *testing.T) {
 			recorder,
 			req,
 		)
-		status := recorder.Code
-		if status != 400 {
-			t.Errorf("Expected status 400 but got %d", status)
-		}
+		assertStatus(t, recorder, 400)
 	})
 
 	t.Run("grant_type is required", func(t *testing.T) {
@@ -121,10 +105,7 @@ func TestToken(t *testing.T) {
 			recorder,
 			req,
 		)
-		status := recorder.Code
-		if status != 400 {
-			t.Errorf("Expected status 400 but got %d", status)
-		}
+		assertStatus(t, recorder, 400)
 	})
 
 	t.Run("username is required", func(t *testing.T) {
@@ -137,10 +118,7 @@ func TestToken(t *testing.T) {
 			recorder,
 			req,
 		)
-		status := recorder.Code
-		if status != 400 {
-			t.Errorf("Expected status 400 but got %d", status)
-		}
+		assertStatus(t, recorder, 400)
 	})
 
 	t.Run("password is required", func(t *testing.T) {
@@ -153,10 +131,7 @@ func TestToken(t *testing.T) {
 			recorder,
 			req,
 		)
-		status := recorder.Code
-		if status != 400 {
-			t.Errorf("Expected status 400 but got %d", status)
-		}
+		assertStatus(t, recorder, 400)
 	})
 
 	t.Run("client_id must be web", func(t *testing.T) {
@@ -169,10 +144,7 @@ func TestToken(t *testing.T) {
 			recorder,
 			req,
 		)
-		status := recorder.Code
-		if status != 401 {
-			t.Errorf("Expected status 401 but got %d", status)
-		}
+		assertStatus(t, recorder, 401)
 	})
 
 	t.Run("grant_type must be password", func(t *testing.T) {
@@ -185,9 +157,6 @@ func TestToken(t *testing.T) {
 			recorder,
 			req,
 		)
-		status := recorder.Code
-		if status != 400 {
-			t.Errorf("Expected status 400 but got %d", status)
-		}
+		assertStatus(t, recorder, 400)
 	})
 }

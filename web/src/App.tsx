@@ -46,7 +46,7 @@ export const App: React.FC = () => {
   return (
     <Switch>
       <Route exact path="/" component={HomePage} />
-      <Route exact path="/files/:library/:path*" component={FilesPage} />
+      <Route exact path="/files/:library/:path?" component={FilesPage} />
       <Route exact path="/logout" component={LogoutPage} />
       <Route exact path="/settings" component={SettingsPage} />
       <Route exact path="/settings/:setting" component={SettingsPage} />

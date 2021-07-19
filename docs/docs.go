@@ -225,6 +225,12 @@ var doc = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "The entry path. If this value is set, all other parameters are ignored and a maximum of 1 value is returned.",
+                        "name": "path",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "The library id",
                         "name": "libraryId",
@@ -295,46 +301,6 @@ var doc = `{
                         }
                     }
                 }
-            }
-        },
-        "/api/libraries/{libraryId}/entries/{path}": {
-            "get": {
-                "security": [
-                    {
-                        "OAuth2": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Files"
-                ],
-                "summary": "Search the collection of files and folders",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "The url encoded path",
-                        "name": "path",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "The library id",
-                        "name": "libraryId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/service.FileInfo"
-                        }
-                    }
-                }
             },
             "delete": {
                 "security": [
@@ -354,7 +320,7 @@ var doc = `{
                         "type": "string",
                         "description": "The url encoded path",
                         "name": "path",
-                        "in": "path",
+                        "in": "query",
                         "required": true
                     },
                     {
@@ -372,7 +338,7 @@ var doc = `{
                 }
             }
         },
-        "/api/libraries/{libraryId}/entries/{path}/download": {
+        "/api/libraries/{libraryId}/entries/download": {
             "get": {
                 "security": [
                     {
@@ -382,13 +348,13 @@ var doc = `{
                 "tags": [
                     "Files"
                 ],
-                "summary": "Search the collection of files and folders",
+                "summary": "Download a file",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "The url encoded path",
+                        "description": "The file path",
                         "name": "path",
-                        "in": "path",
+                        "in": "query",
                         "required": true
                     },
                     {
@@ -814,6 +780,9 @@ var doc = `{
                     "items": {
                         "$ref": "#/definitions/controller.BrowseResponseFolder"
                     }
+                },
+                "parent": {
+                    "type": "string"
                 },
                 "path": {
                     "type": "string"

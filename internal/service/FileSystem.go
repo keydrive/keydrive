@@ -67,6 +67,11 @@ func (fs *FileSystem) GetEntriesForLibrary(library model.Library, parentPath str
 
 func (fs *FileSystem) GetEntryMetadata(library model.Library, path string) (FileInfo, error) {
 	path = fs.cleanRelativePath(path)
+	if path == "/" {
+		// We're at the library root, so this is not a valid entry.
+		return FileInfo{}, os.ErrNotExist
+	}
+
 	parentPath := filepath.Dir(path)
 	target := fs.resolve(library, path)
 
