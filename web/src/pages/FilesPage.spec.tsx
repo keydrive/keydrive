@@ -124,6 +124,19 @@ describe('FilesPage', () => {
         ],
       }
     );
+    fetchMock.getOnce(
+      {
+        url: 'path:/api/libraries/4/entries',
+        query: {
+          parent: '/Documents',
+        },
+        overwriteRoutes: false,
+      },
+      {
+        status: 200,
+        body: [],
+      }
+    );
 
     const { navigation } = await render(<FilesPage />, {
       path: '/files/4',
