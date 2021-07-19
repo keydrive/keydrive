@@ -12,7 +12,6 @@ export enum KeyCode {
 export const useKeyBind = (key: KeyCode, handler: () => void): void => {
   useEffect(() => {
     const listener = (e: KeyboardEvent) => {
-      console.debug(e.key);
       if (e.key === key) {
         handler();
       }

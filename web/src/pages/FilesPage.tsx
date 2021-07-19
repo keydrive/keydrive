@@ -16,7 +16,7 @@ import { IconButton } from '../components/IconButton';
 import { Button } from '../components/Button';
 import { classNames } from '../utils/classNames';
 import { TextInput } from '../components/input/TextInput';
-import { KeyCode, useKeyBind } from '../hooks/useKeyBind';
+import { useFileNavigator } from '../hooks/useFileNavigator';
 
 export const FilesPage: React.FC = () => {
   const libraries = useService(LibrariesService);
@@ -26,13 +26,20 @@ export const FilesPage: React.FC = () => {
 
   // Current directory info and details.
   const [entries, setEntries] = useState<Entry[]>();
-  const [selectedEntry, setSelectedEntry] = useState<Entry>();
   const [currentDir, setCurrentDir] = useState<Entry>();
+  const goTo = useCallback(
+    (path: string | Entry) => {
+      history.push(`/files/${libraryId}/${encodeURIComponent(typeof path === 'string' ? path : resolvePath(path))}`);
+    },
+    [history, libraryId]
+  );
+  const { selectedEntry, setSelectedEntry } = useFileNavigator(entries, goTo);
 
   // Current library info.
-  const [library, setLibrary] = useState<Library>();
-  const { selectors } = useService(librariesStore);
-  const librariesList = useAppSelector(selectors.libraries);
+  const {
+    selectors: { libraryById },
+  } = useService(librariesStore);
+  const library = useAppSelector(libraryById(parseInt(libraryId)));
 
   // File and folder operations.
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -52,15 +59,12 @@ export const FilesPage: React.FC = () => {
   }, [libraries, libraryId, path]);
 
   useEffect(() => {
-    refresh();
+    refresh().catch((e) => {
+      console.log(e);
+    });
   }, [refresh]);
 
-  useEffect(() => {
-    const id = parseInt(libraryId);
-    setLibrary(librariesList?.find((l) => l.id === id));
-  }, [librariesList, libraryId]);
-
-  useEffect(() => setSelectedEntry(undefined), [path]);
+  useEffect(() => setSelectedEntry(undefined), [setSelectedEntry, path]);
 
   const uploadFiles = useCallback(
     async (e: ChangeEvent<HTMLInputElement>) => {
@@ -83,68 +87,8 @@ export const FilesPage: React.FC = () => {
       await libraries.createFolder(libraryId, path, name).then(setSelectedEntry).then(refresh);
       setNewFolderName(undefined);
     },
-    [libraries, libraryId, path, refresh]
+    [libraries, libraryId, path, refresh, setSelectedEntry]
   );
-
-  const goTo = useCallback(
-    (path: string | Entry) => {
-      history.push(`/files/${libraryId}/${encodeURIComponent(typeof path === 'string' ? path : resolvePath(path))}`);
-    },
-    [history, libraryId]
-  );
-
-  const shiftSelectToFirst = useCallback(() => {
-    if (entries && entries.length > 0) {
-      setSelectedEntry(entries[0]);
-    }
-  }, [entries]);
-
-  const shiftSelectToLast = useCallback(() => {
-    if (entries && entries.length > 0) {
-      setSelectedEntry(entries[entries.length - 1]);
-    }
-  }, [entries]);
-
-  const shiftSelect = useCallback(
-    (delta: -1 | 1) => {
-      if (!entries || entries.length === 0) {
-        return;
-      }
-      if (selectedEntry) {
-        const currentIndex = entries.indexOf(selectedEntry);
-        const desiredIndex = Math.min(Math.max(currentIndex + delta, 0), entries.length - 1);
-        setSelectedEntry(entries[desiredIndex]);
-      } else if (delta === 1) {
-        // we have no selection so we select the top item to be able to scroll down
-        shiftSelectToFirst();
-      } else if (delta === -1) {
-        // we have no selection so we select the bottom item to be able to scroll up
-        shiftSelectToLast();
-      }
-    },
-    [entries, selectedEntry, shiftSelectToFirst, shiftSelectToLast]
-  );
-
-  useKeyBind(KeyCode.Enter, () => {
-    if (selectedEntry && selectedEntry.category === 'Folder') {
-      goTo(selectedEntry);
-    }
-  });
-  useKeyBind(KeyCode.Escape, () => {
-    setSelectedEntry(undefined);
-  });
-  useKeyBind(KeyCode.ArrowUp, () => {
-    shiftSelect(-1);
-  });
-  useKeyBind(KeyCode.ArrowDown, () => {
-    shiftSelect(+1);
-  });
-  useKeyBind(KeyCode.Home, () => {
-    shiftSelectToFirst();
-  });
-  useKeyBind(KeyCode.End, () => {
-    shiftSelectToLast();
-  });
 
   return (
     <Layout className="files-page">
@@ -207,7 +151,9 @@ export const FilesPage: React.FC = () => {
                             setNewFolderName(undefined);
                           }
                           if (e.key === 'Enter') {
-                            createFolder(newFolderName);
+                            createFolder(newFolderName).catch((e) => {
+                              console.error(e);
+                            });
                           }
                         }}
                         onFocus={(e) => e.currentTarget.select()}
