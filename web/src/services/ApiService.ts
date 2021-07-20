@@ -109,7 +109,19 @@ export class ApiService {
       throw new Error(`Error while downloading: ${path}`);
     }
 
-    const file = new File([await response.blob()], response.headers.get('Content-Disposition') || 'download', {
+    // Get the file name from the content disposition.
+    let fileName = 'download';
+    const contentDisposition = response.headers.get('Content-Disposition');
+    if (contentDisposition) {
+      const nameStart = contentDisposition.indexOf('filename="');
+      if (nameStart >= 0) {
+        // Here we assume the file name is always the last part of the header.
+        // It's either that or dealing with potential quotes in the name.
+        fileName = contentDisposition.substring(nameStart + 10, contentDisposition.length - 1);
+      }
+    }
+
+    const file = new File([await response.blob()], fileName, {
       type: response.headers.get('Content-Type') || 'application/octet-stream',
     });
     const downloadUrl = URL.createObjectURL(file);
