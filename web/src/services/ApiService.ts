@@ -40,6 +40,11 @@ export class ApiService {
     return responseBody;
   }
 
+  private static getUrl(path: string, params?: Record<string, string>): string {
+    const paramString = params ? `?${new URLSearchParams(params)}` : '';
+    return `/api${path}${paramString}`;
+  }
+
   public jsonGet<T>(path: string, params?: Record<string, string>): Promise<T> {
     return this.jsonRequest('GET', path, undefined, params);
   }
@@ -92,6 +97,31 @@ export class ApiService {
     );
   }
 
+  public async download(path: string, params?: Record<string, string>): Promise<void> {
+    const response = await fetch(ApiService.getUrl(path, params), {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${this.getToken()}`,
+      },
+    });
+
+    if (response.status !== 200) {
+      throw new Error(`Error while downloading: ${path}`);
+    }
+
+    const file = new File([await response.blob()], response.headers.get('Content-Disposition') || 'download', {
+      type: response.headers.get('Content-Type') || 'application/octet-stream',
+    });
+    const downloadUrl = URL.createObjectURL(file);
+
+    const downloadA = document.createElement('a');
+    downloadA.href = downloadUrl;
+    downloadA.download = file.name;
+    downloadA.click();
+
+    URL.revokeObjectURL(downloadUrl);
+  }
+
   private jsonRequest<T>(
     method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
     path: string,
@@ -103,10 +133,8 @@ export class ApiService {
       headers['Content-Type'] = 'application/json';
     }
 
-    const paramString = params ? `?${new URLSearchParams(params)}` : '';
-
     return ApiService.handleResponse(
-      fetch(`/api${path}${paramString}`, {
+      fetch(ApiService.getUrl(path, params), {
         method,
         headers,
         body: body ? JSON.stringify(body) : undefined,

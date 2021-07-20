@@ -166,6 +166,8 @@ export const FilesPage: React.FC = () => {
                           `/files/${libraryId}/${encodeURIComponent(resolvePath(entry.parent, entry.name))}`
                         );
                         setCurrentDir(entry);
+                      } else {
+                        libraries.downloadFile(libraryId, resolvePath(entry.parent, entry.name));
                       }
                     }}
                     onClick={() => setSelectedEntry(entry)}

@@ -110,4 +110,8 @@ export class LibrariesService {
       name,
     });
   }
+
+  public downloadFile(libraryId: number | string, path: string): Promise<void> {
+    return this.api.download(`/libraries/${libraryId}/entries/download`, { path });
+  }
 }
