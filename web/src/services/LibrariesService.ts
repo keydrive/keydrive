@@ -47,6 +47,10 @@ export interface BrowseResponse {
   folders: { path: string }[];
 }
 
+export interface DownloadTokenResponse {
+  token: string;
+}
+
 export class LibrariesService {
   public static readonly NAME = 'LibrariesService';
   private readonly api: ApiService;
@@ -111,7 +115,10 @@ export class LibrariesService {
     });
   }
 
-  public downloadFile(libraryId: number | string, path: string): Promise<void> {
-    return this.api.download(`/libraries/${libraryId}/entries/download`, { path });
+  public async getDownloadToken(libraryId: number | string, path: string): Promise<string> {
+    const response: DownloadTokenResponse = await this.api.jsonPost(`/libraries/${libraryId}/entries/download`, {
+      path,
+    });
+    return response.token;
   }
 }

@@ -95,6 +95,51 @@ func ListEntries(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin
 	}
 }
 
+type CreateDownloadTokenDTO struct {
+	Path string `json:"path" binding:"required"`
+}
+
+type DownloadTokenDTO struct {
+	Token string `json:"token"`
+}
+
+// CreateDownloadToken
+// @Tags Files
+// @Router /api/libraries/{libraryId}/entries/download [post]
+// @Summary Create a download token
+// @security OAuth2
+// @Produce json
+// @Param body body CreateDownloadTokenDTO true "The file to create a download token for"
+// @Success 201 {object} DownloadTokenDTO
+func CreateDownloadToken(db *gorm.DB, libs *service.Library) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var create CreateDownloadTokenDTO
+		if err := c.ShouldBindJSON(&create); err != nil {
+			writeError(c, err)
+			return
+		}
+
+		err := db.Transaction(func(tx *gorm.DB) error {
+			_, err := getAccessToLib(c, libs, false, tx)
+			if err != nil {
+				return err
+			}
+
+			response := DownloadTokenDTO{
+				Token: service.RandomString(10),
+			}
+			// TODO: Store the download token and path in the db.
+			c.JSON(http.StatusCreated, response)
+
+			return nil
+		})
+		if err != nil {
+			writeError(c, err)
+			return
+		}
+	}
+}
+
 // DownloadEntry
 // @Tags Files
 // @Router /api/libraries/{libraryId}/entries/download [get]

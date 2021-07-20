@@ -31,6 +31,13 @@ definitions:
       path:
         type: string
     type: object
+  controller.CreateDownloadTokenDTO:
+    properties:
+      path:
+        type: string
+    required:
+    - path
+    type: object
   controller.CreateLibraryDTO:
     properties:
       name:
@@ -64,6 +71,11 @@ definitions:
     - lastName
     - password
     - username
+    type: object
+  controller.DownloadTokenDTO:
+    properties:
+      token:
+        type: string
     type: object
   controller.HealthCheckResponse:
     properties:
@@ -449,6 +461,26 @@ paths:
       security:
       - OAuth2: []
       summary: Download a file
+      tags:
+      - Files
+    post:
+      parameters:
+      - description: The file to create a download token for
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.CreateDownloadTokenDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controller.DownloadTokenDTO'
+      security:
+      - OAuth2: []
+      summary: Create a download token
       tags:
       - Files
   /api/libraries/{libraryId}/shares:

@@ -113,6 +113,7 @@ func NewApp(dbDiag gorm.Dialector) (app App, err error) {
 				entries.GET("", ListEntries(app.DB, app.Libraries, app.FileSystem))
 				entries.POST("", CreateEntry(app.DB, app.Libraries, app.FileSystem))
 				entries.GET("/download", DownloadEntry(app.DB, app.Libraries, app.FileSystem))
+				entries.POST("/download", CreateDownloadToken(app.DB, app.Libraries))
 				entries.DELETE("", DeleteEntry(app.DB, app.Libraries, app.FileSystem))
 			}
 		}

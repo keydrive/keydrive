@@ -370,6 +370,39 @@ var doc = `{
                         "description": ""
                     }
                 }
+            },
+            "post": {
+                "security": [
+                    {
+                        "OAuth2": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Create a download token",
+                "parameters": [
+                    {
+                        "description": "The file to create a download token for",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.CreateDownloadTokenDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/controller.DownloadTokenDTO"
+                        }
+                    }
+                }
             }
         },
         "/api/libraries/{libraryId}/shares": {
@@ -797,6 +830,17 @@ var doc = `{
                 }
             }
         },
+        "controller.CreateDownloadTokenDTO": {
+            "type": "object",
+            "required": [
+                "path"
+            ],
+            "properties": {
+                "path": {
+                    "type": "string"
+                }
+            }
+        },
         "controller.CreateLibraryDTO": {
             "type": "object",
             "required": [
@@ -841,6 +885,14 @@ var doc = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.DownloadTokenDTO": {
+            "type": "object",
+            "properties": {
+                "token": {
                     "type": "string"
                 }
             }
