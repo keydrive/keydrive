@@ -171,12 +171,7 @@ export const FilesPage: React.FC = () => {
                           libraryId,
                           resolvePath(entry.parent, entry.name)
                         );
-                        window.open(
-                          `/api/libraries/${libraryId}/entries/download?path=${encodeURIComponent(
-                            resolvePath(entry.parent, entry.name)
-                          )}&token=${downloadToken}`,
-                          '_self'
-                        );
+                        window.open(`/api/download?token=${downloadToken}`, '_self');
                       }
                     }}
                     onClick={() => setSelectedEntry(entry)}

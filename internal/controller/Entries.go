@@ -111,7 +111,7 @@ type DownloadTokenDTO struct {
 // @Produce json
 // @Param body body CreateDownloadTokenDTO true "The file to create a download token for"
 // @Success 201 {object} DownloadTokenDTO
-func CreateDownloadToken(db *gorm.DB, libs *service.Library) gin.HandlerFunc {
+func CreateDownloadToken(db *gorm.DB, libs *service.Library, tokens *service.DownloadToken) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var create CreateDownloadTokenDTO
 		if err := c.ShouldBindJSON(&create); err != nil {
@@ -120,15 +120,13 @@ func CreateDownloadToken(db *gorm.DB, libs *service.Library) gin.HandlerFunc {
 		}
 
 		err := db.Transaction(func(tx *gorm.DB) error {
-			_, err := getAccessToLib(c, libs, false, tx)
+			library, err := getAccessToLib(c, libs, false, tx)
 			if err != nil {
 				return err
 			}
 
-			response := DownloadTokenDTO{
-				Token: service.RandomString(10),
-			}
-			// TODO: Store the download token and path in the db.
+			token := tokens.GenerateDownloadToken(library, create.Path)
+			response := DownloadTokenDTO{Token: token.Token}
 			c.JSON(http.StatusCreated, response)
 
 			return nil
