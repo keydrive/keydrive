@@ -44,7 +44,7 @@ func TestDownload(t *testing.T) {
 		}
 	})
 
-	t.Run("it returns 404 if file not found", func(t *testing.T) {
+	t.Run("it returns 404 if file is not found", func(t *testing.T) {
 		token := testApp.DownloadTokens.GenerateDownloadToken(lib, "/not/here.txt").Token
 		req, _ := http.NewRequest("GET", fmt.Sprintf("/api/download?token=%s", token), nil)
 		recorder := httptest.NewRecorder()
@@ -55,7 +55,7 @@ func TestDownload(t *testing.T) {
 		assertStatus(t, recorder, 404)
 	})
 
-	t.Run("it returns 400 if no download token provided", func(t *testing.T) {
+	t.Run("it returns 400 if no download token is provided", func(t *testing.T) {
 		req, _ := http.NewRequest("GET", "/api/download", nil)
 		recorder := httptest.NewRecorder()
 		testApp.Router.ServeHTTP(
@@ -63,5 +63,15 @@ func TestDownload(t *testing.T) {
 			req,
 		)
 		assertStatus(t, recorder, 400)
+	})
+
+	t.Run("it returns 401 if an invalid download token is provided", func(t *testing.T) {
+		req, _ := http.NewRequest("GET", "/api/download?token=not_valid", nil)
+		recorder := httptest.NewRecorder()
+		testApp.Router.ServeHTTP(
+			recorder,
+			req,
+		)
+		assertStatus(t, recorder, 401)
 	})
 }
