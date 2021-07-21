@@ -2,7 +2,7 @@ import { checkPendingMocks } from '../__testutils__/checkPendingMocks';
 import fetchMock from 'fetch-mock';
 import { ReallyDeepPartial, render } from '../__testutils__/render';
 import { FilesPage } from './FilesPage';
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { RootState } from '../store';
 import { formDataMatcher } from '../__testutils__/formDataMatcher';
@@ -22,6 +22,11 @@ const initialState: ReallyDeepPartial<RootState> = {
 
 describe('FilesPage', () => {
   afterEach(checkPendingMocks);
+
+  const originalWindowOpen = window.open;
+  afterEach(() => {
+    window.open = originalWindowOpen;
+  });
 
   beforeEach(() => {
     fetchMock.getOnce(
@@ -457,5 +462,39 @@ describe('FilesPage', () => {
     });
     expect(screen.queryByDisplayValue('Hold On')).toBeNull();
     expect(screen.queryByText('Hold On')).toBeNull();
+  });
+
+  it('downloads a file', async () => {
+    fetchMock.postOnce(
+      {
+        url: 'path:/api/libraries/4/entries/download',
+        body: {
+          path: '/Ballmers Peak Label.xcf',
+        },
+      },
+      {
+        status: 201,
+        body: {
+          token: 'i_am_a_download_token',
+        },
+      }
+    );
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    delete window.open;
+    window.open = jest.fn();
+
+    await render(<FilesPage />, {
+      path: '/files/4',
+      route: '/files/:library/:path?',
+      loggedIn: true,
+      initialState,
+    });
+
+    userEvent.dblClick(await screen.findByText('Ballmers Peak Label.xcf'));
+    await waitFor(() => {
+      expect(window.open).toBeCalledWith('/api/download?token=i_am_a_download_token', '_self');
+    });
   });
 });
