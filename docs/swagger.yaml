@@ -247,6 +247,20 @@ info:
   title: ClearCloud API
   version: development
 paths:
+  /api/download:
+    get:
+      parameters:
+      - description: The download token
+        in: query
+        name: token
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ""
+      summary: Download a file
+      tags:
+      - Files
   /api/libraries:
     get:
       parameters:
@@ -443,26 +457,6 @@ paths:
       tags:
       - Files
   /api/libraries/{libraryId}/entries/download:
-    get:
-      parameters:
-      - description: The file path
-        in: query
-        name: path
-        required: true
-        type: string
-      - description: The library id
-        in: path
-        name: libraryId
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: ""
-      security:
-      - OAuth2: []
-      summary: Download a file
-      tags:
-      - Files
     post:
       parameters:
       - description: The file to create a download token for
