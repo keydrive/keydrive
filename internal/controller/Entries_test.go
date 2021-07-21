@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -166,5 +167,60 @@ func TestDeleteEntry(t *testing.T) {
 		)
 
 		assertStatus(t, recorder, 204)
+	})
+}
+
+func TestCreateDownloadToken(t *testing.T) {
+	tempDir := t.TempDir()
+	rootFile := filepath.Join(tempDir, "root.txt")
+	_ = os.WriteFile(rootFile, []byte("I am root\n"), 0777)
+
+	lib := model.Library{
+		Type:       model.TypeGeneric,
+		Name:       "Test Library",
+		RootFolder: tempDir,
+	}
+	testApp.DB.Create(&lib)
+
+	t.Run("it requires authentication", func(t *testing.T) {
+		req, _ := http.NewRequest("POST", fmt.Sprintf("/api/libraries/%d/entries/download", lib.ID), nil)
+		recorder := httptest.NewRecorder()
+		testApp.Router.ServeHTTP(
+			recorder,
+			req,
+		)
+
+		assertStatus(t, recorder, 401)
+	})
+
+	t.Run("it requires access to the library", func(t *testing.T) {
+		req := noAccessUserRequest("POST", fmt.Sprintf("/api/libraries/%d/entries/download", lib.ID), strings.NewReader("{\"path\":\"/root.txt\"}"))
+		recorder := httptest.NewRecorder()
+		testApp.Router.ServeHTTP(
+			recorder,
+			req,
+		)
+
+		assertStatus(t, recorder, 404)
+	})
+
+	t.Run("it returns a download token", func(t *testing.T) {
+		req := adminRequest("POST", fmt.Sprintf("/api/libraries/%d/entries/download", lib.ID), strings.NewReader("{\"path\":\"/root.txt\"}"))
+		recorder := httptest.NewRecorder()
+		testApp.Router.ServeHTTP(
+			recorder,
+			req,
+		)
+
+		assertStatus(t, recorder, 201)
+		var body DownloadTokenDTO
+		assertJsonUnmarshal(t, recorder, &body)
+		token, found := testApp.DownloadTokens.GetDownloadToken(body.Token)
+		if !found {
+			t.Errorf("Invalid download token returned")
+		}
+		if token.Path != "/root.txt" {
+			t.Errorf("Download token path does not match requested path")
+		}
 	})
 }
