@@ -11,8 +11,8 @@ func RequireDownloadToken(tokens *service.DownloadTokens) gin.HandlerFunc {
 		tokenString, hasTokenString := c.GetQuery("token")
 		if !hasTokenString {
 			c.AbortWithStatusJSON(
-				http.StatusUnauthorized,
-				ApiError{Status: http.StatusUnauthorized},
+				http.StatusBadRequest,
+				ApiError{Status: http.StatusBadRequest},
 			)
 			return
 		}
