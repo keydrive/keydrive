@@ -3,32 +3,31 @@ package service
 import (
 	"clearcloud/internal/model"
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
-type DownloadToken struct {
-	DB *gorm.DB
+type DownloadTokens struct {
+	tokens map[string]*model.DownloadToken
 }
 
-func (t *DownloadToken) GenerateDownloadToken(library model.Library, path string) *model.DownloadToken {
+func NewDownloadTokens() *DownloadTokens {
+	return &DownloadTokens{
+		tokens: map[string]*model.DownloadToken{},
+	}
+}
+
+func (t *DownloadTokens) GenerateDownloadToken(library model.Library, path string) *model.DownloadToken {
 	token := &model.DownloadToken{
 		Token:   uuid.NewString(),
 		Library: library,
 		Path:    path,
 	}
 
-	result := t.DB.Create(&token)
-	if result.Error == nil {
-		return token
-	}
-	return nil
+	t.tokens[token.Token] = token
+	return token
 }
 
-func (t *DownloadToken) GetDownloadToken(tokenString string) (token model.DownloadToken, found bool) {
-	token.Token = tokenString
-	result := t.DB.Model(&model.DownloadToken{}).Preload("Library").Take(&token)
-	if result.Error == nil {
-		found = true
-	}
+func (t *DownloadTokens) GetDownloadToken(tokenString string) (token *model.DownloadToken, found bool) {
+	token, found = t.tokens[tokenString]
+	delete(t.tokens, tokenString)
 	return
 }

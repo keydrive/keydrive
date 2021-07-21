@@ -17,7 +17,7 @@ import (
 // @Param token query string true "The download token"
 func Download(fs *service.FileSystem) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		token := c.Value(ContextKeyDownloadToken).(model.DownloadToken)
+		token := c.Value(ContextKeyDownloadToken).(*model.DownloadToken)
 
 		entry, err := fs.GetEntryMetadata(token.Library, token.Path)
 		if err != nil {

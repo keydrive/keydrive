@@ -20,7 +20,7 @@ type App struct {
 	Tokens          *service.Token
 	FileSystem      *service.FileSystem
 	PasswordEncoder *service.BcryptEncoder
-	DownloadTokens  *service.DownloadToken
+	DownloadTokens  *service.DownloadTokens
 	Clients         *model.ClientDetailsService
 	Close           func()
 }
@@ -41,7 +41,7 @@ func NewApp(dbDiag gorm.Dialector) (app App, err error) {
 	log.Info("starting automigration...")
 
 	app.DB.Exec("CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public")
-	err = app.DB.AutoMigrate(&model.User{}, &model.OAuth2Token{}, &model.Library{}, &model.CanAccessLibrary{}, &model.DownloadToken{})
+	err = app.DB.AutoMigrate(&model.User{}, &model.OAuth2Token{}, &model.Library{}, &model.CanAccessLibrary{})
 	if err != nil {
 		log.Error("migration failed: %s", err)
 		os.Exit(1)
@@ -76,9 +76,7 @@ func NewApp(dbDiag gorm.Dialector) (app App, err error) {
 	}
 	app.FileSystem = &service.FileSystem{}
 	app.PasswordEncoder = &service.BcryptEncoder{}
-	app.DownloadTokens = &service.DownloadToken{
-		DB: app.DB,
-	}
+	app.DownloadTokens = service.NewDownloadTokens()
 	app.Clients = &model.ClientDetailsService{}
 
 	app.Router = gin.Default()

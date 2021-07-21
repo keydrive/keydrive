@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func RequireDownloadToken(tokens *service.DownloadToken) gin.HandlerFunc {
+func RequireDownloadToken(tokens *service.DownloadTokens) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString, hasTokenString := c.GetQuery("token")
 		if !hasTokenString {
