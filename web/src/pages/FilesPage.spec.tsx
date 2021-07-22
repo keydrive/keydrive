@@ -26,6 +26,9 @@ describe('FilesPage', () => {
   const originalWindowOpen = window.open;
   afterEach(() => {
     window.open = originalWindowOpen;
+    window.HTMLElement.prototype.scrollIntoView = () => {
+      // Just a mock
+    };
   });
 
   beforeEach(() => {
