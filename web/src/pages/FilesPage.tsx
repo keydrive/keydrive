@@ -41,8 +41,8 @@ const FileRow = ({
     <tr
       ref={ref}
       key={entry.name}
-      onDoubleClick={async () => {
-        await onActivate(entry);
+      onDoubleClick={() => {
+        onActivate(entry);
       }}
       onClick={() => onSelect(entry)}
       className={classNames(selected && 'is-selected')}
