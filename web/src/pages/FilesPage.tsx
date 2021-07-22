@@ -160,12 +160,18 @@ export const FilesPage: React.FC = () => {
                 {entries.map((entry) => (
                   <tr
                     key={entry.name}
-                    onDoubleClick={() => {
+                    onDoubleClick={async () => {
                       if (entry.category === 'Folder') {
                         history.push(
                           `/files/${libraryId}/${encodeURIComponent(resolvePath(entry.parent, entry.name))}`
                         );
                         setCurrentDir(entry);
+                      } else {
+                        const downloadToken = await libraries.getDownloadToken(
+                          libraryId,
+                          resolvePath(entry.parent, entry.name)
+                        );
+                        window.open(`/api/download?token=${downloadToken}`, '_self');
                       }
                     }}
                     onClick={() => setSelectedEntry(entry)}

@@ -31,6 +31,13 @@ definitions:
       path:
         type: string
     type: object
+  controller.CreateDownloadTokenDTO:
+    properties:
+      path:
+        type: string
+    required:
+    - path
+    type: object
   controller.CreateLibraryDTO:
     properties:
       name:
@@ -64,6 +71,11 @@ definitions:
     - lastName
     - password
     - username
+    type: object
+  controller.DownloadTokenDTO:
+    properties:
+      token:
+        type: string
     type: object
   controller.HealthCheckResponse:
     properties:
@@ -235,6 +247,20 @@ info:
   title: ClearCloud API
   version: development
 paths:
+  /api/download:
+    get:
+      parameters:
+      - description: The download token
+        in: query
+        name: token
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ""
+      summary: Download a file
+      tags:
+      - Files
   /api/libraries:
     get:
       parameters:
@@ -431,24 +457,24 @@ paths:
       tags:
       - Files
   /api/libraries/{libraryId}/entries/download:
-    get:
+    post:
       parameters:
-      - description: The file path
-        in: query
-        name: path
+      - description: The file to create a download token for
+        in: body
+        name: body
         required: true
-        type: string
-      - description: The library id
-        in: path
-        name: libraryId
-        required: true
-        type: integer
+        schema:
+          $ref: '#/definitions/controller.CreateDownloadTokenDTO'
+      produces:
+      - application/json
       responses:
-        "200":
-          description: ""
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controller.DownloadTokenDTO'
       security:
       - OAuth2: []
-      summary: Download a file
+      summary: Create a download token
       tags:
       - Files
   /api/libraries/{libraryId}/shares:

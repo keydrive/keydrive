@@ -20,6 +20,7 @@ type App struct {
 	Tokens          *service.Token
 	FileSystem      *service.FileSystem
 	PasswordEncoder *service.BcryptEncoder
+	DownloadTokens  *service.DownloadTokens
 	Clients         *model.ClientDetailsService
 	Close           func()
 }
@@ -75,6 +76,7 @@ func NewApp(dbDiag gorm.Dialector) (app App, err error) {
 	}
 	app.FileSystem = &service.FileSystem{}
 	app.PasswordEncoder = &service.BcryptEncoder{}
+	app.DownloadTokens = service.NewDownloadTokens()
 	app.Clients = &model.ClientDetailsService{}
 
 	app.Router = gin.Default()
@@ -112,9 +114,13 @@ func NewApp(dbDiag gorm.Dialector) (app App, err error) {
 			{
 				entries.GET("", ListEntries(app.DB, app.Libraries, app.FileSystem))
 				entries.POST("", CreateEntry(app.DB, app.Libraries, app.FileSystem))
-				entries.GET("/download", DownloadEntry(app.DB, app.Libraries, app.FileSystem))
+				entries.POST("/download", CreateDownloadToken(app.DB, app.Libraries, app.DownloadTokens))
 				entries.DELETE("", DeleteEntry(app.DB, app.Libraries, app.FileSystem))
 			}
+		}
+		download := api.Group("/download", RequireDownloadToken(app.DownloadTokens))
+		{
+			download.GET("", Download(app.FileSystem))
 		}
 		system := api.Group("/system")
 		{

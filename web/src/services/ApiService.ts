@@ -40,6 +40,11 @@ export class ApiService {
     return responseBody;
   }
 
+  private static getUrl(path: string, params?: Record<string, string>): string {
+    const paramString = params ? `?${new URLSearchParams(params)}` : '';
+    return `/api${path}${paramString}`;
+  }
+
   public jsonGet<T>(path: string, params?: Record<string, string>): Promise<T> {
     return this.jsonRequest('GET', path, undefined, params);
   }
@@ -103,10 +108,8 @@ export class ApiService {
       headers['Content-Type'] = 'application/json';
     }
 
-    const paramString = params ? `?${new URLSearchParams(params)}` : '';
-
     return ApiService.handleResponse(
-      fetch(`/api${path}${paramString}`, {
+      fetch(ApiService.getUrl(path, params), {
         method,
         headers,
         body: body ? JSON.stringify(body) : undefined,

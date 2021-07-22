@@ -28,6 +28,28 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/download": {
+            "get": {
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Download a file",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The download token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/libraries": {
             "get": {
                 "security": [
@@ -339,35 +361,36 @@ var doc = `{
             }
         },
         "/api/libraries/{libraryId}/entries/download": {
-            "get": {
+            "post": {
                 "security": [
                     {
                         "OAuth2": []
                     }
                 ],
+                "produces": [
+                    "application/json"
+                ],
                 "tags": [
                     "Files"
                 ],
-                "summary": "Download a file",
+                "summary": "Create a download token",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "The file path",
-                        "name": "path",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "The library id",
-                        "name": "libraryId",
-                        "in": "path",
-                        "required": true
+                        "description": "The file to create a download token for",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.CreateDownloadTokenDTO"
+                        }
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": ""
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/controller.DownloadTokenDTO"
+                        }
                     }
                 }
             }
@@ -797,6 +820,17 @@ var doc = `{
                 }
             }
         },
+        "controller.CreateDownloadTokenDTO": {
+            "type": "object",
+            "required": [
+                "path"
+            ],
+            "properties": {
+                "path": {
+                    "type": "string"
+                }
+            }
+        },
         "controller.CreateLibraryDTO": {
             "type": "object",
             "required": [
@@ -841,6 +875,14 @@ var doc = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.DownloadTokenDTO": {
+            "type": "object",
+            "properties": {
+                "token": {
                     "type": "string"
                 }
             }
