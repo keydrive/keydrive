@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -96,82 +97,6 @@ func TestListEntries(t *testing.T) {
 	})
 }
 
-func TestDownloadEntry(t *testing.T) {
-	// Prep filesystem
-	tempDir := t.TempDir()
-	_ = os.WriteFile(filepath.Join(tempDir, "gimme.txt"), []byte("Hello World!\n"), 0777)
-
-	lib := model.Library{
-		Type:       model.TypeGeneric,
-		Name:       "Test Library",
-		RootFolder: tempDir,
-	}
-	testApp.DB.Create(&lib)
-
-	// Go!
-	t.Run("it downloads a file", func(t *testing.T) {
-		req := adminRequest("GET", fmt.Sprintf("/api/libraries/%d/entries/download?path=gimme.txt", lib.ID), nil)
-		recorder := httptest.NewRecorder()
-		testApp.Router.ServeHTTP(
-			recorder,
-			req,
-		)
-
-		contentType := recorder.Header().Get("Content-Type")
-		if contentType != "text/plain" {
-			t.Errorf("Expected text/plain but got: %s", contentType)
-		}
-		disposition := recorder.Header().Get("Content-Disposition")
-		if disposition != "attachment; filename=\"gimme.txt\"" {
-			t.Errorf("Expected [attachment; filename=\"gimme.txt\"] but got: %s", disposition)
-		}
-		body := recorder.Body.String()
-		if body != "Hello World!\n" {
-			t.Errorf("Expected [Hello World!] but got: %s", body)
-		}
-	})
-
-	t.Run("it returns 404 if file not found", func(t *testing.T) {
-		req := adminRequest("GET", fmt.Sprintf("/api/libraries/%d/entries/download?path=nope.txt", lib.ID), nil)
-		recorder := httptest.NewRecorder()
-		testApp.Router.ServeHTTP(
-			recorder,
-			req,
-		)
-		assertStatus(t, recorder, 404)
-	})
-
-	t.Run("it returns 404 if no access to library", func(t *testing.T) {
-		req := noAccessUserRequest("GET", fmt.Sprintf("/api/libraries/%d/entries/download?path=gimme.txt", lib.ID), nil)
-		recorder := httptest.NewRecorder()
-		testApp.Router.ServeHTTP(
-			recorder,
-			req,
-		)
-		assertStatus(t, recorder, 404)
-	})
-
-	t.Run("it returns 400 if no path provided", func(t *testing.T) {
-		req := adminRequest("GET", fmt.Sprintf("/api/libraries/%d/entries/download", lib.ID), nil)
-		recorder := httptest.NewRecorder()
-		testApp.Router.ServeHTTP(
-			recorder,
-			req,
-		)
-		assertStatus(t, recorder, 400)
-	})
-
-	t.Run("it requires authentication", func(t *testing.T) {
-		req, _ := http.NewRequest("GET", fmt.Sprintf("/api/libraries/%d/entries/download?path=not_allowed", lib.ID), nil)
-		recorder := httptest.NewRecorder()
-		testApp.Router.ServeHTTP(
-			recorder,
-			req,
-		)
-		assertStatus(t, recorder, 401)
-	})
-}
-
 func TestDeleteEntry(t *testing.T) {
 	tempDir := t.TempDir()
 	rootFile := filepath.Join(tempDir, "root.txt")
@@ -242,5 +167,60 @@ func TestDeleteEntry(t *testing.T) {
 		)
 
 		assertStatus(t, recorder, 204)
+	})
+}
+
+func TestCreateDownloadToken(t *testing.T) {
+	tempDir := t.TempDir()
+	rootFile := filepath.Join(tempDir, "root.txt")
+	_ = os.WriteFile(rootFile, []byte("I am root\n"), 0777)
+
+	lib := model.Library{
+		Type:       model.TypeGeneric,
+		Name:       "Test Library",
+		RootFolder: tempDir,
+	}
+	testApp.DB.Create(&lib)
+
+	t.Run("it requires authentication", func(t *testing.T) {
+		req, _ := http.NewRequest("POST", fmt.Sprintf("/api/libraries/%d/entries/download", lib.ID), nil)
+		recorder := httptest.NewRecorder()
+		testApp.Router.ServeHTTP(
+			recorder,
+			req,
+		)
+
+		assertStatus(t, recorder, 401)
+	})
+
+	t.Run("it requires access to the library", func(t *testing.T) {
+		req := noAccessUserRequest("POST", fmt.Sprintf("/api/libraries/%d/entries/download", lib.ID), strings.NewReader("{\"path\":\"/root.txt\"}"))
+		recorder := httptest.NewRecorder()
+		testApp.Router.ServeHTTP(
+			recorder,
+			req,
+		)
+
+		assertStatus(t, recorder, 404)
+	})
+
+	t.Run("it returns a download token", func(t *testing.T) {
+		req := adminRequest("POST", fmt.Sprintf("/api/libraries/%d/entries/download", lib.ID), strings.NewReader("{\"path\":\"/root.txt\"}"))
+		recorder := httptest.NewRecorder()
+		testApp.Router.ServeHTTP(
+			recorder,
+			req,
+		)
+
+		assertStatus(t, recorder, 201)
+		var body DownloadTokenDTO
+		assertJsonUnmarshal(t, recorder, &body)
+		token, found := testApp.DownloadTokens.GetDownloadToken(body.Token)
+		if !found {
+			t.Errorf("Invalid download token returned")
+		}
+		if token.Path != "/root.txt" {
+			t.Errorf("Download token path does not match requested path")
+		}
 	})
 }

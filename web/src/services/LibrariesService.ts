@@ -47,6 +47,10 @@ export interface BrowseResponse {
   folders: { path: string }[];
 }
 
+export interface DownloadTokenResponse {
+  token: string;
+}
+
 export class LibrariesService {
   public static readonly NAME = 'LibrariesService';
   private readonly api: ApiService;
@@ -112,8 +116,9 @@ export class LibrariesService {
   }
 
   public async download(libraryId: string, path: string): Promise<void> {
-    await this.api.download(`/libraries/${libraryId}/entries/download`, {
+    const response: DownloadTokenResponse = await this.api.jsonPost(`/libraries/${libraryId}/entries/download`, {
       path,
     });
+    window.open(`/api/download?token=${response.token}`, '_self');
   }
 }

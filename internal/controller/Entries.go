@@ -3,14 +3,11 @@ package controller
 import (
 	"clearcloud/internal/model"
 	"clearcloud/internal/service"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"io"
 	"mime/multipart"
 	"net/http"
 	"os"
-	"strings"
 )
 
 type LibraryAccess struct {
@@ -95,37 +92,46 @@ func ListEntries(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin
 	}
 }
 
-// DownloadEntry
+type CreateDownloadTokenDTO struct {
+	Path string `json:"path" binding:"required"`
+}
+
+type DownloadTokenDTO struct {
+	Token string `json:"token"`
+}
+
+// CreateDownloadToken
 // @Tags Files
-// @Router /api/libraries/{libraryId}/entries/download [get]
-// @Summary Download a file
-// @Security OAuth2
-// @Success 200
-// @Param path query string true "The file path"
-// @Param libraryId path int true "The library id"
-func DownloadEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin.HandlerFunc {
+// @Router /api/libraries/{libraryId}/entries/download [post]
+// @Summary Create a download token
+// @security OAuth2
+// @Produce json
+// @Param body body CreateDownloadTokenDTO true "The file to create a download token for"
+// @Success 201 {object} DownloadTokenDTO
+func CreateDownloadToken(db *gorm.DB, libs *service.Library, tokens *service.DownloadTokens) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		library, path, err := resolvePath(c, libs, db, false)
+		var create CreateDownloadTokenDTO
+		if err := c.ShouldBindJSON(&create); err != nil {
+			writeError(c, err)
+			return
+		}
+
+		err := db.Transaction(func(tx *gorm.DB) error {
+			library, err := getAccessToLib(c, libs, false, tx)
+			if err != nil {
+				return err
+			}
+
+			token := tokens.GenerateDownloadToken(library, create.Path)
+			response := DownloadTokenDTO{Token: token.Token}
+			c.JSON(http.StatusCreated, response)
+
+			return nil
+		})
 		if err != nil {
 			writeError(c, err)
 			return
 		}
-		entry, err := fs.GetEntryMetadata(library, path)
-		if err != nil {
-			writeError(c, err)
-			return
-		}
-		stream, err := fs.OpenFile(library, path)
-		if err != nil {
-			writeError(c, err)
-			return
-		}
-		defer func(stream io.ReadCloser) {
-			_ = stream.Close()
-		}(stream)
-		c.Header("Content-Type", entry.MimeType)
-		c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", strings.ReplaceAll(entry.Name, "\"", "\\\"")))
-		_, _ = io.Copy(c.Writer, stream)
 	}
 }
 
