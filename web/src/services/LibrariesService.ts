@@ -115,10 +115,10 @@ export class LibrariesService {
     });
   }
 
-  public async getDownloadToken(libraryId: number | string, path: string): Promise<string> {
+  public async download(libraryId: string, path: string): Promise<void> {
     const response: DownloadTokenResponse = await this.api.jsonPost(`/libraries/${libraryId}/entries/download`, {
       path,
     });
-    return response.token;
+    window.open(`/api/download?token=${response.token}`, '_self');
   }
 }

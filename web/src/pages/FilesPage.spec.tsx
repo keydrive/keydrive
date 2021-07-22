@@ -56,6 +56,9 @@ describe('FilesPage', () => {
         ],
       }
     );
+    window.HTMLElement.prototype.scrollIntoView = () => {
+      // Just a mock
+    };
   });
 
   it('shows the files', async () => {
@@ -127,6 +130,19 @@ describe('FilesPage', () => {
             size: 4096,
           },
         ],
+      }
+    );
+    fetchMock.getOnce(
+      {
+        url: 'path:/api/libraries/4/entries',
+        query: {
+          parent: '/Documents',
+        },
+        overwriteRoutes: false,
+      },
+      {
+        status: 200,
+        body: [],
       }
     );
 

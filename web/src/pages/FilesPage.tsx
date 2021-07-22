@@ -16,6 +16,47 @@ import { IconButton } from '../components/IconButton';
 import { Button } from '../components/Button';
 import { classNames } from '../utils/classNames';
 import { TextInput } from '../components/input/TextInput';
+import { useFileNavigator } from '../hooks/useFileNavigator';
+
+const FileRow = ({
+  entry,
+  onActivate,
+  onSelect,
+  selected,
+}: {
+  entry: Entry;
+  selected: boolean;
+  onActivate: (entry: Entry) => void;
+  onSelect: (entry: Entry) => void;
+}) => {
+  const ref = useRef<HTMLTableRowElement | null>(null);
+  useEffect(() => {
+    if (selected && ref.current) {
+      ref.current?.scrollIntoView({
+        block: 'nearest',
+      });
+    }
+  }, [ref, selected]);
+  return (
+    <tr
+      ref={ref}
+      key={entry.name}
+      onDoubleClick={() => {
+        onActivate(entry);
+      }}
+      onClick={() => onSelect(entry)}
+      className={classNames(selected && 'is-selected')}
+    >
+      <td className="icon">
+        <EntryIcon entry={entry} />
+      </td>
+      <td>{entry.name}</td>
+      <td>{humanReadableDateTime(entry.modified)}</td>
+      <td>{entry.category === 'Folder' ? '--' : humanReadableSize(entry.size)}</td>
+      <td>{entry.category}</td>
+    </tr>
+  );
+};
 
 export const FilesPage: React.FC = () => {
   const libraries = useService(LibrariesService);
@@ -25,13 +66,27 @@ export const FilesPage: React.FC = () => {
 
   // Current directory info and details.
   const [entries, setEntries] = useState<Entry[]>();
-  const [selectedEntry, setSelectedEntry] = useState<Entry>();
   const [currentDir, setCurrentDir] = useState<Entry>();
+  const onClickEntry = useCallback(
+    async (target: string | Entry) => {
+      if (typeof target === 'string') {
+        history.push(`/files/${libraryId}/${encodeURIComponent(target)}`);
+      } else if (target.category === 'Folder') {
+        history.push(`/files/${libraryId}/${encodeURIComponent(resolvePath(target))}`);
+        setCurrentDir(target);
+      } else {
+        await libraries.download(libraryId, resolvePath(target));
+      }
+    },
+    [history, libraries, libraryId]
+  );
+  const { selectedEntry, setSelectedEntry } = useFileNavigator(entries, onClickEntry);
 
   // Current library info.
-  const [library, setLibrary] = useState<Library>();
-  const { selectors } = useService(librariesStore);
-  const librariesList = useAppSelector(selectors.libraries);
+  const {
+    selectors: { libraryById },
+  } = useService(librariesStore);
+  const library = useAppSelector(libraryById(parseInt(libraryId)));
 
   // File and folder operations.
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -51,15 +106,12 @@ export const FilesPage: React.FC = () => {
   }, [libraries, libraryId, path]);
 
   useEffect(() => {
-    refresh();
+    refresh().catch((e) => {
+      console.error(e);
+    });
   }, [refresh]);
 
-  useEffect(() => {
-    const id = parseInt(libraryId);
-    setLibrary(librariesList?.find((l) => l.id === id));
-  }, [librariesList, libraryId]);
-
-  useEffect(() => setSelectedEntry(undefined), [path]);
+  useEffect(() => setSelectedEntry(undefined), [setSelectedEntry, path, libraryId]);
 
   const uploadFiles = useCallback(
     async (e: ChangeEvent<HTMLInputElement>) => {
@@ -82,7 +134,7 @@ export const FilesPage: React.FC = () => {
       await libraries.createFolder(libraryId, path, name).then(setSelectedEntry).then(refresh);
       setNewFolderName(undefined);
     },
-    [libraries, libraryId, path, refresh]
+    [libraries, libraryId, path, refresh, setSelectedEntry]
   );
 
   return (
@@ -91,7 +143,7 @@ export const FilesPage: React.FC = () => {
         <div>
           <IconButton
             className="parent-dir"
-            onClick={() => history.push(`/files/${libraryId}/${encodeURIComponent(currentDir?.parent || '')}`)}
+            onClick={() => onClickEntry(currentDir?.parent || '')}
             aria-label="Parent directory"
             icon="level-up-alt"
             disabled={!currentDir}
@@ -141,11 +193,14 @@ export const FilesPage: React.FC = () => {
                         iconButton="folder-plus"
                         onButtonClick={() => createFolder(newFolderName)}
                         onKeyDown={(e) => {
+                          e.stopPropagation();
                           if (e.key === 'Escape') {
                             setNewFolderName(undefined);
                           }
                           if (e.key === 'Enter') {
-                            createFolder(newFolderName);
+                            createFolder(newFolderName).catch((err) => {
+                              console.error(err);
+                            });
                           }
                         }}
                         onFocus={(e) => e.currentTarget.select()}
@@ -158,33 +213,13 @@ export const FilesPage: React.FC = () => {
                   </tr>
                 )}
                 {entries.map((entry) => (
-                  <tr
+                  <FileRow
                     key={entry.name}
-                    onDoubleClick={async () => {
-                      if (entry.category === 'Folder') {
-                        history.push(
-                          `/files/${libraryId}/${encodeURIComponent(resolvePath(entry.parent, entry.name))}`
-                        );
-                        setCurrentDir(entry);
-                      } else {
-                        const downloadToken = await libraries.getDownloadToken(
-                          libraryId,
-                          resolvePath(entry.parent, entry.name)
-                        );
-                        window.open(`/api/download?token=${downloadToken}`, '_self');
-                      }
-                    }}
-                    onClick={() => setSelectedEntry(entry)}
-                    className={classNames(selectedEntry?.name === entry.name && 'is-selected')}
-                  >
-                    <td className="icon">
-                      <EntryIcon entry={entry} />
-                    </td>
-                    <td>{entry.name}</td>
-                    <td>{humanReadableDateTime(entry.modified)}</td>
-                    <td>{entry.category === 'Folder' ? '--' : humanReadableSize(entry.size)}</td>
-                    <td>{entry.category}</td>
-                  </tr>
+                    entry={entry}
+                    selected={selectedEntry?.name === entry.name}
+                    onActivate={onClickEntry}
+                    onSelect={setSelectedEntry}
+                  />
                 ))}
               </tbody>
             </table>

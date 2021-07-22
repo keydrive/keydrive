@@ -49,6 +49,7 @@ export const librariesStore = (injector: Injector) => {
     reducer: librariesSlice.reducer,
     selectors: {
       libraries: (state: RootState) => state.libraries.libraries,
+      libraryById: (id: number) => (state: RootState) => state.libraries.libraries?.find((lib) => lib.id === id),
     },
   };
 };
