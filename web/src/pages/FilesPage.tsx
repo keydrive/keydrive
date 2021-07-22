@@ -73,6 +73,7 @@ export const FilesPage: React.FC = () => {
         history.push(`/files/${libraryId}/${encodeURIComponent(target)}`);
       } else if (target.category === 'Folder') {
         history.push(`/files/${libraryId}/${encodeURIComponent(resolvePath(target))}`);
+        setCurrentDir(target);
       } else {
         await libraries.download(libraryId, resolvePath(target));
       }
@@ -110,7 +111,7 @@ export const FilesPage: React.FC = () => {
     });
   }, [refresh]);
 
-  useEffect(() => setSelectedEntry(undefined), [setSelectedEntry, path]);
+  useEffect(() => setSelectedEntry(undefined), [setSelectedEntry, path, libraryId]);
 
   const uploadFiles = useCallback(
     async (e: ChangeEvent<HTMLInputElement>) => {
