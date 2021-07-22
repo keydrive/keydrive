@@ -18,6 +18,46 @@ import { classNames } from '../utils/classNames';
 import { TextInput } from '../components/input/TextInput';
 import { useFileNavigator } from '../hooks/useFileNavigator';
 
+const FileRow = ({
+  entry,
+  onActivate,
+  onSelect,
+  selected,
+}: {
+  entry: Entry;
+  selected: boolean;
+  onActivate: (entry: Entry) => void;
+  onSelect: (entry: Entry) => void;
+}) => {
+  const ref = useRef<HTMLTableRowElement | null>(null);
+  useEffect(() => {
+    if (selected && ref.current) {
+      ref.current?.scrollIntoView({
+        block: 'nearest',
+      });
+    }
+  }, [ref, selected]);
+  return (
+    <tr
+      ref={ref}
+      key={entry.name}
+      onDoubleClick={async () => {
+        await onActivate(entry);
+      }}
+      onClick={() => onSelect(entry)}
+      className={classNames(selected && 'is-selected')}
+    >
+      <td className="icon">
+        <EntryIcon entry={entry} />
+      </td>
+      <td>{entry.name}</td>
+      <td>{humanReadableDateTime(entry.modified)}</td>
+      <td>{entry.category === 'Folder' ? '--' : humanReadableSize(entry.size)}</td>
+      <td>{entry.category}</td>
+    </tr>
+  );
+};
+
 export const FilesPage: React.FC = () => {
   const libraries = useService(LibrariesService);
   const { library: libraryId, path: encodedPath } = useParams<{ library: string; path?: string }>();
@@ -172,22 +212,13 @@ export const FilesPage: React.FC = () => {
                   </tr>
                 )}
                 {entries.map((entry) => (
-                  <tr
+                  <FileRow
                     key={entry.name}
-                    onDoubleClick={async () => {
-                      await onClickEntry(entry);
-                    }}
-                    onClick={() => setSelectedEntry(entry)}
-                    className={classNames(selectedEntry?.name === entry.name && 'is-selected')}
-                  >
-                    <td className="icon">
-                      <EntryIcon entry={entry} />
-                    </td>
-                    <td>{entry.name}</td>
-                    <td>{humanReadableDateTime(entry.modified)}</td>
-                    <td>{entry.category === 'Folder' ? '--' : humanReadableSize(entry.size)}</td>
-                    <td>{entry.category}</td>
-                  </tr>
+                    entry={entry}
+                    selected={selectedEntry?.name === entry.name}
+                    onActivate={onClickEntry}
+                    onSelect={setSelectedEntry}
+                  />
                 ))}
               </tbody>
             </table>

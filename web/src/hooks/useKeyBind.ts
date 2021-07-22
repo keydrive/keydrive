@@ -13,6 +13,8 @@ export const useKeyBind = (key: KeyCode, handler: () => void): void => {
   useEffect(() => {
     const listener = (e: KeyboardEvent) => {
       if (e.key === key) {
+        e.preventDefault();
+        e.stopPropagation();
         handler();
       }
     };
