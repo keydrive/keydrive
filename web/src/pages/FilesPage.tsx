@@ -28,13 +28,13 @@ export const FilesPage: React.FC = () => {
   const [entries, setEntries] = useState<Entry[]>();
   const [currentDir, setCurrentDir] = useState<Entry>();
   const onClickEntry = useCallback(
-    (target: string | Entry) => {
+    async (target: string | Entry) => {
       if (typeof target === 'string') {
         history.push(`/files/${libraryId}/${encodeURIComponent(target)}`);
       } else if (target.category === 'Folder') {
         history.push(`/files/${libraryId}/${encodeURIComponent(resolvePath(target))}`);
       } else {
-        libraries.download(libraryId, resolvePath(target));
+        await libraries.download(libraryId, resolvePath(target));
       }
     },
     [history, libraries, libraryId]
@@ -174,8 +174,8 @@ export const FilesPage: React.FC = () => {
                 {entries.map((entry) => (
                   <tr
                     key={entry.name}
-                    onDoubleClick={() => {
-                      onClickEntry(entry);
+                    onDoubleClick={async () => {
+                      await onClickEntry(entry);
                     }}
                     onClick={() => setSelectedEntry(entry)}
                     className={classNames(selectedEntry?.name === entry.name && 'is-selected')}
