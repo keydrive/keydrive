@@ -1,8 +1,8 @@
 package main
 
 import (
-	_ "clearcloud/docs"
 	"clearcloud/internal/controller"
+	_ "clearcloud/internal/swagger"
 	"clearcloud/pkg/logger"
 	"flag"
 	"fmt"
