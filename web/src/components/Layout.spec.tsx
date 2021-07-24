@@ -1,13 +1,9 @@
-import { checkPendingMocks } from '../__testutils__/checkPendingMocks';
 import { render } from '../__testutils__/render';
 import { Layout } from './Layout';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import fetchMock from 'fetch-mock';
 
 describe('Layout', () => {
-  afterEach(checkPendingMocks);
-
   it('displays the libraries', async () => {
     const { navigation } = await render(<Layout />, {
       initialState: {

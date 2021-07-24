@@ -51,7 +51,7 @@ export const App: React.FC = () => {
     );
   }
 
-  if (!currentUser) {
+  if (!currentUser || !libraries) {
     return (
       <div className="app-loader">
         <Icon icon="spinner" size={2} pulse />
