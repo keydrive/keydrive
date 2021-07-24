@@ -711,6 +711,7 @@ var MimeToCategory = map[string]model.Category{
 
 	"application/gzip":                                model.CategoryArchive,
 	"application/octet-stream":                        model.CategoryBinary,
+	"application/epub+zip":                            model.CategoryDocument,
 	"application/pdf":                                 model.CategoryDocument,
 	"application/vnd.oasis.opendocument.presentation": model.CategoryDocument,
 	"application/vnd.oasis.opendocument.spreadsheet":  model.CategoryDocument,
