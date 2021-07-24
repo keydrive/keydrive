@@ -3,15 +3,21 @@ import { ManageLibrariesModal } from './ManageLibrariesModal';
 import fetchMock from 'fetch-mock';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
+import { checkPendingMocks } from '../../__testutils__/checkPendingMocks';
 
 describe('ManageLibrariesModal', () => {
+  afterEach(checkPendingMocks);
   describe('Create mode', () => {
     it('can browse through folders', async () => {
       const onClose = jest.fn();
-      fetchMock.get('/api/libraries/?limit=100', {
-        totalElements: 0,
-        elements: [],
-      });
+      fetchMock.get(
+        '/api/libraries/?limit=100',
+        {
+          totalElements: 0,
+          elements: [],
+        },
+        { overwriteRoutes: true }
+      );
       fetchMock.post(
         {
           url: '/api/system/browse',
@@ -96,6 +102,43 @@ describe('ManageLibrariesModal', () => {
       await fireEvent.click(screen.getByLabelText('Parent directory'));
       await waitFor(() => {
         expect(screen.getByLabelText('Folder:', { selector: 'input' })).toHaveValue('/');
+      });
+    });
+  });
+
+  describe('Edit mode', () => {
+    it('displays the root folder', async () => {
+      const onClose = jest.fn();
+      fetchMock.get(
+        '/api/libraries/?limit=100',
+        {
+          totalElements: 1,
+          elements: [{ id: 3252, type: 'generic', name: 'Downloads', canWrite: true }],
+        },
+        { overwriteRoutes: true }
+      );
+      fetchMock.get('/api/libraries/3252', {
+        id: 3252,
+        name: 'Downloads',
+        rootFolder: '/Users/chappio/Downloads',
+        sharedWith: [],
+        type: 'generic',
+      });
+      await render(<ManageLibrariesModal onClose={onClose} />, {
+        loggedIn: true,
+      });
+      const input = await screen.findByLabelText('Folder:');
+      await waitFor(() => {
+        expect(input).toHaveValue('/Users/chappio/Downloads');
+      });
+
+      // the first call was loading the libs in the modal
+      expect(fetchMock.calls('/api/libraries/?limit=100')).toHaveLength(1);
+
+      // now we close the modal which should cause a reload
+      fireEvent.click(screen.getByLabelText('Close'));
+      await waitFor(() => {
+        expect(fetchMock.calls('/api/libraries/?limit=100')).toHaveLength(2);
       });
     });
   });

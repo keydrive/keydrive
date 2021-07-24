@@ -8,7 +8,7 @@ type InputProps = Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, 
 
 export interface Props extends FieldProps, InputProps {
   value: string;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
   type?: 'text' | 'password';
   placeholder?: string;
   className?: string;
@@ -36,7 +36,7 @@ export const TextInput: React.FC<Props> = ({
     onFieldBlur={onFieldBlur}
   >
     {label && <label htmlFor={props.id}>{label}</label>}
-    <input {...props} onChange={(e) => onChange(e.currentTarget.value)} />
+    <input {...props} readOnly={!onChange} onChange={onChange && ((e) => onChange(e.currentTarget.value))} />
     {iconButton && (
       <Button onClick={onButtonClick}>
         <Icon icon={iconButton} />
