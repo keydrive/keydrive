@@ -97,7 +97,7 @@ const EditLibraryForm: React.FC<{ library: LibraryDetails; onDone: () => void }>
         submitLabel="Save"
       >
         <TextInput required label="Name:" value={name} onChange={setName} id="name" />
-        <TextInput tabIndex={-1} required label="Folder:" value={library.rootFolder} id="folder" />
+        <TextInput required label="Folder:" value={library.rootFolder} id="folder" />
       </Form>
     </>
   );

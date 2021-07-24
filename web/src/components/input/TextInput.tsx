@@ -36,7 +36,12 @@ export const TextInput: React.FC<Props> = ({
     onFieldBlur={onFieldBlur}
   >
     {label && <label htmlFor={props.id}>{label}</label>}
-    <input {...props} readOnly={!onChange} onChange={onChange && ((e) => onChange(e.currentTarget.value))} />
+    <input
+      readOnly={!onChange}
+      tabIndex={onChange && -1}
+      {...props}
+      onChange={onChange && ((e) => onChange(e.currentTarget.value))}
+    />
     {iconButton && (
       <Button onClick={onButtonClick}>
         <Icon icon={iconButton} />
