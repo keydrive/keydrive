@@ -11,10 +11,19 @@ String waitForContainer(Object container, int port) {
   return ip
 }
 
+def dockerTag() {
+  switch(env.BRANCH_NAME) {
+     case "main":
+       return "previes";
+     default:
+       return env.BRANCH_NAME;
+  }
+}
+
 pipeline {
   agent none
   environment {
-    DOCKER_TAG = "tocabi/clearcloud:${env.BRANCH_NAME}"
+    DOCKER_TAG = "tocabi/clearcloud:${dockerTag()}"
   }
   stages {
     stage('Build Frontend') {

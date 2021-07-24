@@ -1,6 +1,6 @@
 = ClearCloud
 :toc: macro
-:latest-release: main
+:latest-release: preview
 
 image:https://img.shields.io/jenkins/build?jobUrl=https%3A%2F%2Fjenkins.chapp.io%2Fjob%2FTocabi%2Fjob%2Fclearcloud%2Fjob%2Fmain[Jenkins,link="https://jenkins.chapp.io/blue/organizations/jenkins/Tocabi%2Fclearcloud/branches"]
 image:https://img.shields.io/github/license/Tocabi/clearcloud[License,link="https://github.com/Tocabi/clearcloud/blob/main/LICENSE"]
