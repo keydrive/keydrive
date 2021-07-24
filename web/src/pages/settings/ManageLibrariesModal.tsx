@@ -132,6 +132,28 @@ export const ManageLibrariesModal: React.FC<Props> = ({ onClose }) => {
 
   useEffect(() => refreshLibraries(), [refreshLibraries]);
 
+  let rightPanelContents = undefined;
+  if (!loading) {
+    if (library) {
+      rightPanelContents = (
+        <EditLibraryForm
+          library={library}
+          onDone={() => {
+            refreshLibraries(library.id);
+          }}
+        />
+      );
+    } else {
+      rightPanelContents = (
+        <CreateLibraryForm
+          onDone={(id) => {
+            refreshLibraries(id);
+          }}
+        />
+      );
+    }
+  }
+
   return (
     <Modal
       panelled
@@ -157,22 +179,7 @@ export const ManageLibrariesModal: React.FC<Props> = ({ onClose }) => {
       >
         {(lib: LibraryDetails) => <span>{lib.name}</span>}
       </ModalLeftPanel>
-      <ModalRightPanel>
-        {loading ? undefined : library ? (
-          <EditLibraryForm
-            library={library}
-            onDone={() => {
-              refreshLibraries(library.id);
-            }}
-          />
-        ) : (
-          <CreateLibraryForm
-            onDone={(id) => {
-              refreshLibraries(id);
-            }}
-          />
-        )}
-      </ModalRightPanel>
+      <ModalRightPanel>{rightPanelContents}</ModalRightPanel>
     </Modal>
   );
 };
