@@ -84,9 +84,11 @@ export const FilesPage: React.FC = () => {
       const getCurrentChildren = libraries.getEntries(libraryId, path);
 
       // TODO: Handle 404 on getCurrentEntity
+      const newCurrentDir = await getCurrentEntity;
+      const newEntries = await getCurrentChildren;
       if (mounted) {
-        setCurrentDir(await getCurrentEntity);
-        setEntries(await getCurrentChildren);
+        setCurrentDir(newCurrentDir);
+        setEntries(newEntries);
         setLoadingEntries(false);
       }
     })();
@@ -131,8 +133,9 @@ export const FilesPage: React.FC = () => {
         lastEntry = await libraries.uploadFile(libraryId, path, file);
       }
       setSelectedEntry(lastEntry);
+      await refresh();
     },
-    [setSelectedEntry, libraries, libraryId, path]
+    [refresh, setSelectedEntry, libraries, libraryId, path]
   );
 
   const createFolder = useCallback(

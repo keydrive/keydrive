@@ -82,8 +82,8 @@ describe('FilesPage', () => {
       initialState,
     });
 
-    expect(screen.getByText('Mock Library', { selector: '.details *' })).toBeDefined();
-    expect(await screen.findByText('Ballmers Peak Label.xcf')).toBeDefined();
+    await screen.findByText('Mock Library', { selector: '.details *' });
+    await screen.findByText('Ballmers Peak Label.xcf');
     expect(screen.queryByText('Ballmers Peak Label.xcf', { selector: '.details *' })).toBeNull();
     userEvent.click(screen.getByText('Ballmers Peak Label.xcf'));
     expect(screen.getByText('Ballmers Peak Label.xcf', { selector: '.details *' })).toBeDefined();
