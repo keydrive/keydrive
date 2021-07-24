@@ -40,7 +40,7 @@ export const Modal: React.FC<Props> = ({ children, title, panelled, onClose, sho
 
   return (
     <>
-      <div className={classNames('modal-overlay', closing && 'closing')} onClick={close} />
+      <div aria-label="Close" className={classNames('modal-overlay', closing && 'closing')} onClick={close} />
       <div
         className={classNames(
           'modal',

@@ -3,7 +3,7 @@ import { MemoryRouter, Route, useLocation } from 'react-router-dom';
 import { InjectionProvider } from '../hooks/useService';
 import { Injector } from '../services/Injector';
 import { Provider } from 'react-redux';
-import { initializeStore, RootState } from '../store';
+import { initializeStore, RootState, Store } from '../store';
 import { render as rtlRender } from '@testing-library/react';
 
 export type ReallyDeepPartial<T> = {
@@ -22,6 +22,7 @@ export interface TestAPI {
   navigation: {
     pathname: string;
   };
+  store: Store;
 }
 
 export async function render(element: ReactElement, options: RenderOptions = {}): Promise<TestAPI> {
@@ -60,5 +61,5 @@ export async function render(element: ReactElement, options: RenderOptions = {})
 
   rtlRender(element, { wrapper: Wrapper });
 
-  return { navigation };
+  return { navigation, store };
 }

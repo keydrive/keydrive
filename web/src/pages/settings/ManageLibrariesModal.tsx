@@ -40,7 +40,7 @@ const CreateLibraryForm: React.FC<{ onDone: (id: number) => void }> = ({ onDone 
         }}
         submitLabel="Create"
       >
-        <TextInput required label="Name:" value={name} onChange={setName} id="name" />
+        <TextInput autoFocus required label="Name:" value={name} onChange={setName} id="name" />
         <TextInput
           required
           label={
@@ -97,6 +97,7 @@ const EditLibraryForm: React.FC<{ library: LibraryDetails; onDone: () => void }>
         submitLabel="Save"
       >
         <TextInput required label="Name:" value={name} onChange={setName} id="name" />
+        <TextInput required label="Folder:" value={library.rootFolder} id="folder" />
       </Form>
     </>
   );
@@ -111,6 +112,7 @@ export const ManageLibrariesModal: React.FC<Props> = ({ onClose }) => {
   const librariesService = useService(LibrariesService);
   const [selectedLibrary, setSelectedLibrary] = useState<number>();
   const library = libraries.find((l) => l.id === selectedLibrary);
+  const [loading, setLoading] = useState(true);
   const dispatch = useAppDispatch();
   const {
     actions: { getLibrariesAsync },
@@ -118,19 +120,49 @@ export const ManageLibrariesModal: React.FC<Props> = ({ onClose }) => {
 
   const refreshLibraries = useCallback(
     (showId?: number) => {
+      setLoading(true);
       librariesService.listLibraryDetails().then((libs) => {
         setLibraries(libs);
         setSelectedLibrary(showId || libs[0]?.id);
+        setLoading(false);
       });
-      dispatch(getLibrariesAsync());
     },
-    [dispatch, getLibrariesAsync, librariesService]
+    [librariesService]
   );
 
   useEffect(() => refreshLibraries(), [refreshLibraries]);
 
+  let rightPanelContents = undefined;
+  if (!loading) {
+    if (library) {
+      rightPanelContents = (
+        <EditLibraryForm
+          library={library}
+          onDone={() => {
+            refreshLibraries(library.id);
+          }}
+        />
+      );
+    } else {
+      rightPanelContents = (
+        <CreateLibraryForm
+          onDone={(id) => {
+            refreshLibraries(id);
+          }}
+        />
+      );
+    }
+  }
+
   return (
-    <Modal panelled onClose={onClose} title="Libraries">
+    <Modal
+      panelled
+      onClose={() => {
+        dispatch(getLibrariesAsync());
+        onClose();
+      }}
+      title="Libraries"
+    >
       <ModalLeftPanel
         items={libraries}
         selected={selectedLibrary}
@@ -147,22 +179,7 @@ export const ManageLibrariesModal: React.FC<Props> = ({ onClose }) => {
       >
         {(lib: LibraryDetails) => <span>{lib.name}</span>}
       </ModalLeftPanel>
-      <ModalRightPanel>
-        {library ? (
-          <EditLibraryForm
-            library={library}
-            onDone={() => {
-              refreshLibraries(library.id);
-            }}
-          />
-        ) : (
-          <CreateLibraryForm
-            onDone={(id) => {
-              refreshLibraries(id);
-            }}
-          />
-        )}
-      </ModalRightPanel>
+      <ModalRightPanel>{rightPanelContents}</ModalRightPanel>
     </Modal>
   );
 };
