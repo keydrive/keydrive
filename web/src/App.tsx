@@ -40,7 +40,7 @@ export const App: React.FC = () => {
     if (token) {
       dispatch(getCurrentUserAsync());
     }
-  }, [dispatch, token, getCurrentUserAsync]);
+  }, [dispatch, getCurrentUserAsync, token]);
 
   if (!token) {
     return (
