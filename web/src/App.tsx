@@ -30,10 +30,10 @@ export const App: React.FC = () => {
 
   // refresh libraries
   useEffect(() => {
-    if (!libraries) {
+    if (!libraries && token) {
       dispatch(getLibrariesAsync());
     }
-  }, [dispatch, getLibrariesAsync, libraries]);
+  }, [dispatch, getLibrariesAsync, libraries, token]);
 
   // refresh user data
   useEffect(() => {
