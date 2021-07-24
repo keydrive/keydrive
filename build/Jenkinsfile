@@ -14,7 +14,7 @@ String waitForContainer(Object container, int port) {
 def dockerTag() {
   switch(env.BRANCH_NAME) {
      case "main":
-       return "previes";
+       return "preview";
      default:
        return env.BRANCH_NAME;
   }
