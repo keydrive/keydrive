@@ -71,32 +71,40 @@ export const FilesPage: React.FC = () => {
   const [currentDir, setCurrentDir] = useState<Entry>();
   const [entries, setEntries] = useState<Entry[]>([]);
   const [loadingEntries, setLoadingEntries] = useState(false);
+  const [shouldRefresh, setShouldRefresh] = useState(false);
+
+  // refresh when paths change
+  useEffect(() => {
+    setShouldRefresh(true);
+  }, [libraryId, path]);
 
   // This effect triggers when the path changes. This means we should enter a loading state
-  const refresh = useCallback(() => {
-    let mounted = true;
-    setLoadingEntries(true);
-    (async () => {
-      // If the path is falsy or '/' we're at the library root, so no need for an extra call.
-      const pathIsRoot = !path || path === '/';
-      // noinspection ES6MissingAwait It is awaited later to run in parallel
-      const getCurrentEntity = pathIsRoot ? Promise.resolve(undefined) : libraries.getEntry(libraryId, path);
-      const getCurrentChildren = libraries.getEntries(libraryId, path);
+  useEffect(() => {
+    if (shouldRefresh) {
+      let mounted = true;
+      setLoadingEntries(true);
+      (async () => {
+        // If the path is falsy or '/' we're at the library root, so no need for an extra call.
+        const pathIsRoot = !path || path === '/';
+        // noinspection ES6MissingAwait It is awaited later to run in parallel
+        const getCurrentEntity = pathIsRoot ? Promise.resolve(undefined) : libraries.getEntry(libraryId, path);
+        const getCurrentChildren = libraries.getEntries(libraryId, path);
 
-      // TODO: Handle 404 on getCurrentEntity
-      const newCurrentDir = await getCurrentEntity;
-      const newEntries = await getCurrentChildren;
-      if (mounted) {
-        setCurrentDir(newCurrentDir);
-        setEntries(newEntries);
-        setLoadingEntries(false);
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, [libraryId, libraries, path]);
-  useEffect(() => refresh(), [refresh]);
+        // TODO: Handle 404 on getCurrentEntity
+        const newCurrentDir = await getCurrentEntity;
+        const newEntries = await getCurrentChildren;
+        if (mounted) {
+          setCurrentDir(newCurrentDir);
+          setEntries(newEntries);
+          setLoadingEntries(false);
+          setShouldRefresh(false);
+        }
+      })();
+      return () => {
+        mounted = false;
+      };
+    }
+  }, [libraryId, libraries, path, shouldRefresh]);
 
   // Current directory info and details.
   const onClickEntry = useCallback(
@@ -133,19 +141,19 @@ export const FilesPage: React.FC = () => {
         lastEntry = await libraries.uploadFile(libraryId, path, file);
       }
       setSelectedEntry(lastEntry);
-      await refresh();
+      setShouldRefresh(true);
     },
-    [refresh, setSelectedEntry, libraries, libraryId, path]
+    [setSelectedEntry, libraries, libraryId, path]
   );
 
   const createFolder = useCallback(
     async (name: string) => {
       const newEntry = await libraries.createFolder(libraryId, path, name);
       setNewFolderName(undefined);
-      await refresh();
       await setSelectedEntry(newEntry);
+      setShouldRefresh(true);
     },
-    [refresh, libraries, libraryId, path, setSelectedEntry]
+    [libraries, libraryId, path, setSelectedEntry]
   );
 
   // Current library info.
