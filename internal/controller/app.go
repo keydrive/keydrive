@@ -40,6 +40,7 @@ func NewApp(dbDiag gorm.Dialector) (app App, err error) {
 			log.Error("failed to connect to database (attempt %d): %s", connectAttempt, err)
 			if connectAttempt < 5 {
 				err = nil
+				app.DB = nil
 				waitTime := 3 * time.Second * time.Duration(connectAttempt)
 				log.Error("retrying connection in %s", waitTime)
 				time.Sleep(waitTime)
