@@ -27,7 +27,7 @@ Docker is probably the easiest way to install ClearCloud. You can find the image
 +
 [source,yml,subs="attributes"]
 ----
-version: '3.7'
+version: '3.3'
 
 services:
   clearcloud:
