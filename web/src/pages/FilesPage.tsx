@@ -150,7 +150,7 @@ export const FilesPage: React.FC = () => {
     async (name: string) => {
       const newEntry = await libraries.createFolder(libraryId, path, name);
       setNewFolderName(undefined);
-      await setSelectedEntry(newEntry);
+      setSelectedEntry(newEntry);
       setShouldRefresh(true);
     },
     [libraries, libraryId, path, setSelectedEntry]

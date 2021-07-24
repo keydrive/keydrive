@@ -8,8 +8,6 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
-	"sort"
-	"strings"
 )
 
 type LibraryAccess struct {
@@ -90,17 +88,6 @@ func ListEntries(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin
 			writeError(c, err)
 			return
 		}
-		sort.Slice(entries, func(i, j int) bool {
-			a := entries[i]
-			b := entries[j]
-			if a.Category == model.CategoryFolder && b.Category != model.CategoryFolder {
-				return true;
-			}
-			if a.Category != model.CategoryFolder && b.Category == model.CategoryFolder {
-				return false;
-			}
-			return strings.ToLower(a.Name) > strings.ToLower(b.Name)
-		})
 		c.JSON(http.StatusOK, entries)
 	}
 }

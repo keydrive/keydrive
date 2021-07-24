@@ -8,6 +8,7 @@ import (
 	"mime/multipart"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 )
@@ -61,6 +62,18 @@ func (fs *FileSystem) GetEntriesForLibrary(library model.Library, parentPath str
 			Size:     file.Size(),
 		}
 	}
+
+	sort.Slice(output, func(i, j int) bool {
+		a := output[i]
+		b := output[j]
+		if a.Category == model.CategoryFolder && b.Category != model.CategoryFolder {
+			return true;
+		}
+		if a.Category != model.CategoryFolder && b.Category == model.CategoryFolder {
+			return false;
+		}
+		return strings.ToLower(a.Name) > strings.ToLower(b.Name)
+	})
 
 	return output, nil
 }
