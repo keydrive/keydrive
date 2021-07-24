@@ -1,14 +1,13 @@
 import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Layout } from '../components/Layout';
 import { Panel } from '../components/Panel';
-import { useHistory, useParams } from 'react-router-dom';
+import { Redirect, useHistory, useParams } from 'react-router-dom';
 import { useService } from '../hooks/useService';
 import { Entry, LibrariesService, Library } from '../services/LibrariesService';
 import { Icon } from '../components/Icon';
 import { EntryIcon } from '../components/EntryIcon';
 import { humanReadableSize } from '../utils/humanReadableSize';
 import { resolvePath } from '../utils/path';
-import { sortEntries } from '../utils/sortEntries';
 import { humanReadableDateTime } from '../utils/humanReadableDateTime';
 import { librariesStore } from '../store/libraries';
 import { useAppSelector } from '../store';
@@ -59,21 +58,27 @@ const FileRow = ({
 };
 
 export const FilesPage: React.FC = () => {
+  // The dataflow in this component is as follows:
+  // 1. The route changes which triggers the "loading" state
+  // 2. The current directory and its entities are fetched
+  // 3. If everything is okay, the "loading" state is removed
+  // to navigate to another entity, ONLY change the path through the history object
   const libraries = useService(LibrariesService);
   const { library: libraryId, path: encodedPath } = useParams<{ library: string; path?: string }>();
   const path = decodeURIComponent(encodedPath || '');
   const history = useHistory();
 
-  // Current directory info and details.
-  const [entries, setEntries] = useState<Entry[]>();
   const [currentDir, setCurrentDir] = useState<Entry>();
+  const [entries, setEntries] = useState<Entry[]>([]);
+  const [loadingEntries, setLoadingEntries] = useState(false);
+
+  // Current directory info and details.
   const onClickEntry = useCallback(
     async (target: string | Entry) => {
       if (typeof target === 'string') {
         history.push(`/files/${libraryId}/${encodeURIComponent(target)}`);
       } else if (target.category === 'Folder') {
         history.push(`/files/${libraryId}/${encodeURIComponent(resolvePath(target))}`);
-        setCurrentDir(target);
       } else {
         await libraries.download(libraryId, resolvePath(target));
       }
@@ -82,37 +87,41 @@ export const FilesPage: React.FC = () => {
   );
   const { selectedEntry, setSelectedEntry } = useFileNavigator(entries, onClickEntry);
 
-  // Current library info.
-  const {
-    selectors: { libraryById },
-  } = useService(librariesStore);
-  const library = useAppSelector(libraryById(parseInt(libraryId)));
-
   // File and folder operations.
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [newFolderName, setNewFolderName] = useState<string>();
 
-  const refresh = useCallback(() => {
-    // If the path is falsy or '/' we're at the library root, so no need for an extra call.
-    const pathIsRoot = !path || path === '/';
-    if (pathIsRoot) {
-      setCurrentDir(undefined);
-    }
-
-    return Promise.all([
-      libraries.getEntries(libraryId, path).then(sortEntries).then(setEntries),
-      pathIsRoot ? undefined : libraries.getEntry(libraryId, path).then(setCurrentDir),
-    ]);
-  }, [libraries, libraryId, path]);
-
-  useEffect(() => {
-    refresh().catch((e) => {
-      console.error(e);
-    });
-  }, [refresh]);
-
   useEffect(() => setSelectedEntry(undefined), [setSelectedEntry, path, libraryId]);
 
+  // This effect triggers when the path changes. This means we should enter a loading state
+  const loadEntries = useCallback(async () => {
+    setLoadingEntries(true);
+    setSelectedEntry(undefined);
+    try {
+      // If the path is falsy or '/' we're at the library root, so no need for an extra call.
+      const pathIsRoot = !path || path === '/';
+      // noinspection ES6MissingAwait It is awaited later to run in parallel
+      const getCurrentEntity = pathIsRoot ? Promise.resolve(undefined) : libraries.getEntry(libraryId, path);
+      const getCurrentChildren = libraries.getEntries(libraryId, path);
+
+      // TODO: Handle 404 on getCurrentEntity
+      const newCurrentDir = await getCurrentEntity;
+      const newEntries = await getCurrentChildren;
+      setCurrentDir(newCurrentDir);
+      setEntries(newEntries);
+      return newEntries;
+    } finally {
+      setLoadingEntries(false);
+    }
+  }, [setSelectedEntry, libraryId, path, libraries]);
+
+  useEffect(() => {
+    loadEntries().catch((e) => {
+      console.error(e);
+    });
+  }, [loadEntries, libraries, path]);
+
+  const [isUploading, setIsUploading] = useState(false);
   const uploadFiles = useCallback(
     async (e: ChangeEvent<HTMLInputElement>) => {
       const files = e.currentTarget.files;
@@ -122,21 +131,54 @@ export const FilesPage: React.FC = () => {
 
       // TODO: Check for already existing file names, modal with skip/overwrite/cancel.
 
+      let lastEntry: Entry | undefined = undefined;
+      setIsUploading(true);
       for (const file of Array.from(files)) {
-        await libraries.uploadFile(libraryId, path, file).then(refresh);
+        lastEntry = await libraries.uploadFile(libraryId, path, file);
       }
+      const newList = await loadEntries();
+      setSelectedEntry(newList.find((entry) => entry.name === lastEntry?.name));
+      setIsUploading(false);
     },
-    [libraries, libraryId, path, refresh]
+    [loadEntries, setSelectedEntry, libraries, libraryId, path]
   );
 
   const createFolder = useCallback(
     async (name: string) => {
-      await libraries.createFolder(libraryId, path, name).then(setSelectedEntry).then(refresh);
+      const newEntry = await libraries.createFolder(libraryId, path, name);
       setNewFolderName(undefined);
+      const newList = await loadEntries();
+      setSelectedEntry(newList.find((e) => e.name === newEntry.name));
     },
-    [libraries, libraryId, path, refresh, setSelectedEntry]
+    [loadEntries, libraries, libraryId, path, setSelectedEntry]
   );
 
+  // Current library info.
+  const {
+    selectors: { libraryById },
+  } = useService(librariesStore);
+  const library = useAppSelector(libraryById(parseInt(libraryId)));
+
+  // we can add more loading states later
+  const loading = loadingEntries || isUploading;
+
+  const [highlightedEntry, setHighlightedEntry] = useState<Entry>();
+  useEffect(() => {
+    if (loading) {
+      // do not update while loading
+      return;
+    }
+    if (selectedEntry) {
+      setHighlightedEntry(selectedEntry);
+    } else if (currentDir) {
+      setHighlightedEntry(currentDir);
+    }
+  }, [currentDir, selectedEntry, loading]);
+
+  if (!library) {
+    // this library does not exist!
+    return <Redirect to="/" />;
+  }
   return (
     <Layout className="files-page">
       <div className="top-bar">
@@ -148,7 +190,9 @@ export const FilesPage: React.FC = () => {
             icon="level-up-alt"
             disabled={!currentDir}
           />
-          <h1>{library?.name}</h1>
+          <h1>
+            {library.name} {loading && <Icon icon="spinner" pulse />}
+          </h1>
         </div>
         <div className="actions">
           <input ref={fileInputRef} hidden type="file" onChange={uploadFiles} multiple data-testid="file-input" />
@@ -162,80 +206,74 @@ export const FilesPage: React.FC = () => {
       </div>
       <main>
         <Panel className="files">
-          {entries ? (
-            <table className="clickable">
-              <colgroup>
-                <col className="icon" />
-                <col />
-                <col className="modified" />
-                <col className="size" />
-                <col className="category" />
-              </colgroup>
-              <thead>
+          <table className="clickable">
+            <colgroup>
+              <col className="icon" />
+              <col />
+              <col className="modified" />
+              <col className="size" />
+              <col className="category" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th />
+                <th>Name</th>
+                <th>Modified</th>
+                <th>Size</th>
+                <th>Kind</th>
+              </tr>
+            </thead>
+            <tbody>
+              {newFolderName != null && (
                 <tr>
-                  <th />
-                  <th>Name</th>
-                  <th>Modified</th>
-                  <th>Size</th>
-                  <th>Kind</th>
+                  <td className="icon" />
+                  <td>
+                    <TextInput
+                      autoFocus
+                      id="new-folder-name"
+                      value={newFolderName}
+                      onChange={setNewFolderName}
+                      iconButton="folder-plus"
+                      onButtonClick={() => createFolder(newFolderName)}
+                      onKeyDown={(e) => {
+                        e.stopPropagation();
+                        if (e.key === 'Escape') {
+                          setNewFolderName(undefined);
+                        }
+                        if (e.key === 'Enter') {
+                          createFolder(newFolderName).catch((err) => {
+                            console.error(err);
+                          });
+                        }
+                      }}
+                      onFocus={(e) => e.currentTarget.select()}
+                      onFieldBlur={() => setNewFolderName(undefined)}
+                    />
+                  </td>
+                  <td />
+                  <td />
+                  <td />
                 </tr>
-              </thead>
-              <tbody>
-                {newFolderName != null && (
-                  <tr>
-                    <td className="icon" />
-                    <td>
-                      <TextInput
-                        autoFocus
-                        id="new-folder-name"
-                        value={newFolderName}
-                        onChange={setNewFolderName}
-                        iconButton="folder-plus"
-                        onButtonClick={() => createFolder(newFolderName)}
-                        onKeyDown={(e) => {
-                          e.stopPropagation();
-                          if (e.key === 'Escape') {
-                            setNewFolderName(undefined);
-                          }
-                          if (e.key === 'Enter') {
-                            createFolder(newFolderName).catch((err) => {
-                              console.error(err);
-                            });
-                          }
-                        }}
-                        onFocus={(e) => e.currentTarget.select()}
-                        onFieldBlur={() => setNewFolderName(undefined)}
-                      />
-                    </td>
-                    <td />
-                    <td />
-                    <td />
-                  </tr>
-                )}
-                {entries.map((entry) => (
-                  <FileRow
-                    key={entry.name}
-                    entry={entry}
-                    selected={selectedEntry?.name === entry.name}
-                    onActivate={onClickEntry}
-                    onSelect={setSelectedEntry}
-                  />
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <div className="loader">
-              <Icon icon="spinner" pulse size={2} />
-            </div>
-          )}
+              )}
+              {entries.map((entry) => (
+                <FileRow
+                  key={entry.name}
+                  entry={entry}
+                  selected={selectedEntry?.name === entry.name}
+                  onActivate={onClickEntry}
+                  onSelect={setSelectedEntry}
+                />
+              ))}
+            </tbody>
+          </table>
         </Panel>
-        <DetailsPanel entry={selectedEntry || currentDir} library={library} />
+        <DetailsPanel entry={highlightedEntry} library={library} />
       </main>
     </Layout>
   );
 };
 
-const DetailsPanel: React.FC<{ entry?: Entry; library?: Library }> = ({ entry, library }) => {
+const DetailsPanel: React.FC<{ entry?: Entry; library: Library }> = ({ entry, library }) => {
   if (entry) {
     return (
       <Panel className="details">
@@ -260,17 +298,13 @@ const DetailsPanel: React.FC<{ entry?: Entry; library?: Library }> = ({ entry, l
     );
   }
 
-  if (library) {
-    return (
-      <Panel className="details">
-        <div className="preview">
-          <Icon icon="folder" />
-        </div>
-        <div className="name">{library.name}</div>
-        <div className="category">Library: {library.type}</div>
-      </Panel>
-    );
-  }
-
-  return <Panel className="details" />;
+  return (
+    <Panel className="details">
+      <div className="preview">
+        <Icon icon="folder" />
+      </div>
+      <div className="name">{library.name}</div>
+      <div className="category">Library: {library.type}</div>
+    </Panel>
+  );
 };

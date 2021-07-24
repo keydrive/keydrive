@@ -10,6 +10,7 @@ import { ChangePasswordModal } from './settings/ChangePasswordModal';
 import { EditProfileModal } from './settings/EditProfileModal';
 import { ManageLibrariesModal } from './settings/ManageLibrariesModal';
 import { useHistory, useParams } from 'react-router-dom';
+import userPlaceholder from '../images/user_placeholder.png';
 
 interface ModalProps {
   onClose: () => void;
@@ -49,7 +50,7 @@ export const SettingsPage: React.FC = () => {
         <main>
           <Panel>
             <div className="profile-info">
-              <img src="https://i.pravatar.cc/150?img=13" alt="Profile" />
+              <img src={userPlaceholder} alt="Profile" />
               <div className="profile-details">
                 <h2>
                   {user?.firstName} {user?.lastName}
