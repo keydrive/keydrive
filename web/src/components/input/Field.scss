@@ -53,9 +53,14 @@
       margin-left: 12px;
     }
 
-    &:focus {
+    &:not([readonly]):focus {
       border-color: var(--primary);
       box-shadow: 0 0 2px var(--primary);
+    }
+
+    &[readonly] {
+      cursor: not-allowed;
+      background-color: transparent;
     }
   }
 }
