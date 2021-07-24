@@ -10,6 +10,7 @@ import (
 	glog "gorm.io/gorm/logger"
 	"net/http"
 	"os"
+	"time"
 )
 
 type App struct {
@@ -26,16 +27,28 @@ type App struct {
 }
 
 func NewApp(dbDiag gorm.Dialector) (app App, err error) {
-	app.DB, err = gorm.Open(dbDiag, &gorm.Config{
-		Logger: glog.New(log, glog.Config{
-			LogLevel: glog.Info,
-		}),
-	})
-
-	if err != nil {
-		log.Error("failed to connect to database: %s", err)
-		return
+	connectAttempt := 0
+	for app.DB != nil {
+		connectAttempt++
+		log.Info("connecting to database")
+		app.DB, err = gorm.Open(dbDiag, &gorm.Config{
+			Logger: glog.New(log, glog.Config{
+				LogLevel: glog.Info,
+			}),
+		})
+		if err != nil {
+			log.Error("failed to connect to database (attempt %d): %s", connectAttempt, err)
+			if connectAttempt < 5 {
+				err = nil
+				waitTime := 3 * time.Second * time.Duration(connectAttempt)
+				log.Error("retrying connection in %s", waitTime)
+				time.Sleep(waitTime)
+			} else {
+				return
+			}
+		}
 	}
+
 
 	log.Info("connected")
 	log.Info("starting automigration...")
