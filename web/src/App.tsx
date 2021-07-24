@@ -10,16 +10,32 @@ import { Icon } from './components/Icon';
 import { LogoutPage } from './pages/LogoutPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { HomePage } from './pages/HomePage';
+import { librariesStore } from './store/libraries';
 
 export const App: React.FC = () => {
   const {
-    selectors,
+    selectors: { token: getToken, currentUser: getCurrentUser },
     actions: { getCurrentUserAsync },
   } = useService(userStore);
-  const token = useAppSelector(selectors.token);
-  const currentUser = useAppSelector(selectors.currentUser);
+  const {
+    selectors: { libraries: getLibraries },
+    actions: { getLibrariesAsync },
+  } = useService(librariesStore);
+
+  const token = useAppSelector(getToken);
+  const currentUser = useAppSelector(getCurrentUser);
+  const libraries = useAppSelector(getLibraries);
+
   const dispatch = useDispatch();
 
+  // refresh libraries
+  useEffect(() => {
+    if (!libraries) {
+      dispatch(getLibrariesAsync());
+    }
+  }, [dispatch, getLibrariesAsync, libraries]);
+
+  // refresh user data
   useEffect(() => {
     if (token) {
       dispatch(getCurrentUserAsync());

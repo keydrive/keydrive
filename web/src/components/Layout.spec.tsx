@@ -34,25 +34,4 @@ describe('Layout', () => {
     userEvent.click(screen.getByText('Movies'));
     expect(navigation.pathname).toBe('/files/2');
   });
-
-  it('loads the libraries if they are not in state', async () => {
-    fetchMock.getOnce('path:/api/libraries/', {
-      status: 200,
-      body: {
-        totalElements: 2,
-        elements: [
-          {
-            id: 1,
-            name: 'Documents',
-            type: 'generic',
-            canWrite: true,
-          },
-        ],
-      },
-    });
-
-    await render(<Layout />, { loggedIn: true });
-
-    expect(await screen.findByText('Documents')).toBeDefined();
-  });
 });
