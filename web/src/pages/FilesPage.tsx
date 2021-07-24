@@ -71,40 +71,6 @@ export const FilesPage: React.FC = () => {
   const [currentDir, setCurrentDir] = useState<Entry>();
   const [entries, setEntries] = useState<Entry[]>([]);
   const [loadingEntries, setLoadingEntries] = useState(false);
-  const [shouldRefresh, setShouldRefresh] = useState(false);
-
-  // refresh when paths change
-  useEffect(() => {
-    setShouldRefresh(true);
-  }, [libraryId, path]);
-
-  // This effect triggers when the path changes. This means we should enter a loading state
-  useEffect(() => {
-    if (shouldRefresh) {
-      let mounted = true;
-      setLoadingEntries(true);
-      (async () => {
-        // If the path is falsy or '/' we're at the library root, so no need for an extra call.
-        const pathIsRoot = !path || path === '/';
-        // noinspection ES6MissingAwait It is awaited later to run in parallel
-        const getCurrentEntity = pathIsRoot ? Promise.resolve(undefined) : libraries.getEntry(libraryId, path);
-        const getCurrentChildren = libraries.getEntries(libraryId, path);
-
-        // TODO: Handle 404 on getCurrentEntity
-        const newCurrentDir = await getCurrentEntity;
-        const newEntries = await getCurrentChildren;
-        if (mounted) {
-          setCurrentDir(newCurrentDir);
-          setEntries(newEntries);
-          setLoadingEntries(false);
-          setShouldRefresh(false);
-        }
-      })();
-      return () => {
-        mounted = false;
-      };
-    }
-  }, [libraryId, libraries, path, shouldRefresh]);
 
   // Current directory info and details.
   const onClickEntry = useCallback(
@@ -127,6 +93,35 @@ export const FilesPage: React.FC = () => {
 
   useEffect(() => setSelectedEntry(undefined), [setSelectedEntry, path, libraryId]);
 
+  // This effect triggers when the path changes. This means we should enter a loading state
+  const loadEntries = useCallback(async () => {
+    setLoadingEntries(true);
+    setSelectedEntry(undefined);
+    try {
+      // If the path is falsy or '/' we're at the library root, so no need for an extra call.
+      const pathIsRoot = !path || path === '/';
+      // noinspection ES6MissingAwait It is awaited later to run in parallel
+      const getCurrentEntity = pathIsRoot ? Promise.resolve(undefined) : libraries.getEntry(libraryId, path);
+      const getCurrentChildren = libraries.getEntries(libraryId, path);
+
+      // TODO: Handle 404 on getCurrentEntity
+      const newCurrentDir = await getCurrentEntity;
+      const newEntries = await getCurrentChildren;
+      setCurrentDir(newCurrentDir);
+      setEntries(newEntries);
+      return newEntries;
+    } finally {
+      setLoadingEntries(false);
+    }
+  }, [setSelectedEntry, libraryId, path, libraries]);
+
+  useEffect(() => {
+    loadEntries().catch((e) => {
+      console.error(e);
+    });
+  }, [loadEntries, libraries, path]);
+
+  const [isUploading, setIsUploading] = useState(false);
   const uploadFiles = useCallback(
     async (e: ChangeEvent<HTMLInputElement>) => {
       const files = e.currentTarget.files;
@@ -137,23 +132,25 @@ export const FilesPage: React.FC = () => {
       // TODO: Check for already existing file names, modal with skip/overwrite/cancel.
 
       let lastEntry: Entry | undefined = undefined;
+      setIsUploading(true);
       for (const file of Array.from(files)) {
         lastEntry = await libraries.uploadFile(libraryId, path, file);
       }
-      setSelectedEntry(lastEntry);
-      setShouldRefresh(true);
+      const newList = await loadEntries();
+      setSelectedEntry(newList.find((e) => e.name === lastEntry?.name));
+      setIsUploading(false);
     },
-    [setSelectedEntry, libraries, libraryId, path]
+    [loadEntries, setSelectedEntry, libraries, libraryId, path]
   );
 
   const createFolder = useCallback(
     async (name: string) => {
       const newEntry = await libraries.createFolder(libraryId, path, name);
       setNewFolderName(undefined);
-      setSelectedEntry(newEntry);
-      setShouldRefresh(true);
+      const newList = await loadEntries();
+      setSelectedEntry(newList.find((e) => e.name === newEntry.name));
     },
-    [libraries, libraryId, path, setSelectedEntry]
+    [loadEntries, libraries, libraryId, path, setSelectedEntry]
   );
 
   // Current library info.
@@ -162,14 +159,26 @@ export const FilesPage: React.FC = () => {
   } = useService(librariesStore);
   const library = useAppSelector(libraryById(parseInt(libraryId)));
 
+  // we can add more loading states later
+  const loading = loadingEntries || isUploading;
+
+  const [highlightedEntry, setHighlightedEntry] = useState<Entry>();
+  useEffect(() => {
+    if (loading) {
+      // do not update while loading
+      return;
+    }
+    if (selectedEntry) {
+      setHighlightedEntry(selectedEntry);
+    } else if (currentDir) {
+      setHighlightedEntry(currentDir);
+    }
+  }, [currentDir, selectedEntry, loading]);
+
   if (!library) {
     // this library does not exist!
     return <Redirect to="/" />;
   }
-
-  // we can add more loading states later
-  const loading = loadingEntries;
-
   return (
     <Layout className="files-page">
       <div className="top-bar">
@@ -258,20 +267,13 @@ export const FilesPage: React.FC = () => {
             </tbody>
           </table>
         </Panel>
-        <DetailsPanel loading={loading} entry={selectedEntry || currentDir} library={library} />
+        <DetailsPanel entry={highlightedEntry} library={library} />
       </main>
     </Layout>
   );
 };
 
-const DetailsPanel: React.FC<{ loading?: boolean; entry?: Entry; library: Library }> = ({
-  loading,
-  entry,
-  library,
-}) => {
-  if (loading) {
-    return <Panel className="details" />;
-  }
+const DetailsPanel: React.FC<{ entry?: Entry; library: Library }> = ({ entry, library }) => {
   if (entry) {
     return (
       <Panel className="details">

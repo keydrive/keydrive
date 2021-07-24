@@ -276,19 +276,6 @@ describe('FilesPage', () => {
         body: fileOneEntry,
       }
     );
-    fetchMock.getOnce(
-      {
-        url: 'path:/api/libraries/4/entries',
-        query: {
-          parent: '',
-        },
-        overwriteRoutes: false,
-      },
-      {
-        status: 200,
-        body: [fileOneEntry],
-      }
-    );
     fetchMock.postOnce(
       {
         url: 'path:/api/libraries/4/entries',
@@ -324,10 +311,11 @@ describe('FilesPage', () => {
       loggedIn: true,
       initialState,
     });
-
+    // wait for the page to load
+    await screen.findByText('Ballmers Peak Label.xcf');
     userEvent.upload(screen.getByTestId('file-input'), [fileOne, fileTwo]);
-    await screen.findByText('upload.txt');
-    await screen.findByText('another.zip');
+    await screen.findByText('upload.txt', { selector: 'td ' });
+    await screen.findByText('another.zip', { selector: 'td ' });
   });
 
   it('creates a new folder on enter', async () => {
@@ -363,6 +351,13 @@ describe('FilesPage', () => {
         body: [
           {
             name: 'I Am Of Exist',
+            modified: '2021-03-26T23:32:42.139992387+01:00',
+            parent: '/',
+            category: 'Folder',
+            size: 0,
+          },
+          {
+            name: 'Folder Details Pane',
             modified: '2021-03-26T23:32:42.139992387+01:00',
             parent: '/',
             category: 'Folder',
@@ -422,6 +417,13 @@ describe('FilesPage', () => {
         body: [
           {
             name: 'I Am Of Exist',
+            modified: '2021-03-26T23:32:42.139992387+01:00',
+            parent: '/',
+            category: 'Folder',
+            size: 0,
+          },
+          {
+            name: 'Folder Details Pane',
             modified: '2021-03-26T23:32:42.139992387+01:00',
             parent: '/',
             category: 'Folder',
