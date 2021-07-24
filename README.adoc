@@ -90,7 +90,7 @@ docker compose up -d
 go get
 
 # Optional: update the api docs
-swag init
+swag init --output ./internal/swagger
 
 # Start the backend
 go run ./main.go
