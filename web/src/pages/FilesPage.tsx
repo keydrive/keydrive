@@ -137,7 +137,7 @@ export const FilesPage: React.FC = () => {
         lastEntry = await libraries.uploadFile(libraryId, path, file);
       }
       const newList = await loadEntries();
-      setSelectedEntry(newList.find((e) => e.name === lastEntry?.name));
+      setSelectedEntry(newList.find((entry) => entry.name === lastEntry?.name));
       setIsUploading(false);
     },
     [loadEntries, setSelectedEntry, libraries, libraryId, path]
