@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import logo from '../images/logo.svg';
 import { Icon } from './Icon';
@@ -6,7 +6,7 @@ import { useService } from '../hooks/useService';
 import { LibraryType } from '../services/LibrariesService';
 import { classNames } from '../utils/classNames';
 import { librariesStore } from '../store/libraries';
-import { useAppDispatch, useAppSelector } from '../store';
+import { useAppSelector } from '../store';
 
 export interface Props {
   className?: string;
@@ -21,18 +21,8 @@ const libraryIcons: Record<LibraryType, string> = {
 };
 
 export const Layout: React.FC<Props> = ({ children, className }) => {
-  const {
-    selectors,
-    actions: { getLibrariesAsync },
-  } = useService(librariesStore);
+  const { selectors } = useService(librariesStore);
   const libraries = useAppSelector(selectors.libraries);
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    if (!libraries) {
-      dispatch(getLibrariesAsync());
-    }
-  }, [dispatch, getLibrariesAsync, libraries]);
 
   return (
     <div className={classNames('layout', className)}>
