@@ -129,6 +129,7 @@
 
   &.closing {
     animation: fade-out 0.4s forwards;
+    pointer-events: none;
   }
 
   @keyframes fade-in {
