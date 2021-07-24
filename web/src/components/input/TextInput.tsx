@@ -38,7 +38,7 @@ export const TextInput: React.FC<Props> = ({
     {label && <label htmlFor={props.id}>{label}</label>}
     <input
       readOnly={!onChange}
-      tabIndex={onChange && -1}
+      tabIndex={onChange ? undefined : -1}
       {...props}
       onChange={onChange && ((e) => onChange(e.currentTarget.value))}
     />
