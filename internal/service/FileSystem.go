@@ -67,12 +67,12 @@ func (fs *FileSystem) GetEntriesForLibrary(library model.Library, parentPath str
 		a := output[i]
 		b := output[j]
 		if a.Category == model.CategoryFolder && b.Category != model.CategoryFolder {
-			return true;
+			return true
 		}
 		if a.Category != model.CategoryFolder && b.Category == model.CategoryFolder {
-			return false;
+			return false
 		}
-		return strings.ToLower(a.Name) > strings.ToLower(b.Name)
+		return strings.ToLower(a.Name) < strings.ToLower(b.Name)
 	})
 
 	return output, nil
