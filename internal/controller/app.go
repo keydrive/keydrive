@@ -28,7 +28,7 @@ type App struct {
 
 func NewApp(dbDiag gorm.Dialector) (app App, err error) {
 	connectAttempt := 0
-	for app.DB != nil {
+	for app.DB == nil {
 		connectAttempt++
 		log.Info("connecting to database")
 		app.DB, err = gorm.Open(dbDiag, &gorm.Config{
