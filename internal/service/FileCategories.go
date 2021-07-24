@@ -720,6 +720,16 @@ var MimeToCategory = map[string]model.Category{
 	"application/x-rar-compressed":                    model.CategoryArchive,
 	"application/x-tar":                               model.CategoryArchive,
 	"application/zip":                                 model.CategoryArchive,
+
+	// office formats
+	"application/vnd.openxmlformats-officedocument.wordprocessingml.document":   model.CategoryDocument,
+	"application/vnd.openxmlformats-officedocument.wordprocessingml.template":   model.CategoryDocument,
+	"application/vnd.openxmlformats-officedocument.presentationml.template":     model.CategoryDocument,
+	"application/vnd.openxmlformats-officedocument.presentationml.slideshow":    model.CategoryDocument,
+	"application/vnd.openxmlformats-officedocument.presentationml.presentation": model.CategoryDocument,
+	"application/vnd.openxmlformats-officedocument.presentationml.slide":        model.CategoryDocument,
+	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":         model.CategoryDocument,
+	"application/vnd.openxmlformats-officedocument.spreadsheetml.template":      model.CategoryDocument,
 }
 
 func GetFileCategory(name string, mimeType string, isDir bool) (model.Category, string) {
