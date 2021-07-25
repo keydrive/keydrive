@@ -153,6 +153,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: frontend-build
+          path: web/build
       - run: ${{ matrix.goopts }} go build -o ./keydrive ./main.go
       - run: chmod +x ./keydrive
       - uses: actions/upload-artifact@v2
