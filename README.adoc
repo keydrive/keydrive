@@ -31,7 +31,7 @@ version: '3.3'
 
 services:
   keydrive:
-    image: keydrive/keydrive:{latest-release}
+    image: ghcr.io/keydrive/keydrive:edge
     restart: unless-stopped
     networks:
       - default
