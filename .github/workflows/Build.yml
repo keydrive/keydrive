@@ -14,6 +14,16 @@ jobs:
   build:
     name: Build & Test
     runs-on: ubuntu-20.04
+    services:
+      postgres:
+        image: library/postgres:13
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -33,3 +43,7 @@ jobs:
         run: yarn --cwd web test --ci --coverage --reporters=default --reporters=jest-junit
       - name: Build Frontend
         run: yarn --cwd web build
+      - name: Install go dependencies
+        run: go get -u github.com/jstemmer/go-junit-report
+      - name: Run Backend Tests
+        run: POSTGRES_HOST=postgres go test -v -coverprofile=coverage.out ./... 2>&1 | go-junit-report > junit.xml
