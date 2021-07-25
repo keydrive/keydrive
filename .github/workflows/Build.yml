@@ -66,6 +66,14 @@ jobs:
       - uses: actions/setup-go@v2
         with:
           go-version: '^1.16.5'
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
       - name: Install go dependencies
         run: go get -u github.com/jstemmer/go-junit-report
       - name: Run Backend Tests
@@ -92,6 +100,14 @@ jobs:
       - uses: actions/setup-go@v2
         with:
           go-version: '^1.16.5'
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
       - uses: actions/download-artifact@v2
         with:
           name: frontend-build
@@ -114,7 +130,7 @@ jobs:
       - name: Determine branch name
         run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | tr / -)" >> $GITHUB_ENV
       - name: Determine tag name
-        run: if [ $BRANCH_NAME == "main" ]; then echo "TAG_NAME=preview" >> $GITHUB_ENV; else; echo "TAG_NAME=$BRANCH_NAME" >> $GITHUB_ENV; fi;
+        run: if [ $BRANCH_NAME == "main" ]; then echo "TAG_NAME=preview" >> $GITHUB_ENV; else echo "TAG_NAME=$BRANCH_NAME" >> $GITHUB_ENV; fi;
       - uses: actions/download-artifact@v2
         with:
           name: binary-linux-x64
@@ -126,4 +142,4 @@ jobs:
           context: .false
           platforms: linux/amd64,linux/arm/v6
           push: true
-          tags: ghcr.io/keydrive/keydrive
+          tags: ghcr.io/keydrive/keydrive:${{ env.TAG_NAME }}
