@@ -19,6 +19,10 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
+      - uses: actions/cache@v2
+        with:
+          path: 'web/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('web/yarn.lock') }}
       - name: Install Yarn Dependencies
         run: yarn --cwd web install --frozen-lockfile
       - name: Run Frontend Linting
@@ -33,6 +37,10 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
+      - uses: actions/cache@v2
+        with:
+          path: 'web/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('web/yarn.lock') }}
       - name: Install Yarn Dependencies
         run: yarn --cwd web install --frozen-lockfile
       - name: Build Frontend
