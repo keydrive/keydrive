@@ -145,7 +145,7 @@ jobs:
       - uses: docker/build-push-action@v2
         if: ${{ env.BRANCH_NAME != 'main' }}
         with:
-          context: .false
+          context: .
           platforms: linux/amd64,linux/arm/v6
           push: true
           tags: ghcr.io/keydrive/keydrive:${{ env.BRANCH_NAME }}
