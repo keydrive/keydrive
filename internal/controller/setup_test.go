@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"clearcloud/internal/model"
+	"keydrive/internal/model"
 	"database/sql"
 	"fmt"
 	"github.com/google/uuid"

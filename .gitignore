@@ -6,7 +6,7 @@ web/build/*
 !web/build/static.go
 node_modules/
 coverage/
-clearcloud
+keydrive
 junit.xml
 coverage.out
 

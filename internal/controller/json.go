@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"clearcloud/pkg/logger"
+	"keydrive/pkg/logger"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"

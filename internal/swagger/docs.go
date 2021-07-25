@@ -19,8 +19,8 @@ var doc = `{
         "description": "{{.Description}}",
         "title": "{{.Title}}",
         "contact": {
-            "name": "ClearCloud Team",
-            "url": "https://github.com/ChappIO/clearcloud/issues",
+            "name": "KeyDrive Team",
+            "url": "https://github.com/keydrive/keydrive/issues",
             "email": "thomas.biesaart@protonmail.com"
         },
         "version": "{{.Version}}"
@@ -1156,7 +1156,7 @@ var SwaggerInfo = swaggerInfo{
 	Host:        "",
 	BasePath:    "",
 	Schemes:     []string{},
-	Title:       "ClearCloud API",
+	Title:       "KeyDrive API",
 	Description: "",
 }
 

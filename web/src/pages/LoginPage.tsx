@@ -21,7 +21,7 @@ export const LoginPage: React.FC = () => {
     <div className="login-page">
       <div className="login-box">
         <div className="title">
-          <img src={logo} alt="ClearCloud" />
+          <img src={logo} alt="KeyDrive" />
         </div>
         <Form
           onSubmit={async () => {

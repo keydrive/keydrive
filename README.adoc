@@ -2,9 +2,8 @@
 :toc: macro
 :latest-release: preview
 
-image:https://img.shields.io/jenkins/build?jobUrl=https%3A%2F%2Fjenkins.chapp.io%2Fjob%2FTocabi%2Fjob%2Fclearcloud%2Fjob%2Fmain[Jenkins,link="https://jenkins.chapp.io/blue/organizations/jenkins/Tocabi%2Fclearcloud/branches"]
-image:https://img.shields.io/github/license/Tocabi/clearcloud[License,link="https://github.com/Tocabi/clearcloud/blob/main/LICENSE"]
-image:https://img.shields.io/docker/pulls/tocabi/clearcloud[Docker Pulls,link="https://hub.docker.com/r/tocabi/clearcloud"]
+image:https://img.shields.io/github/license/keydrive/keydrive[License,link="https://github.com/keydrive/keydrive/blob/main/LICENSE"]
+image:https://img.shields.io/docker/pulls/keydrive/keydrive[Docker Pulls,link="https://hub.docker.com/r/keydrive/keydrive"]
 
 A personal file management and sharing application.
 
@@ -12,15 +11,15 @@ toc::[]
 
 == Introduction
 
-ClearCloud is a self-hosted file management system which allows you to access your files from anywhere, without the privacy concerns of a cloud service.
+KeyDrive is a self-hosted file management system which allows you to access your files from anywhere, without the privacy concerns of a cloud service.
 
-image:docs/screenshot_files.png[ClearCloud file browser]
+image:docs/screenshot_files.png[KeyDrive file browser]
 
 == Installation
 
 === Docker
 
-Docker is probably the easiest way to install ClearCloud. You can find the image on Docker Hub: https://hub.docker.com/r/tocabi/clearcloud[tocabi/clearcloud].
+Docker is probably the easiest way to install KeyDrive. You can find the image on Docker Hub: https://hub.docker.com/r/keydrive/keydrive[keydrive/keydrive].
 
 1. https://docs.docker.com/engine/install[Install Docker]
 2. Create a `docker-compose.yml` file:
@@ -30,21 +29,21 @@ Docker is probably the easiest way to install ClearCloud. You can find the image
 version: '3.3'
 
 services:
-  clearcloud:
-    image: tocabi/clearcloud:{latest-release}
+  keydrive:
+    image: keydrive/keydrive:{latest-release}
     restart: unless-stopped
     networks:
       - default
     ports:
-      # Here we expose clearcloud on port 5555
+      # Here we expose keydrive on port 5555
       - 5555:5555
     volumes:
       # We create a volume for you files
       - /path/to/your/media:/libraries
     environment:
       POSTGRES_HOST: database
-      POSTGRES_DB: clearcloud
-      POSTGRES_USER: clearcloud
+      POSTGRES_DB: keydrive
+      POSTGRES_USER: keydrive
       POSTGRES_PASSWORD: "ChangeMeToASecurePassword"
   database:
     image: library/postgres:13
@@ -55,15 +54,15 @@ services:
       # We need to store the database files somewhere
       - /path/to/your/database/storage:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: clearcloud
-      POSTGRES_USER: clearcloud
+      POSTGRES_DB: keydrive
+      POSTGRES_USER: keydrive
       POSTGRES_PASSWORD: "ChangeMeToASecurePassword"
 
 networks:
   default:
 ----
 3. Run `docker compose up -d` to start the stack
-4. Open clearcloud on http://localhost:5555 or http://<your-server-ip>:5555
+4. Open KeyDrive on http://localhost:5555 or http://<your-server-ip>:5555
 
 == Development
 

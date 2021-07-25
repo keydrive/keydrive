@@ -242,9 +242,9 @@ definitions:
 info:
   contact:
     email: thomas.biesaart@protonmail.com
-    name: ClearCloud Team
-    url: https://github.com/ChappIO/clearcloud/issues
-  title: ClearCloud API
+    name: KeyDrive Team
+    url: https://github.com/keydrive/keydrive/issues
+  title: KeyDrive API
   version: development
 paths:
   /api/download:

@@ -1,7 +1,7 @@
 package service
 
 import (
-	"clearcloud/internal/model"
+	"keydrive/internal/model"
 	"github.com/google/uuid"
 )
 

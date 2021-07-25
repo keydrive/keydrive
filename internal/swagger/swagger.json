@@ -1,10 +1,10 @@
 {
     "swagger": "2.0",
     "info": {
-        "title": "ClearCloud API",
+        "title": "KeyDrive API",
         "contact": {
-            "name": "ClearCloud Team",
-            "url": "https://github.com/ChappIO/clearcloud/issues",
+            "name": "KeyDrive Team",
+            "url": "https://github.com/keydrive/keydrive/issues",
             "email": "thomas.biesaart@protonmail.com"
         },
         "version": "development"
