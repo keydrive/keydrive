@@ -25,3 +25,11 @@ jobs:
       - run: yarn --version
       - run: go version
       - run: docker --version
+      - name: Install Yarn Dependencies
+        run: yarn --cwd web install --frozen-lockfile
+      - name: Run Frontend Linting
+        run: yarn --cwd web lint -f json -o eslint-report.json || true
+      - name: Run React Tests
+        run: yarn --cwd web test --ci --coverage --reporters=default --reporters=jest-junit
+      - name: Build Frontend
+        run: yarn --cwd web build
