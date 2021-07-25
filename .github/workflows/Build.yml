@@ -127,8 +127,7 @@ jobs:
             goopts: GOOS=linux GOARCH=arm GOARM=6
             target: linux/arm/v6
     env:
-      GOOS: ${{ matrix.goos }}
-      GOARCH: ${{ matrix.goarch }}
+      CGO_ENABLED: "0"
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-go@v2
@@ -179,7 +178,7 @@ jobs:
       - uses: docker/build-push-action@v2
         if: ${{ env.BRANCH_NAME != 'main' }}
         with:
-          context: "{{ env.GITHUB_WORKSPACE }}"
+          context: ${{ env.GITHUB_WORKSPACE }}
           platforms: linux/amd64,linux/arm/v6
           push: true
           tags: ghcr.io/keydrive/keydrive:${{ env.BRANCH_NAME }}
