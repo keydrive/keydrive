@@ -1,14 +1,14 @@
 package main
 
 import (
-	"clearcloud/internal/controller"
-	_ "clearcloud/internal/swagger"
-	"clearcloud/pkg/logger"
 	"flag"
 	"fmt"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"gorm.io/driver/postgres"
+	"keydrive/internal/controller"
+	_ "keydrive/internal/swagger"
+	"keydrive/pkg/logger"
 	"net/http"
 	"os"
 	"strconv"
@@ -39,11 +39,11 @@ var postgresDb = stringOpt("postgres-db", "postgres", "The psql database name")
 var postgresPort = intOpt("postgres-port", 5432, "The psql host port")
 var log = logger.NewConsole(logger.LevelDebug, "MAIN")
 
-// @title ClearCloud API
+// @title KeyDrive API
 // @version development
 
-// @contact.name ClearCloud Team
-// @contact.url https://github.com/ChappIO/clearcloud/issues
+// @contact.name KeyDrive Team
+// @contact.url https://github.com/keydrive/keydrive/issues
 // @contact.email thomas.biesaart@protonmail.com
 
 // @securitydefinitions.oauth2.password OAuth2

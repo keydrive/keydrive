@@ -1,9 +1,9 @@
 package controller
 
 import (
-	"clearcloud/internal/model"
-	"clearcloud/internal/service"
-	"clearcloud/web/build"
+	"keydrive/internal/model"
+	"keydrive/internal/service"
+	"keydrive/web/build"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"

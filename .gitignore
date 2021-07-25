@@ -6,7 +6,6 @@ web/build/*
 !web/build/static.go
 node_modules/
 coverage/
-clearcloud
 junit.xml
 coverage.out
 

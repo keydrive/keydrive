@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"clearcloud/internal/service"
+	"keydrive/internal/service"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"io/ioutil"

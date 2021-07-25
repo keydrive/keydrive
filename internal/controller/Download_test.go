@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"clearcloud/internal/model"
+	"keydrive/internal/model"
 	"fmt"
 	"net/http"
 	"net/http/httptest"

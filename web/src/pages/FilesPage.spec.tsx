@@ -102,7 +102,7 @@ describe('FilesPage', () => {
         status: 200,
         body: [
           {
-            name: 'ClearCloud Settings.pdf',
+            name: 'KeyDrive Settings.pdf',
             parent: '/Documents',
             modified: '2021-06-16T09:52:47.769779842+02:00',
             category: 'Binary',
@@ -154,7 +154,7 @@ describe('FilesPage', () => {
     });
 
     userEvent.dblClick(await screen.findByText('Documents'));
-    expect(await screen.findByText('ClearCloud Settings.pdf')).toBeDefined();
+    expect(await screen.findByText('KeyDrive Settings.pdf')).toBeDefined();
     expect(navigation.pathname).toBe('/files/4/%2FDocuments');
     expect(screen.getByText('Documents', { selector: '.details *' })).toBeDefined();
   });
@@ -172,7 +172,7 @@ describe('FilesPage', () => {
         status: 200,
         body: [
           {
-            name: 'ClearCloud Settings.pdf',
+            name: 'KeyDrive Settings.pdf',
             parent: '/Documents',
             modified: '2021-06-16T09:52:47.769779842+02:00',
             category: 'Binary',
@@ -238,7 +238,7 @@ describe('FilesPage', () => {
       initialState,
     });
 
-    expect(await screen.findByText('ClearCloud Settings.pdf')).toBeDefined();
+    expect(await screen.findByText('KeyDrive Settings.pdf')).toBeDefined();
     userEvent.click(screen.getByLabelText('Parent directory'));
     expect(await screen.findByText('Documents')).toBeDefined();
     expect(navigation.pathname).toBe('/files/4/%2F');
