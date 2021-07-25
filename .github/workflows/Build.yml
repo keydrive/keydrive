@@ -132,10 +132,8 @@ jobs:
         include:
           - name: linux-x64
             goopts: GOOS=linux GOARCH=amd64
-            target: linux/amd64
           - name: linux-armv6
             goopts: GOOS=linux GOARCH=arm GOARM=6
-            target: linux/arm/v6
     env:
       CGO_ENABLED: "0"
     steps:
@@ -154,13 +152,12 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: frontend-build
-      - run: mkdir -p ${{ matrix.target }}
-      - run: ${{ matrix.goopts }} go build -o ${{ matrix.target }}/keydrive ./main.go
-      - run: chmod +x ${{ matrix.target }}/keydrive
+      - run: ${{ matrix.goopts }} go build -o ./keydrive ./main.go
+      - run: chmod +x ./keydrive
       - uses: actions/upload-artifact@v2
         with:
           name: binary-${{ matrix.name }}
-          path: ${{ matrix.target }}/keydrive
+          path: ./keydrive
   build_docker:
     needs:
       - build_go
@@ -171,9 +168,11 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: binary-linux-x64
+          path: linux/amd64/keydrive
       - uses: actions/download-artifact@v2
         with:
           name: binary-linux-armv6
+          path: linux/arm/v6/keydrive
       - run: ls
       - run: find linux
       - uses: docker/setup-qemu-action@v1
