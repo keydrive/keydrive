@@ -184,6 +184,11 @@ jobs:
           platforms: linux/amd64,linux/arm/v6
           push: true
           tags: ghcr.io/keydrive/keydrive:preview
+      - uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - uses: docker/build-push-action@v2
         if: ${{ env.BRANCH_NAME != 'main' }}
         with:
