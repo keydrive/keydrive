@@ -72,6 +72,8 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        ports:
+          - 5432:5432
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-go@v2
@@ -88,7 +90,7 @@ jobs:
       - name: Install go dependencies
         run: go get -u github.com/jstemmer/go-junit-report
       - name: Run Backend Tests
-        run: POSTGRES_HOST=postgres go test -v -coverprofile=coverage.out ./... 2>&1 | go-junit-report > junit.xml
+        run: go test -v -coverprofile=coverage.out ./... 2>&1 | go-junit-report > junit.xml
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v2
         with:
@@ -179,12 +181,14 @@ jobs:
       - uses: docker/build-push-action@v2
         if: ${{ env.BRANCH_NAME == 'main' }}
         with:
+          context: .
           platforms: linux/amd64,linux/arm/v6
           push: true
           tags: ghcr.io/keydrive/keydrive:preview
       - uses: docker/build-push-action@v2
         if: ${{ env.BRANCH_NAME != 'main' }}
         with:
+          context: .
           platforms: linux/amd64,linux/arm/v6
           push: true
           tags: ghcr.io/keydrive/keydrive:${{ env.BRANCH_NAME }}
