@@ -2,6 +2,7 @@
 :toc: macro
 :latest-release: preview
 
+image:https://github.com/keydrive/keydrive/actions/workflows/Build.yml/badge.svg[Build,link="https://github.com/keydrive/keydrive/actions/workflows/Build.yml"]
 image:https://img.shields.io/github/license/keydrive/keydrive[License,link="https://github.com/keydrive/keydrive/blob/main/LICENSE"]
 image:https://img.shields.io/docker/pulls/keydrive/keydrive[Docker Pulls,link="https://hub.docker.com/r/keydrive/keydrive"]
 
