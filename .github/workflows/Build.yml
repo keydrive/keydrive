@@ -11,8 +11,38 @@ on:
 
 
 jobs:
-  build:
-    name: Build & Test
+  test_react:
+    name: Test Frontend
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - name: Install Yarn Dependencies
+        run: yarn --cwd web install --frozen-lockfile
+      - name: Run Frontend Linting
+        run: yarn --cwd web lint -f json -o eslint-report.json || true
+      - name: Run React Tests
+        run: yarn --cwd web test --ci --coverage --reporters=default --reporters=jest-junit
+  build_react:
+    name: Build Frontend
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - name: Install Yarn Dependencies
+        run: yarn --cwd web install --frozen-lockfile
+      - name: Build Frontend
+        run: yarn --cwd web build
+      - uses: actions/upload-artifact@v2
+        with:
+          name: frontend-build
+          path: web/build
+  test_go:
+    name: Test Backend
     runs-on: ubuntu-20.04
     services:
       postgres:
@@ -26,24 +56,40 @@ jobs:
           --health-retries 5
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '16'
       - uses: actions/setup-go@v2
         with:
           go-version: '^1.16.5'
-      - run: yarn --version
-      - run: go version
-      - run: docker --version
-      - name: Install Yarn Dependencies
-        run: yarn --cwd web install --frozen-lockfile
-      - name: Run Frontend Linting
-        run: yarn --cwd web lint -f json -o eslint-report.json || true
-      - name: Run React Tests
-        run: yarn --cwd web test --ci --coverage --reporters=default --reporters=jest-junit
-      - name: Build Frontend
-        run: yarn --cwd web build
       - name: Install go dependencies
         run: go get -u github.com/jstemmer/go-junit-report
       - name: Run Backend Tests
         run: POSTGRES_HOST=postgres go test -v -coverprofile=coverage.out ./... 2>&1 | go-junit-report > junit.xml
+  build_go:
+    needs:
+      - build_react
+    name: Build Backend
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        include:
+          - goopts: GOOS=linux GOARCH=amd64
+            target: linux/amd64
+          - goopts: GOOS=linux GOARCH=arm GOARM
+            target: linux/arm/v6
+    env:
+      GOOS: ${{ matrix.goos }}
+      GOARCH: ${{ matrix.goarch }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '^1.16.5'
+      - uses: actions/download-artifact@v2
+        with:
+          name: frontend-build
+      - run: mkdir -p ${{ matrix.target }}
+      - run: ${{ matrix.goopts }} go build -o ${{ matrix.target }}/keydrive ./main.go
+      - run: chmod +x ${{ matrix.target }}/keydrive
+      - uses: actions/upload-artifact@v2
+        with:
+          name: backend-${{ matrix.target }}
+          path: ${{ matrix.target }}
