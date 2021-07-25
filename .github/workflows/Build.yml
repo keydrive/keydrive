@@ -28,6 +28,10 @@ jobs:
         run: yarn --cwd web lint -f json -o eslint-report.json || true
       - name: Run React Tests
         run: yarn --cwd web test --ci --coverage --reporters=default --reporters=jest-junit
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v2
+        with:
+          report_paths: 'web/junit.xml'
       - uses: actions/upload-artifact@v2
         with:
           name: frontend-tests
@@ -85,6 +89,10 @@ jobs:
         run: go get -u github.com/jstemmer/go-junit-report
       - name: Run Backend Tests
         run: POSTGRES_HOST=postgres go test -v -coverprofile=coverage.out ./... 2>&1 | go-junit-report > junit.xml
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v2
+        with:
+          report_paths: 'junit.xml'
       - uses: actions/upload-artifact@v2
         with:
           name: backend-tests
