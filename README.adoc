@@ -1,4 +1,4 @@
-= ClearCloud
+= KeyDrive (formerly ClearCloud)
 :toc: macro
 :latest-release: preview
 
