@@ -93,6 +93,9 @@ jobs:
             junit.xml
   sonar_analysis:
     name: SonarCloud Analysis
+    needs:
+      - test_go
+      - test_react
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
