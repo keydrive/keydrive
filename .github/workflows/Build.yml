@@ -39,26 +39,6 @@ jobs:
             web/coverage/lcov.info
             web/eslint-report.json
             web/junit.xml
-  build_react:
-    name: Build Frontend
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '16'
-      - uses: actions/cache@v2
-        with:
-          path: 'web/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('web/yarn.lock') }}
-      - name: Install Yarn Dependencies
-        run: yarn --cwd web install --frozen-lockfile
-      - name: Build Frontend
-        run: yarn --cwd web build
-      - uses: actions/upload-artifact@v2
-        with:
-          name: frontend-build
-          path: web/build
   test_go:
     name: Test Backend
     runs-on: ubuntu-20.04
@@ -114,7 +94,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: frontend-tests
-          path: wen
+          path: web
       - uses: actions/download-artifact@v2
         with:
           name: backend-tests
@@ -123,6 +103,26 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_LOGIN }}
+  build_react:
+    name: Build Frontend
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - uses: actions/cache@v2
+        with:
+          path: 'web/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('web/yarn.lock') }}
+      - name: Install Yarn Dependencies
+        run: yarn --cwd web install --frozen-lockfile
+      - name: Build Frontend
+        run: yarn --cwd web build
+      - uses: actions/upload-artifact@v2
+        with:
+          name: frontend-build
+          path: web/build
   build_go:
     needs:
       - build_react
