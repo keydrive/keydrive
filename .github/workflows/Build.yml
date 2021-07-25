@@ -173,8 +173,6 @@ jobs:
         with:
           name: binary-linux-armv6
           path: linux/arm/v6/keydrive
-      - run: ls
-      - run: find linux
       - uses: docker/setup-qemu-action@v1
       - uses: docker/setup-buildx-action@v1
       - name: Determine branch name
