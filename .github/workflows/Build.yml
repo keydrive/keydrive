@@ -73,7 +73,7 @@ jobs:
         include:
           - goopts: GOOS=linux GOARCH=amd64
             target: linux/amd64
-          - goopts: GOOS=linux GOARCH=arm GOARM
+          - goopts: GOOS=linux GOARCH=arm GOARM=6
             target: linux/arm/v6
     env:
       GOOS: ${{ matrix.goos }}
