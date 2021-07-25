@@ -12,7 +12,7 @@ ENV POSTGRES_PORT=5432
 
 RUN apk add --no-cache libc6-compat
 
-ADD ${TARGETPLATFORM}/keydrive /keydrive
+ADD ${TARGETPLATFORM}/keydrive /
 RUN chmod +x /keydrive
 
 ENTRYPOINT ["/keydrive"]
