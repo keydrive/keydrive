@@ -28,6 +28,13 @@ jobs:
         run: yarn --cwd web lint -f json -o eslint-report.json || true
       - name: Run React Tests
         run: yarn --cwd web test --ci --coverage --reporters=default --reporters=jest-junit
+      - uses: actions/upload-artifact@v2
+        with:
+          name: frontend-tests
+          path: |
+            web/coverage/lcov.info
+            web/eslint-report.json
+            web/junit.xml
   build_react:
     name: Build Frontend
     runs-on: ubuntu-20.04
@@ -78,6 +85,30 @@ jobs:
         run: go get -u github.com/jstemmer/go-junit-report
       - name: Run Backend Tests
         run: POSTGRES_HOST=postgres go test -v -coverprofile=coverage.out ./... 2>&1 | go-junit-report > junit.xml
+      - uses: actions/upload-artifact@v2
+        with:
+          name: backend-tests
+          path: |
+            coverage.out
+            junit.xml
+  sonar_analysis:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/download-artifact@v2
+        with:
+          name: frontend-tests
+      - uses: actions/download-artifact@v2
+        with:
+          name: backend-tests
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_LOGIN }}
   build_go:
     needs:
       - build_react
