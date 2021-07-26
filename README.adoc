@@ -19,7 +19,7 @@ image:docs/screenshot_files.png[KeyDrive file browser]
 
 === Docker
 
-Docker is probably the easiest way to install KeyDrive. You can find the image on Docker Hub: https://hub.docker.com/r/keydrive/keydrive[keydrive/keydrive].
+Docker is probably the easiest way to install KeyDrive. You can find the image on GitHub: https://github.com/keydrive/keydrive/pkgs/container/keydrive[keydrive/keydrive].
 
 1. https://docs.docker.com/engine/install[Install Docker]
 2. Create a `docker-compose.yml` file:
