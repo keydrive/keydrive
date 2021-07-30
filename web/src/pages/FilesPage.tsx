@@ -16,6 +16,7 @@ import { Button } from '../components/Button';
 import { classNames } from '../utils/classNames';
 import { TextInput } from '../components/input/TextInput';
 import { useFileNavigator } from '../hooks/useFileNavigator';
+import { ButtonGroup } from '../components/ButtonGroup';
 
 const FileRow = ({
   entry,
@@ -276,13 +277,21 @@ export const FilesPage: React.FC = () => {
 const DetailsPanel: React.FC<{ entry?: Entry; library: Library }> = ({ entry, library }) => {
   if (entry) {
     return (
-      <Panel className="details">
-        <div className="preview">
-          <EntryIcon entry={entry} />
-        </div>
-        <div className="name">{entry.name}</div>
-        <div className="category">{entry.category}</div>
-        <div className="columns">
+      <div className="details">
+        <Panel className="info">
+          <div className="preview">
+            <EntryIcon entry={entry} />
+          </div>
+          <div className="name">{entry.name}</div>
+          <div className="category">{entry.category}</div>
+        </Panel>
+        <Panel className="actions">
+          <ButtonGroup fullWidth>
+            {entry.category !== 'Folder' && <Button>Download</Button>}
+            <Button>Delete</Button>
+          </ButtonGroup>
+        </Panel>
+        <Panel className="metadata">
           <div>
             <span>Modified</span>
             <span>{humanReadableDateTime(entry.modified)}</span>
@@ -293,18 +302,20 @@ const DetailsPanel: React.FC<{ entry?: Entry; library: Library }> = ({ entry, li
               <span>{humanReadableSize(entry.size)}</span>
             </div>
           )}
-        </div>
-      </Panel>
+        </Panel>
+      </div>
     );
   }
 
   return (
-    <Panel className="details">
-      <div className="preview">
-        <Icon icon="folder" />
-      </div>
-      <div className="name">{library.name}</div>
-      <div className="category">Library: {library.type}</div>
-    </Panel>
+    <div className="details">
+      <Panel className="info full">
+        <div className="preview">
+          <Icon icon="folder" />
+        </div>
+        <div className="name">{library.name}</div>
+        <div className="category">Library: {library.type}</div>
+      </Panel>
+    </div>
   );
 };
