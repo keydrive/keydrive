@@ -126,6 +126,8 @@ export const FilesPage: React.FC = () => {
     refresh();
   }, [refresh, libraries, path]);
 
+  useEffect(() => setHighlightedEntry(undefined), [libraryId]);
+
   const [isUploading, setIsUploading] = useState(false);
   const uploadFiles = useCallback(
     async (e: ChangeEvent<HTMLInputElement>) => {
