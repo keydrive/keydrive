@@ -38,7 +38,7 @@ services:
       # Here we expose keydrive on port 5555
       - 5555:5555
     volumes:
-      # We create a volume for you files
+      # We create a volume for your files
       - /path/to/your/media:/libraries
     environment:
       POSTGRES_HOST: database
