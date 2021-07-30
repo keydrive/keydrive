@@ -116,11 +116,15 @@ export const FilesPage: React.FC = () => {
     }
   }, [setSelectedEntry, libraryId, path, libraries]);
 
-  useEffect(() => {
+  const refresh = useCallback(() => {
     loadEntries().catch((e) => {
       console.error(e);
     });
-  }, [loadEntries, libraries, path]);
+  }, [loadEntries]);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh, libraries, path]);
 
   const [isUploading, setIsUploading] = useState(false);
   const uploadFiles = useCallback(
@@ -268,54 +272,66 @@ export const FilesPage: React.FC = () => {
             </tbody>
           </table>
         </Panel>
-        <DetailsPanel entry={highlightedEntry} library={library} />
+        {highlightedEntry ? (
+          <EntryDetailsPanel
+            entry={highlightedEntry}
+            onDownload={() => libraries.download(libraryId, resolvePath(highlightedEntry))}
+            onDelete={async () => {
+              await libraries.deleteEntry(libraryId, resolvePath(highlightedEntry));
+              refresh();
+              setHighlightedEntry(undefined);
+            }}
+          />
+        ) : (
+          <LibraryDetailsPanel library={library} />
+        )}
       </main>
     </Layout>
   );
 };
 
-const DetailsPanel: React.FC<{ entry?: Entry; library: Library }> = ({ entry, library }) => {
-  if (entry) {
-    return (
-      <div className="details">
-        <Panel className="info">
-          <div className="preview">
-            <EntryIcon entry={entry} />
-          </div>
-          <div className="name">{entry.name}</div>
-          <div className="category">{entry.category}</div>
-        </Panel>
-        <Panel className="actions">
-          <ButtonGroup fullWidth>
-            {entry.category !== 'Folder' && <Button>Download</Button>}
-            <Button>Delete</Button>
-          </ButtonGroup>
-        </Panel>
-        <Panel className="metadata">
-          <div>
-            <span>Modified</span>
-            <span>{humanReadableDateTime(entry.modified)}</span>
-          </div>
-          {entry.category !== 'Folder' && (
-            <div>
-              <span>Size</span>
-              <span>{humanReadableSize(entry.size)}</span>
-            </div>
-          )}
-        </Panel>
+const EntryDetailsPanel: React.FC<{ entry: Entry; onDownload?: () => void; onDelete: () => void }> = ({
+  entry,
+  onDownload,
+  onDelete,
+}) => (
+  <div className="details">
+    <Panel className="info">
+      <div className="preview">
+        <EntryIcon entry={entry} />
       </div>
-    );
-  }
-
-  return (
-    <div className="details">
-      <Panel className="info full">
-        <div className="preview">
-          <Icon icon="folder" />
+      <div className="name">{entry.name}</div>
+      <div className="category">{entry.category}</div>
+    </Panel>
+    <Panel className="actions">
+      <ButtonGroup fullWidth>
+        {entry.category !== 'Folder' && <Button onClick={onDownload}>Download</Button>}
+        <Button onClick={onDelete}>Delete</Button>
+      </ButtonGroup>
+    </Panel>
+    <Panel className="metadata">
+      <div>
+        <span>Modified</span>
+        <span>{humanReadableDateTime(entry.modified)}</span>
+      </div>
+      {entry.category !== 'Folder' && (
+        <div>
+          <span>Size</span>
+          <span>{humanReadableSize(entry.size)}</span>
         </div>
-        <div className="name">{library.name}</div>
-        <div className="category">Library: {library.type}</div>
-      </Panel>
-    </div>
-  );
-};
+      )}
+    </Panel>
+  </div>
+);
+
+const LibraryDetailsPanel: React.FC<{ library: Library }> = ({ library }) => (
+  <div className="details">
+    <Panel className="info full">
+      <div className="preview">
+        <Icon icon="folder" />
+      </div>
+      <div className="name">{library.name}</div>
+      <div className="category">Library: {library.type}</div>
+    </Panel>
+  </div>
+);
