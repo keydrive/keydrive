@@ -203,12 +203,14 @@ export const FilesPage: React.FC = () => {
         </div>
         <div className="actions">
           <input ref={fileInputRef} hidden type="file" onChange={uploadFiles} multiple data-testid="file-input" />
-          <Button onClick={() => fileInputRef.current?.click()}>
-            <Icon icon="upload" /> Upload
-          </Button>
-          <Button onClick={() => setNewFolderName('New Folder')}>
-            <Icon icon="folder-plus" /> New Folder
-          </Button>
+          <ButtonGroup>
+            <Button onClick={() => fileInputRef.current?.click()} icon="upload">
+              Upload
+            </Button>
+            <Button onClick={() => setNewFolderName('New Folder')} icon="folder-plus">
+              New Folder
+            </Button>
+          </ButtonGroup>
         </div>
       </div>
       <main>
@@ -307,8 +309,14 @@ const EntryDetailsPanel: React.FC<{ entry: Entry; onDownload?: () => void; onDel
     </Panel>
     <Panel className="actions">
       <ButtonGroup fullWidth>
-        {entry.category !== 'Folder' && <Button onClick={onDownload}>Download</Button>}
-        <Button onClick={onDelete}>Delete</Button>
+        {entry.category !== 'Folder' && (
+          <Button onClick={onDownload} icon="download">
+            Download
+          </Button>
+        )}
+        <Button onClick={onDelete} icon="trash">
+          Delete
+        </Button>
       </ButtonGroup>
     </Panel>
     <Panel className="metadata">

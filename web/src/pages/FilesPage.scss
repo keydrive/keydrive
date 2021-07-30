@@ -10,16 +10,6 @@
     .parent-dir {
       margin: 0 12px;
     }
-
-    .actions {
-      > :not(:last-child) {
-        margin-right: 12px;
-      }
-
-      > .button .icon {
-        margin-right: 6px;
-      }
-    }
   }
 
   main {

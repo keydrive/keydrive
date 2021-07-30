@@ -30,6 +30,12 @@
     }
   }
 
+  &.has-icon {
+    .icon {
+      margin-right: 8px;
+    }
+  }
+
   // styles
   // default: basic
   background: none;
