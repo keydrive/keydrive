@@ -57,8 +57,8 @@ export class ApiService {
     return this.jsonRequest('PATCH', path, body);
   }
 
-  public delete(path: string): Promise<void> {
-    return this.jsonRequest('DELETE', path);
+  public delete(path: string, params?: Record<string, string>): Promise<void> {
+    return this.jsonRequest('DELETE', path, undefined, params);
   }
 
   public async getAllPages<T>(path: string): Promise<T[]> {

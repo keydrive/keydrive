@@ -16,6 +16,7 @@ import { Button } from '../components/Button';
 import { classNames } from '../utils/classNames';
 import { TextInput } from '../components/input/TextInput';
 import { useFileNavigator } from '../hooks/useFileNavigator';
+import { ButtonGroup } from '../components/ButtonGroup';
 
 const FileRow = ({
   entry,
@@ -115,11 +116,17 @@ export const FilesPage: React.FC = () => {
     }
   }, [setSelectedEntry, libraryId, path, libraries]);
 
-  useEffect(() => {
+  const refresh = useCallback(() => {
     loadEntries().catch((e) => {
       console.error(e);
     });
-  }, [loadEntries, libraries, path]);
+  }, [loadEntries]);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh, libraries, path]);
+
+  useEffect(() => setHighlightedEntry(undefined), [libraryId]);
 
   const [isUploading, setIsUploading] = useState(false);
   const uploadFiles = useCallback(
@@ -196,12 +203,14 @@ export const FilesPage: React.FC = () => {
         </div>
         <div className="actions">
           <input ref={fileInputRef} hidden type="file" onChange={uploadFiles} multiple data-testid="file-input" />
-          <Button onClick={() => fileInputRef.current?.click()}>
-            <Icon icon="upload" /> Upload
-          </Button>
-          <Button onClick={() => setNewFolderName('New Folder')}>
-            <Icon icon="folder-plus" /> New Folder
-          </Button>
+          <ButtonGroup>
+            <Button onClick={() => fileInputRef.current?.click()} icon="upload">
+              Upload
+            </Button>
+            <Button onClick={() => setNewFolderName('New Folder')} icon="folder-plus">
+              New Folder
+            </Button>
+          </ButtonGroup>
         </div>
       </div>
       <main>
@@ -267,44 +276,72 @@ export const FilesPage: React.FC = () => {
             </tbody>
           </table>
         </Panel>
-        <DetailsPanel entry={highlightedEntry} library={library} />
+        {highlightedEntry ? (
+          <EntryDetailsPanel
+            entry={highlightedEntry}
+            onDownload={() => libraries.download(libraryId, resolvePath(highlightedEntry))}
+            onDelete={async () => {
+              await libraries.deleteEntry(libraryId, resolvePath(highlightedEntry));
+              refresh();
+              setHighlightedEntry(undefined);
+            }}
+          />
+        ) : (
+          <LibraryDetailsPanel library={library} />
+        )}
       </main>
     </Layout>
   );
 };
 
-const DetailsPanel: React.FC<{ entry?: Entry; library: Library }> = ({ entry, library }) => {
-  if (entry) {
-    return (
-      <Panel className="details">
-        <div className="preview">
-          <EntryIcon entry={entry} />
+const EntryDetailsPanel: React.FC<{ entry: Entry; onDownload?: () => void; onDelete: () => void }> = ({
+  entry,
+  onDownload,
+  onDelete,
+}) => (
+  <div className="details">
+    <Panel className="info">
+      <div className="preview">
+        <EntryIcon entry={entry} />
+      </div>
+      <div className="name">{entry.name}</div>
+      <div className="category">{entry.category}</div>
+    </Panel>
+    <Panel className="actions">
+      <ButtonGroup fullWidth>
+        {entry.category !== 'Folder' && (
+          <Button onClick={onDownload} icon="download">
+            Download
+          </Button>
+        )}
+        <Button onClick={onDelete} icon="trash">
+          Delete
+        </Button>
+      </ButtonGroup>
+    </Panel>
+    <Panel className="metadata">
+      <div>
+        <span>Modified</span>
+        <span>{humanReadableDateTime(entry.modified)}</span>
+      </div>
+      {entry.category !== 'Folder' && (
+        <div>
+          <span>Size</span>
+          <span>{humanReadableSize(entry.size)}</span>
         </div>
-        <div className="name">{entry.name}</div>
-        <div className="category">{entry.category}</div>
-        <div className="columns">
-          <div>
-            <span>Modified</span>
-            <span>{humanReadableDateTime(entry.modified)}</span>
-          </div>
-          {entry.category !== 'Folder' && (
-            <div>
-              <span>Size</span>
-              <span>{humanReadableSize(entry.size)}</span>
-            </div>
-          )}
-        </div>
-      </Panel>
-    );
-  }
+      )}
+    </Panel>
+  </div>
+);
 
-  return (
-    <Panel className="details">
+const LibraryDetailsPanel: React.FC<{ library: Library }> = ({ library }) => (
+  <div className="details">
+    <Panel className="info full">
       <div className="preview">
         <Icon icon="folder" />
       </div>
       <div className="name">{library.name}</div>
       <div className="category">Library: {library.type}</div>
     </Panel>
-  );
-};
+  </div>
+);

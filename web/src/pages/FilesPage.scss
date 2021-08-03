@@ -10,16 +10,6 @@
     .parent-dir {
       margin: 0 12px;
     }
-
-    .actions {
-      > :not(:last-child) {
-        margin-right: 12px;
-      }
-
-      > .button .icon {
-        margin-right: 6px;
-      }
-    }
   }
 
   main {
@@ -53,33 +43,49 @@
     .details {
       flex: 0 1 360px;
       margin-left: 12px;
-      padding: 12px;
+      display: flex;
+      flex-direction: column;
 
-      .preview {
-        margin: 12px;
-        height: 240px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+      .panel {
+        padding: 12px;
 
-        .icon {
-          font-size: 160px;
-          color: var(--primary);
+        &:not(:last-child) {
+          margin-bottom: 2px;
         }
       }
 
-      .name {
-        font-weight: 500;
-        font-size: 1.2rem;
-        margin-bottom: 6px;
+      .info {
+        &.full {
+          flex: 1 1 auto;
+        }
+
+        .preview {
+          margin: 12px;
+          height: 240px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          .icon {
+            font-size: 160px;
+            color: var(--primary);
+          }
+        }
+
+        .name {
+          font-weight: 500;
+          font-size: 1.2rem;
+          margin-bottom: 6px;
+        }
+
+        .category {
+          color: var(--light-gray);
+        }
       }
 
-      .category {
-        margin-bottom: 24px;
-        color: var(--light-gray);
-      }
+      .metadata {
+        flex: auto;
 
-      .columns {
         > div {
           display: flex;
           justify-content: space-between;

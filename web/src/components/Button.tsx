@@ -9,11 +9,19 @@ export interface Props {
   disabled?: boolean;
   primary?: boolean;
   'aria-label'?: string;
+  icon?: string;
 }
 
-export const Button: React.FC<Props> = ({ children, type = 'button', loading, primary, ...props }) => (
-  <button {...props} className={classNames('button', loading && 'loading', primary && 'primary')} type={type}>
-    <span className="content">{children}</span>
+export const Button: React.FC<Props> = ({ children, type = 'button', loading, primary, icon, ...props }) => (
+  <button
+    {...props}
+    className={classNames('button', loading && 'loading', primary && 'primary', icon && 'has-icon')}
+    type={type}
+  >
+    <span className="content">
+      {icon && <Icon icon={icon} />}
+      {children}
+    </span>
     {loading && <Icon icon="spinner" pulse className="loader" />}
   </button>
 );
