@@ -17,17 +17,21 @@ import { classNames } from '../utils/classNames';
 import { TextInput } from '../components/input/TextInput';
 import { useFileNavigator } from '../hooks/useFileNavigator';
 import { ButtonGroup } from '../components/ButtonGroup';
+import { Position } from '../utils/position';
+import { KeyCode, useKeyBind } from '../hooks/useKeyBind';
 
 const FileRow = ({
   entry,
   onActivate,
   onSelect,
   selected,
+  onContextMenu,
 }: {
   entry: Entry;
   selected: boolean;
   onActivate: (entry: Entry) => void;
   onSelect: (entry: Entry) => void;
+  onContextMenu: (entry: Entry, pos: Position) => void;
 }) => {
   const ref = useRef<HTMLTableRowElement | null>(null);
   useEffect(() => {
@@ -46,6 +50,14 @@ const FileRow = ({
       }}
       onClick={() => onSelect(entry)}
       className={classNames(selected && 'is-selected')}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onContextMenu(entry, {
+          x: e.pageX,
+          y: e.pageY,
+        });
+      }}
     >
       <td className="icon">
         <EntryIcon entry={entry} />
@@ -55,6 +67,37 @@ const FileRow = ({
       <td>{entry.category === 'Folder' ? '--' : humanReadableSize(entry.size)}</td>
       <td>{entry.category}</td>
     </tr>
+  );
+};
+
+const ContextMenu: React.FC<{
+  position: Position;
+  entry: Entry;
+  onClose: () => void;
+  onDownload: () => void;
+  onDelete: () => void;
+}> = ({ position, entry, onClose, onDownload, onDelete }) => {
+  useKeyBind(KeyCode.Escape, onClose);
+
+  return (
+    <div
+      className="context-menu"
+      style={{
+        left: position.x,
+        top: position.y,
+      }}
+    >
+      <ButtonGroup vertical>
+        {entry.category !== 'Folder' && (
+          <Button onClick={onDownload} icon="download">
+            Download
+          </Button>
+        )}
+        <Button onClick={onDelete} icon="trash">
+          Delete
+        </Button>
+      </ButtonGroup>
+    </div>
   );
 };
 
@@ -87,6 +130,10 @@ export const FilesPage: React.FC = () => {
     [history, libraries, libraryId]
   );
   const { selectedEntry, setSelectedEntry } = useFileNavigator(entries, onClickEntry);
+
+  // Context menu info.
+  const [contextMenuEntry, setContextMenuEntry] = useState<Entry>();
+  const [contextMenuPos, setContextMenuPos] = useState<Position>({ x: 0, y: 0 });
 
   // File and folder operations.
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -213,6 +260,19 @@ export const FilesPage: React.FC = () => {
           </ButtonGroup>
         </div>
       </div>
+      {contextMenuEntry && (
+        <ContextMenu
+          position={contextMenuPos}
+          entry={contextMenuEntry}
+          onClose={() => setContextMenuEntry(undefined)}
+          onDownload={() => libraries.download(libraryId, resolvePath(contextMenuEntry))}
+          onDelete={async () => {
+            await libraries.deleteEntry(libraryId, resolvePath(contextMenuEntry));
+            refresh();
+            setHighlightedEntry(undefined);
+          }}
+        />
+      )}
       <main>
         <Panel className="files">
           <table className="clickable">
@@ -268,9 +328,13 @@ export const FilesPage: React.FC = () => {
                 <FileRow
                   key={entry.name}
                   entry={entry}
-                  selected={selectedEntry?.name === entry.name}
+                  selected={selectedEntry?.name === entry.name || contextMenuEntry?.name === entry.name}
                   onActivate={onClickEntry}
                   onSelect={setSelectedEntry}
+                  onContextMenu={(e, pos) => {
+                    setContextMenuEntry(e);
+                    setContextMenuPos(pos);
+                  }}
                 />
               ))}
             </tbody>
@@ -294,7 +358,7 @@ export const FilesPage: React.FC = () => {
   );
 };
 
-const EntryDetailsPanel: React.FC<{ entry: Entry; onDownload?: () => void; onDelete: () => void }> = ({
+const EntryDetailsPanel: React.FC<{ entry: Entry; onDownload: () => void; onDelete: () => void }> = ({
   entry,
   onDownload,
   onDelete,
