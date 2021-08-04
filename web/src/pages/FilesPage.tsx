@@ -18,7 +18,7 @@ import { TextInput } from '../components/input/TextInput';
 import { useFileNavigator } from '../hooks/useFileNavigator';
 import { ButtonGroup } from '../components/ButtonGroup';
 import { Position } from '../utils/position';
-import { KeyCode, useKeyBind } from '../hooks/useKeyBind';
+import { EntryContextMenu } from '../components/EntryContextMenu';
 
 const FileRow = ({
   entry,
@@ -67,37 +67,6 @@ const FileRow = ({
       <td>{entry.category === 'Folder' ? '--' : humanReadableSize(entry.size)}</td>
       <td>{entry.category}</td>
     </tr>
-  );
-};
-
-const ContextMenu: React.FC<{
-  position: Position;
-  entry: Entry;
-  onClose: () => void;
-  onDownload: () => void;
-  onDelete: () => void;
-}> = ({ position, entry, onClose, onDownload, onDelete }) => {
-  useKeyBind(KeyCode.Escape, onClose);
-
-  return (
-    <div
-      className="context-menu"
-      style={{
-        left: position.x,
-        top: position.y,
-      }}
-    >
-      <ButtonGroup vertical>
-        {entry.category !== 'Folder' && (
-          <Button onClick={onDownload} icon="download">
-            Download
-          </Button>
-        )}
-        <Button onClick={onDelete} icon="trash">
-          Delete
-        </Button>
-      </ButtonGroup>
-    </div>
   );
 };
 
@@ -261,7 +230,7 @@ export const FilesPage: React.FC = () => {
         </div>
       </div>
       {contextMenuEntry && (
-        <ContextMenu
+        <EntryContextMenu
           position={contextMenuPos}
           entry={contextMenuEntry}
           onClose={() => setContextMenuEntry(undefined)}
