@@ -102,8 +102,8 @@ export const FilesPage: React.FC = () => {
       e.preventDefault();
       e.stopPropagation();
       setContextMenuPos({
-        x: e.pageX,
-        y: e.pageY,
+        x: e.pageX ?? 0,
+        y: e.pageY ?? 0,
       });
       setContextMenuEntry(entry);
       setSelectedEntry(entry);

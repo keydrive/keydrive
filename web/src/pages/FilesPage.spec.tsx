@@ -314,8 +314,8 @@ describe('FilesPage', () => {
     // wait for the page to load
     await screen.findByText('Ballmers Peak Label.xcf');
     userEvent.upload(screen.getByTestId('file-input'), [fileOne, fileTwo]);
-    await screen.findByText('upload.txt', { selector: 'td ' });
-    await screen.findByText('another.zip', { selector: 'td ' });
+    await screen.findByText('upload.txt', { selector: 'td' });
+    await screen.findByText('another.zip', { selector: 'td' });
   });
 
   it('creates a new folder on enter', async () => {
@@ -628,7 +628,7 @@ describe('FilesPage', () => {
     });
 
     fireEvent.contextMenu(await screen.findByText('Ballmers Peak Label.xcf'));
-    userEvent.click(screen.getByText('Download'));
+    userEvent.click(screen.getByText('Download', { selector: '.context-menu *' }));
     await waitFor(() => {
       expect(window.open).toBeCalledWith('/api/download?token=i_am_a_download_token', '_self');
     });
@@ -676,7 +676,7 @@ describe('FilesPage', () => {
     });
 
     fireEvent.contextMenu(await screen.findByText('Documents'));
-    userEvent.click(screen.getByText('Delete'));
+    userEvent.click(screen.getByText('Delete', { selector: '.context-menu *' }));
     await waitFor(() => {
       expect(screen.queryByText('Documents')).toBeNull();
     });
