@@ -18,7 +18,7 @@ import { TextInput } from '../components/input/TextInput';
 import { useFileNavigator } from '../hooks/useFileNavigator';
 import { ButtonGroup } from '../components/ButtonGroup';
 import { Position } from '../utils/position';
-import { EntryContextMenu } from '../components/EntryContextMenu';
+import { FilesContextMenu } from '../components/FilesContextMenu';
 
 const FileRow = ({
   entry,
@@ -230,7 +230,7 @@ export const FilesPage: React.FC = () => {
         </div>
       </div>
       {contextMenuEntry && (
-        <EntryContextMenu
+        <FilesContextMenu
           position={contextMenuPos}
           entry={contextMenuEntry}
           onClose={() => setContextMenuEntry(undefined)}
@@ -240,6 +240,8 @@ export const FilesPage: React.FC = () => {
             refresh();
             setHighlightedEntry(undefined);
           }}
+          onUpload={() => fileInputRef.current?.click()}
+          onNewFolder={() => setNewFolderName('New Folder')}
         />
       )}
       <main>

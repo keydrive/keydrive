@@ -5,21 +5,31 @@ import { ContextMenu, Props as ContextMenuProps } from './ContextMenu';
 import { Entry } from '../services/LibrariesService';
 
 export interface Props extends ContextMenuProps {
-  entry: Entry;
+  entry?: Entry;
   onDownload: () => void;
   onDelete: () => void;
+  onUpload: () => void;
+  onNewFolder: () => void;
 }
 
-export const EntryContextMenu: React.FC<Props> = ({ entry, onDownload, onDelete, ...props }) => (
+export const FilesContextMenu: React.FC<Props> = ({ entry, onDownload, onDelete, onUpload, onNewFolder, ...props }) => (
   <ContextMenu {...props}>
     <ButtonGroup vertical>
-      {entry.category !== 'Folder' && (
+      {entry?.category !== 'Folder' && (
         <Button onClick={onDownload} icon="download">
           Download
         </Button>
       )}
-      <Button onClick={onDelete} icon="trash">
-        Delete
+      {entry && (
+        <Button onClick={onDelete} icon="trash">
+          Delete
+        </Button>
+      )}
+      <Button onClick={onUpload} icon="upload">
+        Upload
+      </Button>
+      <Button onClick={onNewFolder} icon="folder-plus">
+        New Folder
       </Button>
     </ButtonGroup>
   </ContextMenu>
