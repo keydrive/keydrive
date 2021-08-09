@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Position } from '../utils/position';
 import { KeyCode, useKeyBind } from '../hooks/useKeyBind';
+import { useDocumentEvent } from '../hooks/useDocumentEvent';
 
 export interface Props {
   position: Position;
@@ -9,16 +10,8 @@ export interface Props {
 
 export const ContextMenu: React.FC<Props> = ({ position, onClose, children }) => {
   useKeyBind(KeyCode.Escape, onClose);
-
-  useEffect(() => {
-    document.addEventListener('click', onClose);
-    document.addEventListener('contextmenu', onClose);
-
-    return () => {
-      document.removeEventListener('click', onClose);
-      document.removeEventListener('contextmenu', onClose);
-    };
-  }, [onClose]);
+  useDocumentEvent('click', onClose);
+  useDocumentEvent('contextmenu', onClose);
 
   return (
     <div
