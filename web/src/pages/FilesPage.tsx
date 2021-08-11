@@ -3,7 +3,7 @@ import { Layout } from '../components/Layout';
 import { Panel } from '../components/Panel';
 import { Redirect, useHistory, useParams } from 'react-router-dom';
 import { useService } from '../hooks/useService';
-import { Entry, LibrariesService, Library } from '../services/LibrariesService';
+import { Entry, LibrariesService } from '../services/LibrariesService';
 import { Icon } from '../components/Icon';
 import { EntryIcon } from '../components/EntryIcon';
 import { humanReadableSize } from '../utils/humanReadableSize';
@@ -19,6 +19,8 @@ import { useFileNavigator } from '../hooks/useFileNavigator';
 import { ButtonGroup } from '../components/ButtonGroup';
 import { Position } from '../utils/position';
 import { FilesContextMenu } from '../components/FilesContextMenu';
+import { LibraryDetailsPanel } from '../components/files/LibraryDetailsPanel';
+import { EntryDetailsPanel } from '../components/files/EntryDetailsPanel';
 
 const FileRow = ({
   entry,
@@ -322,72 +324,22 @@ export const FilesPage: React.FC = () => {
             </tbody>
           </table>
         </Panel>
-        {highlightedEntry ? (
-          <EntryDetailsPanel
-            entry={highlightedEntry}
-            onDownload={() => libraries.download(libraryId, resolvePath(highlightedEntry))}
-            onDelete={async () => {
-              await libraries.deleteEntry(libraryId, resolvePath(highlightedEntry));
-              refresh();
-              setHighlightedEntry(undefined);
-            }}
-          />
-        ) : (
-          <LibraryDetailsPanel library={library} />
-        )}
+        <div className="details">
+          {highlightedEntry ? (
+            <EntryDetailsPanel
+              entry={highlightedEntry}
+              onDownload={() => libraries.download(libraryId, resolvePath(highlightedEntry))}
+              onDelete={async () => {
+                await libraries.deleteEntry(libraryId, resolvePath(highlightedEntry));
+                refresh();
+                setHighlightedEntry(undefined);
+              }}
+            />
+          ) : (
+            <LibraryDetailsPanel library={library} />
+          )}
+        </div>
       </main>
     </Layout>
   );
 };
-
-const EntryDetailsPanel: React.FC<{ entry: Entry; onDownload: () => void; onDelete: () => void }> = ({
-  entry,
-  onDownload,
-  onDelete,
-}) => (
-  <div className="details">
-    <Panel className="info">
-      <div className="preview">
-        <EntryIcon entry={entry} />
-      </div>
-      <div className="name">{entry.name}</div>
-      <div className="category">{entry.category}</div>
-    </Panel>
-    <Panel className="actions">
-      <ButtonGroup fullWidth>
-        {entry.category !== 'Folder' && (
-          <Button onClick={onDownload} icon="download">
-            Download
-          </Button>
-        )}
-        <Button onClick={onDelete} icon="trash">
-          Delete
-        </Button>
-      </ButtonGroup>
-    </Panel>
-    <Panel className="metadata">
-      <div>
-        <span>Modified</span>
-        <span>{humanReadableDateTime(entry.modified)}</span>
-      </div>
-      {entry.category !== 'Folder' && (
-        <div>
-          <span>Size</span>
-          <span>{humanReadableSize(entry.size)}</span>
-        </div>
-      )}
-    </Panel>
-  </div>
-);
-
-const LibraryDetailsPanel: React.FC<{ library: Library }> = ({ library }) => (
-  <div className="details">
-    <Panel className="info full">
-      <div className="preview">
-        <Icon icon="folder" />
-      </div>
-      <div className="name">{library.name}</div>
-      <div className="category">Library: {library.type}</div>
-    </Panel>
-  </div>
-);
