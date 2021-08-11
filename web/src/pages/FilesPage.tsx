@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Layout } from '../components/Layout';
 import { Panel } from '../components/Panel';
 import { Redirect, useHistory, useParams } from 'react-router-dom';
@@ -155,8 +155,7 @@ export const FilesPage: React.FC = () => {
 
   const [isUploading, setIsUploading] = useState(false);
   const uploadFiles = useCallback(
-    async (e: ChangeEvent<HTMLInputElement>) => {
-      const files = e.currentTarget.files;
+    async (files: FileList | null) => {
       if (!files || files.length === 0) {
         return;
       }
@@ -166,6 +165,18 @@ export const FilesPage: React.FC = () => {
       let lastEntry: Entry | undefined = undefined;
       setIsUploading(true);
       for (const file of Array.from(files)) {
+        // Check if the file is actually a folder.
+        // For some reason this messes up the upload.
+        // The only way to check this seems to be to call the `text` or `arrayBuffer` function on the blob.
+        // If that errors, it's not a file.
+        if (file.size === 0 && file.type === '') {
+          try {
+            await file.arrayBuffer();
+          } catch (e) {
+            continue;
+          }
+        }
+
         lastEntry = await libraries.uploadFile(libraryId, path, file);
       }
       const newList = await loadEntries();
@@ -227,7 +238,14 @@ export const FilesPage: React.FC = () => {
           </h1>
         </div>
         <div className="actions">
-          <input ref={fileInputRef} hidden type="file" onChange={uploadFiles} multiple data-testid="file-input" />
+          <input
+            ref={fileInputRef}
+            hidden
+            type="file"
+            onChange={(e) => uploadFiles(e.currentTarget.files)}
+            multiple
+            data-testid="file-input"
+          />
           <ButtonGroup>
             <Button onClick={() => fileInputRef.current?.click()} icon="upload">
               Upload
@@ -261,7 +279,16 @@ export const FilesPage: React.FC = () => {
         />
       )}
       <main>
-        <Panel className="files" onContextMenu={(e) => showContextMenu(e)}>
+        <Panel
+          className="files"
+          onContextMenu={(e) => showContextMenu(e)}
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={(e) => {
+            e.preventDefault();
+            uploadFiles(e.dataTransfer.files);
+            // TODO: Upload folder structures using webkitGetAsEntry
+          }}
+        >
           <table className="clickable">
             <colgroup>
               <col className="icon" />
