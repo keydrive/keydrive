@@ -18,7 +18,7 @@ import { TextInput } from '../components/input/TextInput';
 import { useFileNavigator } from '../hooks/useFileNavigator';
 import { ButtonGroup } from '../components/ButtonGroup';
 import { Position } from '../utils/position';
-import { FilesContextMenu } from '../components/FilesContextMenu';
+import { FilesContextMenu } from '../components/files/FilesContextMenu';
 import { LibraryDetailsPanel } from '../components/files/LibraryDetailsPanel';
 import { EntryDetailsPanel } from '../components/files/EntryDetailsPanel';
 
