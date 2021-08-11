@@ -17,17 +17,21 @@ import { classNames } from '../utils/classNames';
 import { TextInput } from '../components/input/TextInput';
 import { useFileNavigator } from '../hooks/useFileNavigator';
 import { ButtonGroup } from '../components/ButtonGroup';
+import { Position } from '../utils/position';
+import { FilesContextMenu } from '../components/FilesContextMenu';
 
 const FileRow = ({
   entry,
   onActivate,
   onSelect,
   selected,
+  onContextMenu,
 }: {
   entry: Entry;
   selected: boolean;
   onActivate: (entry: Entry) => void;
   onSelect: (entry: Entry) => void;
+  onContextMenu: (e: React.MouseEvent<unknown, MouseEvent>, entry?: Entry) => void;
 }) => {
   const ref = useRef<HTMLTableRowElement | null>(null);
   useEffect(() => {
@@ -46,6 +50,7 @@ const FileRow = ({
       }}
       onClick={() => onSelect(entry)}
       className={classNames(selected && 'is-selected')}
+      onContextMenu={(e) => onContextMenu(e, entry)}
     >
       <td className="icon">
         <EntryIcon entry={entry} />
@@ -87,6 +92,24 @@ export const FilesPage: React.FC = () => {
     [history, libraries, libraryId]
   );
   const { selectedEntry, setSelectedEntry } = useFileNavigator(entries, onClickEntry);
+
+  // Context menu info.
+  const [contextMenuEntry, setContextMenuEntry] = useState<Entry>();
+  const [contextMenuPos, setContextMenuPos] = useState<Position>();
+
+  const showContextMenu = useCallback(
+    (e: React.MouseEvent<unknown, MouseEvent>, entry?: Entry) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setContextMenuPos({
+        x: e.pageX ?? 0,
+        y: e.pageY ?? 0,
+      });
+      setContextMenuEntry(entry);
+      setSelectedEntry(entry);
+    },
+    [setSelectedEntry]
+  );
 
   // File and folder operations.
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -213,8 +236,30 @@ export const FilesPage: React.FC = () => {
           </ButtonGroup>
         </div>
       </div>
+      {contextMenuPos && (
+        <FilesContextMenu
+          position={contextMenuPos}
+          entry={contextMenuEntry}
+          onClose={() => {
+            setContextMenuPos(undefined);
+            setContextMenuEntry(undefined);
+          }}
+          onDownload={contextMenuEntry ? () => libraries.download(libraryId, resolvePath(contextMenuEntry)) : undefined}
+          onDelete={
+            contextMenuEntry
+              ? async () => {
+                  await libraries.deleteEntry(libraryId, resolvePath(contextMenuEntry));
+                  refresh();
+                  setHighlightedEntry(undefined);
+                }
+              : undefined
+          }
+          onUpload={() => fileInputRef.current?.click()}
+          onNewFolder={() => setNewFolderName('New Folder')}
+        />
+      )}
       <main>
-        <Panel className="files">
+        <Panel className="files" onContextMenu={(e) => showContextMenu(e)}>
           <table className="clickable">
             <colgroup>
               <col className="icon" />
@@ -271,6 +316,7 @@ export const FilesPage: React.FC = () => {
                   selected={selectedEntry?.name === entry.name}
                   onActivate={onClickEntry}
                   onSelect={setSelectedEntry}
+                  onContextMenu={showContextMenu}
                 />
               ))}
             </tbody>
@@ -294,7 +340,7 @@ export const FilesPage: React.FC = () => {
   );
 };
 
-const EntryDetailsPanel: React.FC<{ entry: Entry; onDownload?: () => void; onDelete: () => void }> = ({
+const EntryDetailsPanel: React.FC<{ entry: Entry; onDownload: () => void; onDelete: () => void }> = ({
   entry,
   onDownload,
   onDelete,

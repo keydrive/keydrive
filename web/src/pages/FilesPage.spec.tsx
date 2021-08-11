@@ -314,8 +314,8 @@ describe('FilesPage', () => {
     // wait for the page to load
     await screen.findByText('Ballmers Peak Label.xcf');
     userEvent.upload(screen.getByTestId('file-input'), [fileOne, fileTwo]);
-    await screen.findByText('upload.txt', { selector: 'td ' });
-    await screen.findByText('another.zip', { selector: 'td ' });
+    await screen.findByText('upload.txt', { selector: 'td' });
+    await screen.findByText('another.zip', { selector: 'td' });
   });
 
   it('creates a new folder on enter', async () => {
@@ -594,6 +594,89 @@ describe('FilesPage', () => {
 
     userEvent.click(await screen.findByText('Documents'));
     userEvent.click(screen.getByText('Delete'));
+    await waitFor(() => {
+      expect(screen.queryByText('Documents')).toBeNull();
+    });
+  });
+
+  it('downloads a file on clicking the download menu item', async () => {
+    fetchMock.postOnce(
+      {
+        url: 'path:/api/libraries/4/entries/download',
+        body: {
+          path: '/Ballmers Peak Label.xcf',
+        },
+      },
+      {
+        status: 201,
+        body: {
+          token: 'i_am_a_download_token',
+        },
+      }
+    );
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    delete window.open;
+    window.open = jest.fn();
+
+    await render(<FilesPage />, {
+      path: '/files/4',
+      route: '/files/:library/:path?',
+      loggedIn: true,
+      initialState,
+    });
+
+    fireEvent.contextMenu(await screen.findByText('Ballmers Peak Label.xcf'));
+    userEvent.click(screen.getByText('Download', { selector: '.context-menu *' }));
+    await waitFor(() => {
+      expect(window.open).toBeCalledWith('/api/download?token=i_am_a_download_token', '_self');
+    });
+  });
+
+  it('deletes an entry on clicking the delete menu item', async () => {
+    fetchMock.deleteOnce(
+      {
+        url: 'path:/api/libraries/4/entries',
+        query: {
+          path: '/Documents',
+        },
+      },
+      {
+        status: 204,
+      }
+    );
+    fetchMock.getOnce(
+      {
+        url: 'path:/api/libraries/4/entries',
+        query: {
+          parent: '',
+        },
+        overwriteRoutes: false,
+      },
+      {
+        status: 200,
+        body: [
+          {
+            name: 'Ballmers Peak Label.xcf',
+            parent: '/',
+            modified: '2021-03-26T23:32:42.139992387+01:00',
+            category: 'Binary',
+            size: 2785246,
+          },
+        ],
+      }
+    );
+
+    await render(<FilesPage />, {
+      path: '/files/4',
+      route: '/files/:library/:path?',
+      loggedIn: true,
+      initialState,
+    });
+
+    fireEvent.contextMenu(await screen.findByText('Documents'));
+    userEvent.click(screen.getByText('Delete', { selector: '.context-menu *' }));
     await waitFor(() => {
       expect(screen.queryByText('Documents')).toBeNull();
     });

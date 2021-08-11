@@ -1,0 +1,17 @@
+.context-menu {
+  position: absolute;
+  background-color: var(--side-bar-color);
+  border-radius: $border-radius;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+
+  border: 1px solid var(--light-gray);
+
+  .button {
+    border: none;
+    font-size: 0.85rem;
+
+    &:not(:disabled):not(.loading):hover {
+      background-color: var(--primary-highlight);
+    }
+  }
+}
