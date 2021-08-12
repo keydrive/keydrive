@@ -3,6 +3,7 @@ import { classNames } from '../utils/classNames';
 import { Button } from './Button';
 import { Icon } from './Icon';
 import { IconButton } from './IconButton';
+import { useMountedState } from '../hooks/useMountedState';
 
 export interface Props {
   onClose: () => void;
@@ -13,12 +14,20 @@ export interface Props {
 
 export const Modal: React.FC<Props> = ({ children, title, panelled, onClose, shouldClose }) => {
   const [closing, setClosing] = useState(false);
+  const mounted = useMountedState();
 
   const close = useCallback(() => {
     setClosing(true);
-    // NOTE: This time must match the css animation time
-    setTimeout(onClose, 400);
-  }, [onClose, setClosing]);
+    setTimeout(
+      () => {
+        if (mounted.current) {
+          onClose();
+        }
+      },
+      // NOTE: This time must match the css animation time
+      400
+    );
+  }, [onClose, mounted]);
 
   useEffect(() => {
     const listener = (e: KeyboardEvent) => {
