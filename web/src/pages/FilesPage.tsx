@@ -194,13 +194,20 @@ export const FilesPage: React.FC = () => {
 
       const allEntries = await getAllEntriesRecursive(items);
       for (const entry of allEntries) {
-        const parent = resolvePath(path, getParent(entry.fullPath).substring(1));
+        const entryParent = getParent(entry.fullPath);
+        const parent = resolvePath(path, entryParent.substring(1));
+        let newLastEntry: Entry | undefined = undefined;
+
         if (isFileEntry(entry)) {
-          lastEntry = await libraries.uploadFile(libraryId, parent, await getFsEntryFile(entry));
+          newLastEntry = await libraries.uploadFile(libraryId, parent, await getFsEntryFile(entry));
         } else if (isDirectoryEntry(entry)) {
-          lastEntry = await libraries.createFolder(libraryId, parent, entry.name);
+          newLastEntry = await libraries.createFolder(libraryId, parent, entry.name);
         } else {
           console.error('Unknown entry:', entry);
+        }
+
+        if (entryParent === '/' && newLastEntry) {
+          lastEntry = newLastEntry;
         }
       }
 
