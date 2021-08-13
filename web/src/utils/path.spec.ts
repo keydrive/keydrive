@@ -1,4 +1,4 @@
-import { parentPath, resolvePath } from './path';
+import { getParent, resolvePath } from './path';
 
 describe('resolvePath', () => {
   it.each`
@@ -13,13 +13,13 @@ describe('resolvePath', () => {
   });
 });
 
-describe('parentPath', () => {
+describe('getParent', () => {
   it.each`
     path                   | parent
     ${'/'}                 | ${'/'}
     ${'/thing.txt'}        | ${'/'}
     ${'/some/deep/folder'} | ${'/some/deep'}
   `('returns the parent path', ({ path, parent }) => {
-    expect(parentPath(path)).toBe(parent);
+    expect(getParent(path)).toBe(parent);
   });
 });

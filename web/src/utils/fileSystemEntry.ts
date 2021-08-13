@@ -30,7 +30,7 @@ export function getFsEntryFile(entry: FileSystemFileEntry): Promise<File> {
   return new Promise((resolve, reject) => entry.file(resolve, reject));
 }
 
-export async function getAllEntriesFromTree(items: DataTransferItemList): Promise<FileSystemEntry[]> {
+export async function getAllEntriesRecursive(items: DataTransferItemList): Promise<FileSystemEntry[]> {
   const result: FileSystemEntry[] = [];
 
   for (const item of Array.from(items)) {

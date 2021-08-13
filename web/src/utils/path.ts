@@ -16,6 +16,6 @@ export function resolvePath(parentOrEntry: Entry | string, name?: string): strin
   return `${result}${namePath}`;
 }
 
-export function parentPath(path: string): string {
+export function getParent(path: string): string {
   return path.substring(0, path.lastIndexOf('/')) || '/';
 }

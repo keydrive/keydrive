@@ -7,7 +7,7 @@ import { Entry, LibrariesService } from '../services/LibrariesService';
 import { Icon } from '../components/Icon';
 import { EntryIcon } from '../components/EntryIcon';
 import { humanReadableSize } from '../utils/humanReadableSize';
-import { parentPath, resolvePath } from '../utils/path';
+import { getParent, resolvePath } from '../utils/path';
 import { humanReadableDateTime } from '../utils/humanReadableDateTime';
 import { librariesStore } from '../store/libraries';
 import { useAppSelector } from '../store';
@@ -21,7 +21,7 @@ import { Position } from '../utils/position';
 import { FilesContextMenu } from '../components/files/FilesContextMenu';
 import { LibraryDetailsPanel } from '../components/files/LibraryDetailsPanel';
 import { EntryDetailsPanel } from '../components/files/EntryDetailsPanel';
-import { getAllEntriesFromTree, getFsEntryFile, isDirectoryEntry, isFileEntry } from '../utils/fileSystemEntry';
+import { getAllEntriesRecursive, getFsEntryFile, isDirectoryEntry, isFileEntry } from '../utils/fileSystemEntry';
 
 const FileRow = ({
   entry,
@@ -192,9 +192,9 @@ export const FilesPage: React.FC = () => {
       let lastEntry: Entry | undefined = undefined;
       setIsUploading(true);
 
-      const allEntries = await getAllEntriesFromTree(items);
+      const allEntries = await getAllEntriesRecursive(items);
       for (const entry of allEntries) {
-        const parent = resolvePath(path, parentPath(entry.fullPath).substring(1));
+        const parent = resolvePath(path, getParent(entry.fullPath).substring(1));
         if (isFileEntry(entry)) {
           lastEntry = await libraries.uploadFile(libraryId, parent, await getFsEntryFile(entry));
         } else if (isDirectoryEntry(entry)) {
