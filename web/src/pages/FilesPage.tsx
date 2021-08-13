@@ -21,6 +21,7 @@ import { Position } from '../utils/position';
 import { FilesContextMenu } from '../components/files/FilesContextMenu';
 import { LibraryDetailsPanel } from '../components/files/LibraryDetailsPanel';
 import { EntryDetailsPanel } from '../components/files/EntryDetailsPanel';
+import { FileSystemEntry, getFsEntryFile, isDirectoryEntry, isFileEntry } from '../utils/fileSystemEntry';
 
 const FileRow = ({
   entry,
@@ -185,6 +186,27 @@ export const FilesPage: React.FC = () => {
     },
     [loadEntries, setSelectedEntry, libraries, libraryId, path]
   );
+  const uploadEntries = useCallback(
+    async (items: DataTransferItemList) => {
+      let lastEntry: Entry | undefined = undefined;
+      setIsUploading(true);
+      for (const item of Array.from(items)) {
+        const entry: FileSystemEntry = item.webkitGetAsEntry();
+
+        if (isFileEntry(entry)) {
+          lastEntry = await libraries.uploadFile(libraryId, path, await getFsEntryFile(entry));
+        } else if (isDirectoryEntry(entry)) {
+          // TODO
+        } else {
+          console.error('Unknown entry:', entry);
+        }
+      }
+      const newList = await loadEntries();
+      setSelectedEntry(newList.find((entry) => entry.name === lastEntry?.name));
+      setIsUploading(false);
+    },
+    [loadEntries, setSelectedEntry, libraries, libraryId, path]
+  );
 
   const createFolder = useCallback(
     async (name: string) => {
@@ -285,8 +307,11 @@ export const FilesPage: React.FC = () => {
           onDragOver={(e) => e.preventDefault()}
           onDrop={(e) => {
             e.preventDefault();
-            uploadFiles(e.dataTransfer.files);
-            // TODO: Upload folder structures using webkitGetAsEntry
+            if (typeof DataTransferItem.prototype.webkitGetAsEntry === 'function') {
+              uploadEntries(e.dataTransfer.items);
+            } else {
+              uploadFiles(e.dataTransfer.files);
+            }
           }}
         >
           <table className="clickable">
