@@ -699,6 +699,10 @@ describe('FilesPage', () => {
       category: 'Archive',
       size: 1337,
     };
+    const dirFile = new File([], 'folder');
+    dirFile.arrayBuffer = () => {
+      throw new Error("Can't get arrayBuffer from folder file.");
+    };
 
     fetchMock.postOnce(
       {
@@ -750,7 +754,7 @@ describe('FilesPage', () => {
       initialState,
     });
     fireEvent.drop(await screen.findByText('Ballmers Peak Label.xcf'), {
-      dataTransfer: { files: [fileOne, fileTwo] },
+      dataTransfer: { files: [dirFile, fileOne, fileTwo] },
     });
     await screen.findByText('upload.txt', { selector: 'td' });
     await screen.findByText('another.zip', { selector: 'td' });
