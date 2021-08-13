@@ -681,4 +681,78 @@ describe('FilesPage', () => {
       expect(screen.queryByText('Documents')).toBeNull();
     });
   });
+
+  it('uploads files on drop', async () => {
+    const fileOne = new File(['file content here'], 'upload.txt');
+    const fileOneEntry = {
+      name: 'upload.txt',
+      parent: '/',
+      modified: '2021-03-26T23:32:42.139992387+01:00',
+      category: 'Document',
+      size: 17,
+    };
+    const fileTwo = new File(['another file? in this economy?'], 'another.zip');
+    const fileTwoEntry = {
+      name: 'another.zip',
+      parent: '/',
+      modified: '2021-03-26T23:32:42.139992387+01:00',
+      category: 'Archive',
+      size: 1337,
+    };
+
+    fetchMock.postOnce(
+      {
+        url: 'path:/api/libraries/4/entries',
+        matcher: formDataMatcher({
+          name: 'upload.txt',
+          parent: '',
+          data: fileOne,
+        }),
+      },
+      {
+        status: 201,
+        body: fileOneEntry,
+      }
+    );
+    fetchMock.postOnce(
+      {
+        url: 'path:/api/libraries/4/entries',
+        matcher: formDataMatcher({
+          name: 'another.zip',
+          parent: '',
+          data: fileTwo,
+        }),
+        overwriteRoutes: false,
+      },
+      {
+        status: 201,
+        body: fileTwoEntry,
+      }
+    );
+    fetchMock.getOnce(
+      {
+        url: 'path:/api/libraries/4/entries',
+        query: {
+          parent: '',
+        },
+        overwriteRoutes: false,
+      },
+      {
+        status: 200,
+        body: [fileOneEntry, fileTwoEntry],
+      }
+    );
+
+    await render(<FilesPage />, {
+      path: '/files/4',
+      route: '/files/:library/:path?',
+      loggedIn: true,
+      initialState,
+    });
+    fireEvent.drop(await screen.findByText('Ballmers Peak Label.xcf'), {
+      dataTransfer: { files: [fileOne, fileTwo] },
+    });
+    await screen.findByText('upload.txt', { selector: 'td' });
+    await screen.findByText('another.zip', { selector: 'td' });
+  });
 });

@@ -310,7 +310,10 @@ export const FilesPage: React.FC = () => {
           onDragOver={(e) => e.preventDefault()}
           onDrop={(e) => {
             e.preventDefault();
-            if (typeof DataTransferItem.prototype.webkitGetAsEntry === 'function') {
+            if (
+              typeof DataTransferItem === 'function' &&
+              typeof DataTransferItem.prototype.webkitGetAsEntry === 'function'
+            ) {
               uploadEntries(e.dataTransfer.items);
             } else {
               uploadFiles(e.dataTransfer.files);
