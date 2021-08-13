@@ -7,7 +7,7 @@ import { Entry, LibrariesService } from '../services/LibrariesService';
 import { Icon } from '../components/Icon';
 import { EntryIcon } from '../components/EntryIcon';
 import { humanReadableSize } from '../utils/humanReadableSize';
-import { resolvePath } from '../utils/path';
+import { parentPath, resolvePath } from '../utils/path';
 import { humanReadableDateTime } from '../utils/humanReadableDateTime';
 import { librariesStore } from '../store/libraries';
 import { useAppSelector } from '../store';
@@ -21,7 +21,7 @@ import { Position } from '../utils/position';
 import { FilesContextMenu } from '../components/files/FilesContextMenu';
 import { LibraryDetailsPanel } from '../components/files/LibraryDetailsPanel';
 import { EntryDetailsPanel } from '../components/files/EntryDetailsPanel';
-import { FileSystemEntry, getFsEntryFile, isDirectoryEntry, isFileEntry } from '../utils/fileSystemEntry';
+import { getAllEntriesFromTree, getFsEntryFile, isDirectoryEntry, isFileEntry } from '../utils/fileSystemEntry';
 
 const FileRow = ({
   entry,
@@ -174,6 +174,7 @@ export const FilesPage: React.FC = () => {
           try {
             await file.arrayBuffer();
           } catch (e) {
+            console.warn("Can't upload folders with the File API, skipping:", file.name);
             continue;
           }
         }
@@ -190,17 +191,19 @@ export const FilesPage: React.FC = () => {
     async (items: DataTransferItemList) => {
       let lastEntry: Entry | undefined = undefined;
       setIsUploading(true);
-      for (const item of Array.from(items)) {
-        const entry: FileSystemEntry = item.webkitGetAsEntry();
 
+      const allEntries = await getAllEntriesFromTree(items);
+      for (const entry of allEntries) {
+        const parent = resolvePath(path, parentPath(entry.fullPath).substring(1));
         if (isFileEntry(entry)) {
-          lastEntry = await libraries.uploadFile(libraryId, path, await getFsEntryFile(entry));
+          lastEntry = await libraries.uploadFile(libraryId, parent, await getFsEntryFile(entry));
         } else if (isDirectoryEntry(entry)) {
-          // TODO
+          lastEntry = await libraries.createFolder(libraryId, parent, entry.name);
         } else {
           console.error('Unknown entry:', entry);
         }
       }
+
       const newList = await loadEntries();
       setSelectedEntry(newList.find((entry) => entry.name === lastEntry?.name));
       setIsUploading(false);
