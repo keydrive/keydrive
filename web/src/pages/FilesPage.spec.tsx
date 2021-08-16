@@ -753,7 +753,7 @@ describe('FilesPage', () => {
       loggedIn: true,
       initialState,
     });
-    fireEvent.drop(await screen.findByText('Ballmers Peak Label.xcf'), {
+    fireEvent.drop(await screen.findByText('Drop files to upload'), {
       dataTransfer: { files: [dirFile, fileOne, fileTwo] },
     });
     await screen.findByText('upload.txt', { selector: 'td' });

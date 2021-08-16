@@ -155,6 +155,7 @@ export const FilesPage: React.FC = () => {
   useEffect(() => setHighlightedEntry(undefined), [libraryId]);
 
   const [isUploading, setIsUploading] = useState(false);
+  const [isDropping, setIsDropping] = useState(false);
   const uploadFiles = useCallback(
     async (files: FileList | null) => {
       if (!files || files.length === 0) {
@@ -314,19 +315,30 @@ export const FilesPage: React.FC = () => {
         <Panel
           className="files"
           onContextMenu={(e) => showContextMenu(e)}
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={(e) => {
+          onDragOver={(e) => {
             e.preventDefault();
-            if (
-              typeof DataTransferItem === 'function' &&
-              typeof DataTransferItem.prototype.webkitGetAsEntry === 'function'
-            ) {
-              uploadEntries(e.dataTransfer.items);
-            } else {
-              uploadFiles(e.dataTransfer.files);
-            }
+            setIsDropping(true);
           }}
         >
+          <div
+            className={classNames('drop-overlay', isDropping && 'active')}
+            onDrop={(e) => {
+              e.preventDefault();
+              setIsDropping(false);
+              if (
+                typeof DataTransferItem === 'function' &&
+                typeof DataTransferItem.prototype.webkitGetAsEntry === 'function'
+              ) {
+                uploadEntries(e.dataTransfer.items);
+              } else {
+                uploadFiles(e.dataTransfer.files);
+              }
+            }}
+            onDragLeave={() => setIsDropping(false)}
+          >
+            <Icon icon="upload" />
+            <div className="text">Drop files to upload</div>
+          </div>
           <table className="clickable">
             <colgroup>
               <col className="icon" />
