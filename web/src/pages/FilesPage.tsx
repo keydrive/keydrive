@@ -19,6 +19,7 @@ import { useFileNavigator } from '../hooks/useFileNavigator';
 import { ButtonGroup } from '../components/ButtonGroup';
 import { Position } from '../utils/position';
 import { FilesContextMenu } from '../components/FilesContextMenu';
+import { KeyCode, useKeyBind } from '../hooks/useKeyBind';
 
 const FileRow = ({
   entry,
@@ -151,6 +152,16 @@ export const FilesPage: React.FC = () => {
 
   useEffect(() => setHighlightedEntry(undefined), [libraryId]);
 
+  const onDeleteEntry = useCallback(
+    async (target: Entry) => {
+      await libraries.deleteEntry(libraryId, resolvePath(target));
+      refresh();
+      setHighlightedEntry(undefined);
+    },
+    [libraries, libraryId, refresh]
+  );
+  useKeyBind(KeyCode.Delete, () => selectedEntry && onDeleteEntry(selectedEntry));
+
   const [isUploading, setIsUploading] = useState(false);
   const uploadFiles = useCallback(
     async (e: ChangeEvent<HTMLInputElement>) => {
@@ -245,15 +256,7 @@ export const FilesPage: React.FC = () => {
             setContextMenuEntry(undefined);
           }}
           onDownload={contextMenuEntry ? () => libraries.download(libraryId, resolvePath(contextMenuEntry)) : undefined}
-          onDelete={
-            contextMenuEntry
-              ? async () => {
-                  await libraries.deleteEntry(libraryId, resolvePath(contextMenuEntry));
-                  refresh();
-                  setHighlightedEntry(undefined);
-                }
-              : undefined
-          }
+          onDelete={contextMenuEntry ? () => onDeleteEntry(contextMenuEntry) : undefined}
           onUpload={() => fileInputRef.current?.click()}
           onNewFolder={() => setNewFolderName('New Folder')}
         />
@@ -326,11 +329,7 @@ export const FilesPage: React.FC = () => {
           <EntryDetailsPanel
             entry={highlightedEntry}
             onDownload={() => libraries.download(libraryId, resolvePath(highlightedEntry))}
-            onDelete={async () => {
-              await libraries.deleteEntry(libraryId, resolvePath(highlightedEntry));
-              refresh();
-              setHighlightedEntry(undefined);
-            }}
+            onDelete={() => onDeleteEntry(highlightedEntry)}
           />
         ) : (
           <LibraryDetailsPanel library={library} />
