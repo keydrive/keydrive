@@ -213,6 +213,8 @@ export const FilesPage: React.FC = () => {
       setHighlightedEntry(selectedEntry);
     } else if (currentDir) {
       setHighlightedEntry(currentDir);
+    } else {
+      setHighlightedEntry(undefined);
     }
   }, [currentDir, selectedEntry, loading]);
 
