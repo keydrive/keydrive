@@ -1,8 +1,8 @@
 package service
 
 import (
-	"keydrive/internal/model"
 	"github.com/google/uuid"
+	"keydrive/internal/model"
 )
 
 type DownloadTokens struct {

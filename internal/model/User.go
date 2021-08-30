@@ -3,8 +3,7 @@ package model
 type User struct {
 	ID             int    `json:"id"`
 	Username       string `json:"username" gorm:"not null;unique;type:citext"`
-	FirstName      string `json:"firstName" gorm:"not null"`
-	LastName       string `json:"lastName" gorm:"not null"`
+	Name           string `json:"name" gorm:"not null;default:''"`
 	HashedPassword string `json:"-" gorm:"not null"`
 	IsAdmin        bool   `json:"isAdmin" gorm:"->;type:boolean GENERATED ALWAYS AS (id = 1) STORED"`
 }

@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"keydrive/internal/model"
 	"fmt"
+	"keydrive/internal/model"
 	"net/http/httptest"
 	"testing"
 )

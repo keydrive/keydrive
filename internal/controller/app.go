@@ -1,13 +1,13 @@
 package controller
 
 import (
-	"keydrive/internal/model"
-	"keydrive/internal/service"
-	"keydrive/web/build"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	glog "gorm.io/gorm/logger"
+	"keydrive/internal/model"
+	"keydrive/internal/service"
+	"keydrive/web/build"
 	"net/http"
 	"os"
 	"time"
@@ -50,7 +50,6 @@ func NewApp(dbDiag gorm.Dialector) (app App, err error) {
 		}
 	}
 
-
 	log.Info("connected")
 	log.Info("starting automigration...")
 
@@ -69,8 +68,7 @@ func NewApp(dbDiag gorm.Dialector) (app App, err error) {
 		log.Info("password: admin")
 		app.DB.Save(&model.User{
 			ID:             1,
-			FirstName:      "Super",
-			LastName:       "Admin",
+			Name:           "Admin",
 			Username:       "admin",
 			HashedPassword: "$2y$12$3fvGYrtMSKiow6gvb.K0Q.c4AMhItCQcv5MU7pYNypZii/R.li2o2",
 		})

@@ -12,8 +12,7 @@ export interface Props {
 }
 
 export const EditProfileModal: React.FC<Props> = ({ onClose }) => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string>();
@@ -27,8 +26,7 @@ export const EditProfileModal: React.FC<Props> = ({ onClose }) => {
   useEffect(() => {
     if (currentUserData) {
       setUsername(currentUserData.username);
-      setFirstName(currentUserData.firstName);
-      setLastName(currentUserData.lastName);
+      setName(currentUserData.name);
     }
   }, [currentUserData]);
 
@@ -40,8 +38,7 @@ export const EditProfileModal: React.FC<Props> = ({ onClose }) => {
           setError(undefined);
           const action = await dispatch(
             updateCurrentUserAsync({
-              firstName: firstName.trim(),
-              lastName: lastName.trim(),
+              name: name.trim(),
               username: username.trim(),
             })
           );
@@ -57,8 +54,7 @@ export const EditProfileModal: React.FC<Props> = ({ onClose }) => {
         submitLabel="Save"
       >
         <TextInput label="Username:" value={username} onChange={setUsername} id="username" />
-        <TextInput label="First Name:" value={firstName} onChange={setFirstName} id="firstName" />
-        <TextInput label="Last Name:" value={lastName} onChange={setLastName} id="lastName" />
+        <TextInput label="Name:" value={name} onChange={setName} id="name" />
       </Form>
     </Modal>
   );

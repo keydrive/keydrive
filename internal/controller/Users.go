@@ -1,19 +1,18 @@
 package controller
 
 import (
-	"keydrive/internal/model"
-	"keydrive/internal/service"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"keydrive/internal/model"
+	"keydrive/internal/service"
 	"net/http"
 )
 
 type UserSummary struct {
-	ID        int    `json:"id"`
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	Username  string `json:"username"`
-	IsAdmin   bool   `json:"isAdmin"`
+	ID       int    `json:"id"`
+	Name     string `json:"name"`
+	Username string `json:"username"`
+	IsAdmin  bool   `json:"isAdmin"`
 }
 
 type UserPage struct {
@@ -38,10 +37,9 @@ func ListUsers(db *gorm.DB, users *service.User) gin.HandlerFunc {
 }
 
 type CreateUserDTO struct {
-	Username  string `json:"username" binding:"required"`
-	FirstName string `json:"firstName" binding:"required"`
-	LastName  string `json:"lastName" binding:"required"`
-	Password  string `json:"password" binding:"required"`
+	Username string `json:"username" binding:"required"`
+	Name     string `json:"name" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
 
 // CreateUser
@@ -61,8 +59,7 @@ func CreateUser(db *gorm.DB, pwdEnc *service.BcryptEncoder) gin.HandlerFunc {
 			return
 		}
 		newUser := model.User{
-			FirstName:      create.FirstName,
-			LastName:       create.LastName,
+			Name:           create.Name,
 			Username:       create.Username,
 			HashedPassword: pwdEnc.Encode(create.Password),
 		}
@@ -99,10 +96,9 @@ func GetUser(db *gorm.DB, users *service.User) gin.HandlerFunc {
 }
 
 type UpdateUserDTO struct {
-	Username  string `json:"username" binding:""`
-	FirstName string `json:"firstName" binding:""`
-	LastName  string `json:"lastName" binding:""`
-	Password  string `json:"password" binding:""`
+	Username string `json:"username" binding:""`
+	Name     string `json:"name" binding:""`
+	Password string `json:"password" binding:""`
 }
 
 // UpdateUser
@@ -135,11 +131,8 @@ func UpdateUser(db *gorm.DB, users *service.User, pwdEnc *service.BcryptEncoder)
 			if update.Username != "" {
 				user.Username = update.Username
 			}
-			if update.FirstName != "" {
-				user.FirstName = update.FirstName
-			}
-			if update.LastName != "" {
-				user.LastName = update.LastName
+			if update.Name != "" {
+				user.Name = update.Name
 			}
 			if update.Password != "" {
 				user.HashedPassword = pwdEnc.Encode(update.Password)

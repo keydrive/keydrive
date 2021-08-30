@@ -58,17 +58,14 @@ definitions:
     type: object
   controller.CreateUserDTO:
     properties:
-      firstName:
-        type: string
-      lastName:
+      name:
         type: string
       password:
         type: string
       username:
         type: string
     required:
-    - firstName
-    - lastName
+    - name
     - password
     - username
     type: object
@@ -156,9 +153,7 @@ definitions:
     type: object
   controller.UpdateUserDTO:
     properties:
-      firstName:
-        type: string
-      lastName:
+      name:
         type: string
       password:
         type: string
@@ -176,13 +171,11 @@ definitions:
     type: object
   controller.UserSummary:
     properties:
-      firstName:
-        type: string
       id:
         type: integer
       isAdmin:
         type: boolean
-      lastName:
+      name:
         type: string
       username:
         type: string
@@ -213,13 +206,11 @@ definitions:
     type: object
   model.User:
     properties:
-      firstName:
-        type: string
       id:
         type: integer
       isAdmin:
         type: boolean
-      lastName:
+      name:
         type: string
       username:
         type: string

@@ -1,9 +1,9 @@
 package controller
 
 import (
-	"keydrive/internal/service"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"keydrive/internal/service"
 	"net/http"
 )
 
@@ -46,11 +46,8 @@ func UpdateAuthenticatedUser(db *gorm.DB, pwdEnc *service.BcryptEncoder) gin.Han
 			if update.Username != "" {
 				user.Username = update.Username
 			}
-			if update.FirstName != "" {
-				user.FirstName = update.FirstName
-			}
-			if update.LastName != "" {
-				user.LastName = update.LastName
+			if update.Name != "" {
+				user.Name = update.Name
 			}
 			if update.Password != "" {
 				user.HashedPassword = pwdEnc.Encode(update.Password)

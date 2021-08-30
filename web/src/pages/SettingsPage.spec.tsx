@@ -12,9 +12,8 @@ describe('SettingsPage', () => {
       user: {
         currentUser: {
           id: 1,
-          lastName: 'admin',
+          name: 'Admin',
           username: 'admin',
-          firstName: 'admin',
           isAdmin: true,
         },
       },

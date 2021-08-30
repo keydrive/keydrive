@@ -1,10 +1,10 @@
 package controller
 
 import (
-	"keydrive/internal/model"
-	"keydrive/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"keydrive/internal/model"
+	"keydrive/internal/service"
 	"net/http"
 	"strings"
 )
