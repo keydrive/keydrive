@@ -155,7 +155,7 @@ export const FilesPage: React.FC = () => {
 
   useEffect(() => setHighlightedEntry(undefined), [libraryId]);
 
-  const onDeleteEntry = useCallback(
+  const deleteEntry = useCallback(
     async (target: Entry) => {
       await libraries.deleteEntry(libraryId, resolvePath(target));
       refresh();
@@ -163,7 +163,7 @@ export const FilesPage: React.FC = () => {
     },
     [libraries, libraryId, refresh]
   );
-  useKeyBind(KeyCode.Delete, () => selectedEntry && onDeleteEntry(selectedEntry));
+  useKeyBind(KeyCode.Delete, () => selectedEntry && deleteEntry(selectedEntry));
 
   const [isUploading, setIsUploading] = useState(false);
   const [isDropping, setIsDropping] = useState(false);
@@ -311,7 +311,7 @@ export const FilesPage: React.FC = () => {
             setContextMenuEntry(undefined);
           }}
           onDownload={contextMenuEntry ? () => libraries.download(libraryId, resolvePath(contextMenuEntry)) : undefined}
-          onDelete={contextMenuEntry ? () => onDeleteEntry(contextMenuEntry) : undefined}
+          onDelete={contextMenuEntry ? () => deleteEntry(contextMenuEntry) : undefined}
           onUpload={() => fileInputRef.current?.click()}
           onNewFolder={() => setNewFolderName('New Folder')}
         />
@@ -411,7 +411,7 @@ export const FilesPage: React.FC = () => {
             <EntryDetailsPanel
               entry={highlightedEntry}
               onDownload={() => libraries.download(libraryId, resolvePath(highlightedEntry))}
-              onDelete={() => onDeleteEntry(highlightedEntry)}
+              onDelete={() => deleteEntry(highlightedEntry)}
             />
           ) : (
             <LibraryDetailsPanel library={library} />
