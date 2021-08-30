@@ -1,13 +1,13 @@
-import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Layout } from '../components/Layout';
 import { Panel } from '../components/Panel';
 import { Redirect, useHistory, useParams } from 'react-router-dom';
 import { useService } from '../hooks/useService';
-import { Entry, LibrariesService, Library } from '../services/LibrariesService';
+import { Entry, LibrariesService } from '../services/LibrariesService';
 import { Icon } from '../components/Icon';
 import { EntryIcon } from '../components/EntryIcon';
 import { humanReadableSize } from '../utils/humanReadableSize';
-import { resolvePath } from '../utils/path';
+import { getParent, resolvePath } from '../utils/path';
 import { humanReadableDateTime } from '../utils/humanReadableDateTime';
 import { librariesStore } from '../store/libraries';
 import { useAppSelector } from '../store';
@@ -18,8 +18,11 @@ import { TextInput } from '../components/input/TextInput';
 import { useFileNavigator } from '../hooks/useFileNavigator';
 import { ButtonGroup } from '../components/ButtonGroup';
 import { Position } from '../utils/position';
-import { FilesContextMenu } from '../components/FilesContextMenu';
+import { FilesContextMenu } from '../components/files/FilesContextMenu';
 import { KeyCode, useKeyBind } from '../hooks/useKeyBind';
+import { LibraryDetailsPanel } from '../components/files/LibraryDetailsPanel';
+import { EntryDetailsPanel } from '../components/files/EntryDetailsPanel';
+import { getAllEntriesRecursive, getFsEntryFile, isDirectoryEntry, isFileEntry } from '../utils/fileSystemEntry';
 
 const FileRow = ({
   entry,
@@ -163,9 +166,9 @@ export const FilesPage: React.FC = () => {
   useKeyBind(KeyCode.Delete, () => selectedEntry && onDeleteEntry(selectedEntry));
 
   const [isUploading, setIsUploading] = useState(false);
+  const [isDropping, setIsDropping] = useState(false);
   const uploadFiles = useCallback(
-    async (e: ChangeEvent<HTMLInputElement>) => {
-      const files = e.currentTarget.files;
+    async (files: FileList | null) => {
       if (!files || files.length === 0) {
         return;
       }
@@ -175,8 +178,51 @@ export const FilesPage: React.FC = () => {
       let lastEntry: Entry | undefined = undefined;
       setIsUploading(true);
       for (const file of Array.from(files)) {
+        // Check if the file is actually a folder.
+        // For some reason this messes up the upload.
+        // The only way to check this seems to be to call the `text` or `arrayBuffer` function on the blob.
+        // If that errors, it's not a file.
+        if (file.size === 0 && file.type === '') {
+          try {
+            await file.arrayBuffer();
+          } catch (e) {
+            console.warn("Can't upload folders with the File API, skipping:", file.name);
+            continue;
+          }
+        }
+
         lastEntry = await libraries.uploadFile(libraryId, path, file);
       }
+      const newList = await loadEntries();
+      setSelectedEntry(newList.find((entry) => entry.name === lastEntry?.name));
+      setIsUploading(false);
+    },
+    [loadEntries, setSelectedEntry, libraries, libraryId, path]
+  );
+  const uploadEntries = useCallback(
+    async (items: DataTransferItemList) => {
+      let lastEntry: Entry | undefined = undefined;
+      setIsUploading(true);
+
+      const allEntries = await getAllEntriesRecursive(items);
+      for (const entry of allEntries) {
+        const entryParent = getParent(entry.fullPath);
+        const parent = resolvePath(path, entryParent.substring(1));
+        let newLastEntry: Entry | undefined = undefined;
+
+        if (isFileEntry(entry)) {
+          newLastEntry = await libraries.uploadFile(libraryId, parent, await getFsEntryFile(entry));
+        } else if (isDirectoryEntry(entry)) {
+          newLastEntry = await libraries.createFolder(libraryId, parent, entry.name);
+        } else {
+          console.error('Unknown entry:', entry);
+        }
+
+        if (entryParent === '/' && newLastEntry) {
+          lastEntry = newLastEntry;
+        }
+      }
+
       const newList = await loadEntries();
       setSelectedEntry(newList.find((entry) => entry.name === lastEntry?.name));
       setIsUploading(false);
@@ -238,7 +284,14 @@ export const FilesPage: React.FC = () => {
           </h1>
         </div>
         <div className="actions">
-          <input ref={fileInputRef} hidden type="file" onChange={uploadFiles} multiple data-testid="file-input" />
+          <input
+            ref={fileInputRef}
+            hidden
+            type="file"
+            onChange={(e) => uploadFiles(e.currentTarget.files)}
+            multiple
+            data-testid="file-input"
+          />
           <ButtonGroup>
             <Button onClick={() => fileInputRef.current?.click()} icon="upload">
               Upload
@@ -264,7 +317,33 @@ export const FilesPage: React.FC = () => {
         />
       )}
       <main>
-        <Panel className="files" onContextMenu={(e) => showContextMenu(e)}>
+        <Panel
+          className="files"
+          onContextMenu={(e) => showContextMenu(e)}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setIsDropping(true);
+          }}
+        >
+          <div
+            className={classNames('drop-overlay', isDropping && 'active')}
+            onDrop={(e) => {
+              e.preventDefault();
+              setIsDropping(false);
+              if (
+                typeof DataTransferItem === 'function' &&
+                typeof DataTransferItem.prototype.webkitGetAsEntry === 'function'
+              ) {
+                uploadEntries(e.dataTransfer.items);
+              } else {
+                uploadFiles(e.dataTransfer.files);
+              }
+            }}
+            onDragLeave={() => setIsDropping(false)}
+          >
+            <Icon icon="upload" />
+            <div className="text">Drop files to upload</div>
+          </div>
           <table className="clickable">
             <colgroup>
               <col className="icon" />
@@ -327,68 +406,18 @@ export const FilesPage: React.FC = () => {
             </tbody>
           </table>
         </Panel>
-        {highlightedEntry ? (
-          <EntryDetailsPanel
-            entry={highlightedEntry}
-            onDownload={() => libraries.download(libraryId, resolvePath(highlightedEntry))}
-            onDelete={() => onDeleteEntry(highlightedEntry)}
-          />
-        ) : (
-          <LibraryDetailsPanel library={library} />
-        )}
+        <div className="details">
+          {highlightedEntry ? (
+            <EntryDetailsPanel
+              entry={highlightedEntry}
+              onDownload={() => libraries.download(libraryId, resolvePath(highlightedEntry))}
+              onDelete={() => onDeleteEntry(highlightedEntry)}
+            />
+          ) : (
+            <LibraryDetailsPanel library={library} />
+          )}
+        </div>
       </main>
     </Layout>
   );
 };
-
-const EntryDetailsPanel: React.FC<{ entry: Entry; onDownload: () => void; onDelete: () => void }> = ({
-  entry,
-  onDownload,
-  onDelete,
-}) => (
-  <div className="details">
-    <Panel className="info">
-      <div className="preview">
-        <EntryIcon entry={entry} />
-      </div>
-      <div className="name">{entry.name}</div>
-      <div className="category">{entry.category}</div>
-    </Panel>
-    <Panel className="actions">
-      <ButtonGroup fullWidth>
-        {entry.category !== 'Folder' && (
-          <Button onClick={onDownload} icon="download">
-            Download
-          </Button>
-        )}
-        <Button onClick={onDelete} icon="trash">
-          Delete
-        </Button>
-      </ButtonGroup>
-    </Panel>
-    <Panel className="metadata">
-      <div>
-        <span>Modified</span>
-        <span>{humanReadableDateTime(entry.modified)}</span>
-      </div>
-      {entry.category !== 'Folder' && (
-        <div>
-          <span>Size</span>
-          <span>{humanReadableSize(entry.size)}</span>
-        </div>
-      )}
-    </Panel>
-  </div>
-);
-
-const LibraryDetailsPanel: React.FC<{ library: Library }> = ({ library }) => (
-  <div className="details">
-    <Panel className="info full">
-      <div className="preview">
-        <Icon icon="folder" />
-      </div>
-      <div className="name">{library.name}</div>
-      <div className="category">Library: {library.type}</div>
-    </Panel>
-  </div>
-);

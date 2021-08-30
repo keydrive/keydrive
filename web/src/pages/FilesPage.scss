@@ -19,6 +19,7 @@
       flex: 1 1 auto;
       margin-left: 12px;
       overflow-y: auto;
+      position: relative;
 
       .icon {
         color: var(--primary);
@@ -36,6 +37,43 @@
           .category {
             width: 120px;
           }
+        }
+      }
+
+      .drop-overlay {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        border: 4px dashed var(--primary);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(0, 0, 0, 0.2);
+
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity $transition-duration;
+
+        &.active {
+          opacity: 1;
+          pointer-events: auto;
+        }
+
+        .icon {
+          font-size: 160px;
+          margin-bottom: 60px;
+        }
+
+        .text {
+          font-size: 32px;
+        }
+
+        * {
+          // This is necessary to prevent any child elements from handling drag events.
+          pointer-events: none;
         }
       }
     }
@@ -76,6 +114,7 @@
           font-weight: 500;
           font-size: 1.2rem;
           margin-bottom: 6px;
+          overflow-wrap: anywhere;
         }
 
         .category {

@@ -1,8 +1,8 @@
 import React from 'react';
-import { ButtonGroup } from './ButtonGroup';
-import { Button } from './Button';
-import { ContextMenu, Props as ContextMenuProps } from './ContextMenu';
-import { Entry } from '../services/LibrariesService';
+import { ButtonGroup } from '../ButtonGroup';
+import { Button } from '../Button';
+import { ContextMenu, Props as ContextMenuProps } from '../ContextMenu';
+import { Entry } from '../../services/LibrariesService';
 
 export interface Props extends ContextMenuProps {
   entry?: Entry;
