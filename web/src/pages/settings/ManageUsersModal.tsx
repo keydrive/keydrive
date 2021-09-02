@@ -14,8 +14,7 @@ const CreateOrEditUserForm: React.FC<{
   user?: User;
   onDone: (id: number) => void;
 }> = ({ user, onDone }) => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -24,12 +23,10 @@ const CreateOrEditUserForm: React.FC<{
 
   useEffect(() => {
     if (user) {
-      setFirstName(user.firstName);
-      setLastName(user.lastName);
+      setName(user.name);
       setUsername(user.username);
     } else {
-      setFirstName('');
-      setLastName('');
+      setName('');
       setUsername('');
       setPassword('');
       setConfirm('');
@@ -38,7 +35,7 @@ const CreateOrEditUserForm: React.FC<{
 
   return (
     <>
-      <h2>{user ? `${user.firstName} ${user.lastName}` : 'Add User'}</h2>
+      <h2>{user ? user.name : 'Add User'}</h2>
       <Form
         error={error}
         onSubmit={async () => {
@@ -51,16 +48,14 @@ const CreateOrEditUserForm: React.FC<{
             if (user) {
               const updatedUser = await userService.updateUser(user.id, {
                 username: username.trim(),
-                firstName: firstName.trim(),
-                lastName: lastName.trim(),
+                name: name.trim(),
                 password: password || undefined,
               });
               onDone(updatedUser.id);
             } else {
               const newUser = await userService.createUser({
                 username: username.trim(),
-                firstName: firstName.trim(),
-                lastName: lastName.trim(),
+                name: name.trim(),
                 password,
               });
               onDone(newUser.id);
@@ -76,8 +71,7 @@ const CreateOrEditUserForm: React.FC<{
         submitLabel={user ? 'Save' : 'Add'}
       >
         <TextInput autoFocus required label="Username:" value={username} onChange={setUsername} id="username" />
-        <TextInput required label="First Name:" value={firstName} onChange={setFirstName} id="firstName" />
-        <TextInput required label="Last Name:" value={lastName} onChange={setLastName} id="lastName" />
+        <TextInput required label="Name:" value={name} onChange={setName} id="name" />
         <PasswordInput required={!user} label="Password:" value={password} onChange={setPassword} id="password" />
         <PasswordInput
           required={!user || !!password}
@@ -130,11 +124,9 @@ export const ManageUsersModal: React.FC<Props> = ({ onClose }) => {
           setSelectedUser(undefined);
         }}
       >
-        {({ firstName, lastName, username }) => (
+        {({ name, username }) => (
           <>
-            <h4>
-              {firstName} {lastName}
-            </h4>
+            <h4>{name}</h4>
             <span>{username}</span>
           </>
         )}

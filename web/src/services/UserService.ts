@@ -4,15 +4,13 @@ import { Injector } from './Injector';
 export interface User {
   id: number;
   username: string;
-  firstName: string;
-  lastName: string;
+  name: string;
   isAdmin: boolean;
 }
 
 export interface CreateUser {
   username: string;
-  firstName: string;
-  lastName: string;
+  name: string;
   password: string;
 }
 

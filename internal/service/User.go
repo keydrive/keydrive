@@ -1,8 +1,8 @@
 package service
 
 import (
-	"keydrive/internal/model"
 	"gorm.io/gorm"
+	"keydrive/internal/model"
 )
 
 type User struct {

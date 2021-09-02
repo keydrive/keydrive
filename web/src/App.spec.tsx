@@ -9,7 +9,7 @@ describe('App', () => {
 
   it('loads userdata and libraries on boot', async () => {
     fetchMock.getOnce('/api/user/', {
-      firstName: 'Test',
+      name: 'Test',
     });
     fetchMock.get('/api/libraries/?limit=100', {
       totalElements: 0,
@@ -37,7 +37,7 @@ describe('App', () => {
 
     await waitFor(() => {
       expect(store.getState().libraries.libraries).toHaveLength(2);
-      expect(store.getState().user.currentUser?.firstName).toBe('Test');
+      expect(store.getState().user.currentUser?.name).toBe('Test');
     });
   });
 });

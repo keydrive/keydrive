@@ -1,9 +1,9 @@
 package service
 
 import (
-	"keydrive/internal/model"
 	"context"
 	"gorm.io/gorm"
+	"keydrive/internal/model"
 )
 
 type Token struct {

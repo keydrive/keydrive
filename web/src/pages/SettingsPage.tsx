@@ -52,9 +52,7 @@ export const SettingsPage: React.FC = () => {
             <div className="profile-info">
               <img src={userPlaceholder} alt="Profile" />
               <div className="profile-details">
-                <h2>
-                  {user?.firstName} {user?.lastName}
-                </h2>
+                <h2>{user?.name}</h2>
                 <span className="subtitle">{user?.username}</span>
                 {user?.isAdmin && <Tag>admin</Tag>}
               </div>

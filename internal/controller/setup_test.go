@@ -1,13 +1,13 @@
 package controller
 
 import (
-	"keydrive/internal/model"
 	"database/sql"
 	"fmt"
 	"github.com/google/uuid"
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"gorm.io/driver/postgres"
 	"io"
+	"keydrive/internal/model"
 	"math/rand"
 	"net/http"
 	"os"
@@ -108,8 +108,7 @@ func TestMain(m *testing.M) {
 
 	lonelyUser := model.User{
 		Username:       "no-access",
-		FirstName:      "I have",
-		LastName:       "access to nothing",
+		Name:           "I have access to nothing",
 		HashedPassword: "4fr0u892430u82t8u0tu2308t20u9",
 	}
 	testApp.DB.Create(&lonelyUser)
@@ -118,8 +117,7 @@ func TestMain(m *testing.M) {
 
 	regularUser = model.User{
 		Username:       "simple-access",
-		FirstName:      "I have",
-		LastName:       "access to some stuff",
+		Name:           "I have access to some stuff",
 		HashedPassword: "4fr0u892430u82t8u0tu2308t20u9",
 	}
 	testApp.DB.Create(&regularUser)

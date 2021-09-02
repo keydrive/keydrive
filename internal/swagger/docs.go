@@ -859,16 +859,12 @@ var doc = `{
         "controller.CreateUserDTO": {
             "type": "object",
             "required": [
-                "firstName",
-                "lastName",
+                "name",
                 "password",
                 "username"
             ],
             "properties": {
-                "firstName": {
-                    "type": "string"
-                },
-                "lastName": {
+                "name": {
                     "type": "string"
                 },
                 "password": {
@@ -1005,10 +1001,7 @@ var doc = `{
         "controller.UpdateUserDTO": {
             "type": "object",
             "properties": {
-                "firstName": {
-                    "type": "string"
-                },
-                "lastName": {
+                "name": {
                     "type": "string"
                 },
                 "password": {
@@ -1036,16 +1029,13 @@ var doc = `{
         "controller.UserSummary": {
             "type": "object",
             "properties": {
-                "firstName": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "integer"
                 },
                 "isAdmin": {
                     "type": "boolean"
                 },
-                "lastName": {
+                "name": {
                     "type": "string"
                 },
                 "username": {
@@ -1091,16 +1081,13 @@ var doc = `{
         "model.User": {
             "type": "object",
             "properties": {
-                "firstName": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "integer"
                 },
                 "isAdmin": {
                     "type": "boolean"
                 },
-                "lastName": {
+                "name": {
                     "type": "string"
                 },
                 "username": {
