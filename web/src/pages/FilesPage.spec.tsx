@@ -382,6 +382,7 @@ describe('FilesPage', () => {
     });
     await screen.findByText('Folder Details Pane');
     await screen.findByText('I Am Of Exist');
+    await expect(screen.queryByDisplayValue('Create Me')).toBeNull();
   });
 
   it('creates a new folder on clicking the button', async () => {
@@ -446,6 +447,7 @@ describe('FilesPage', () => {
     userEvent.click(screen.getByDisplayValue('Create Me').nextElementSibling as Element);
     await screen.findByText('Folder Details Pane');
     await screen.findByText('I Am Of Exist');
+    await expect(screen.queryByDisplayValue('Create Me')).toBeNull();
   });
 
   it('cancels creating the folder when blurring the input', async () => {
@@ -677,6 +679,54 @@ describe('FilesPage', () => {
 
     fireEvent.contextMenu(await screen.findByText('Documents'));
     userEvent.click(screen.getByText('Delete', { selector: '.context-menu *' }));
+    await waitFor(() => {
+      expect(screen.queryByText('Documents')).toBeNull();
+    });
+  });
+
+  it('deletes an entry on pressing the delete key', async () => {
+    fetchMock.deleteOnce(
+      {
+        url: 'path:/api/libraries/4/entries',
+        query: {
+          path: '/Documents',
+        },
+      },
+      {
+        status: 204,
+      }
+    );
+    fetchMock.getOnce(
+      {
+        url: 'path:/api/libraries/4/entries',
+        query: {
+          parent: '',
+        },
+        overwriteRoutes: false,
+      },
+      {
+        status: 200,
+        body: [
+          {
+            name: 'Ballmers Peak Label.xcf',
+            parent: '/',
+            modified: '2021-03-26T23:32:42.139992387+01:00',
+            category: 'Binary',
+            size: 2785246,
+          },
+        ],
+      }
+    );
+
+    await render(<FilesPage />, {
+      path: '/files/4',
+      route: '/files/:library/:path?',
+      loggedIn: true,
+      initialState,
+    });
+
+    fireEvent.click(await screen.findByText('Documents'));
+    fireEvent.keyDown(document, { key: 'Delete' });
     await waitFor(() => {
       expect(screen.queryByText('Documents')).toBeNull();
     });
