@@ -82,11 +82,11 @@ describe('FilesPage', () => {
       initialState,
     });
 
-    await screen.findByText('Mock Library', { selector: '.details *' });
+    await screen.findByText('Mock Library', { selector: '.details-panel *' });
     await screen.findByText('Ballmers Peak Label.xcf');
-    expect(screen.queryByText('Ballmers Peak Label.xcf', { selector: '.details *' })).toBeNull();
+    expect(screen.queryByText('Ballmers Peak Label.xcf', { selector: '.details-panel *' })).toBeNull();
     userEvent.click(screen.getByText('Ballmers Peak Label.xcf'));
-    expect(screen.getByText('Ballmers Peak Label.xcf', { selector: '.details *' })).toBeDefined();
+    expect(screen.getByText('Ballmers Peak Label.xcf', { selector: '.details-panel *' })).toBeDefined();
   });
 
   it('enters a directory on double click and shows the folder details', async () => {
@@ -156,7 +156,7 @@ describe('FilesPage', () => {
     userEvent.dblClick(await screen.findByText('Documents'));
     expect(await screen.findByText('KeyDrive Settings.pdf')).toBeDefined();
     expect(navigation.pathname).toBe('/files/4/%2FDocuments');
-    expect(screen.getByText('Documents', { selector: '.details *' })).toBeDefined();
+    expect(screen.getByText('Documents', { selector: '.details-panel *' })).toBeDefined();
   });
 
   it('enters the parent directory when going up', async () => {
@@ -858,7 +858,7 @@ describe('FilesPage', () => {
     userEvent.click(screen.getByText('Rename', { selector: '.context-menu *' }));
     userEvent.keyboard('New name.xcf');
     userEvent.click(screen.getByDisplayValue('New name.xcf').nextElementSibling as Element);
-    expect(await screen.findByText('New name.xcf', { selector: '.details *' })).toBeDefined();
+    expect(await screen.findByText('New name.xcf', { selector: '.details-panel *' })).toBeDefined();
   });
 
   it('renames a file on clicking the rename button', async () => {
@@ -908,7 +908,7 @@ describe('FilesPage', () => {
     userEvent.click(screen.getByText('Rename'));
     userEvent.keyboard('New name.xcf');
     userEvent.click(screen.getByDisplayValue('New name.xcf').nextElementSibling as Element);
-    expect(await screen.findByText('New name.xcf', { selector: '.details *' })).toBeDefined();
+    expect(await screen.findByText('New name.xcf', { selector: '.details-panel *' })).toBeDefined();
   });
 
   it('renames a file on pressing F2 and enter', async () => {
@@ -957,7 +957,7 @@ describe('FilesPage', () => {
     fireEvent.keyDown(document, { key: 'F2' });
     userEvent.keyboard('New name.xcf');
     fireEvent.keyDown(screen.getByDisplayValue('New name.xcf'), { key: 'Enter' });
-    expect(await screen.findByText('New name.xcf', { selector: '.details *' })).toBeDefined();
+    expect(await screen.findByText('New name.xcf', { selector: '.details-panel *' })).toBeDefined();
   });
 
   it('cancels renaming the entry when blurring the input', async () => {
