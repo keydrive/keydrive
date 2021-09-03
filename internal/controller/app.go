@@ -128,6 +128,7 @@ func NewApp(dbDiag gorm.Dialector) (app App, err error) {
 				entries.POST("", CreateEntry(app.DB, app.Libraries, app.FileSystem))
 				entries.POST("/download", CreateDownloadToken(app.DB, app.Libraries, app.DownloadTokens))
 				entries.DELETE("", DeleteEntry(app.DB, app.Libraries, app.FileSystem))
+				entries.POST("/move", MoveEntry(app.DB, app.Libraries, app.FileSystem))
 			}
 		}
 		download := api.Group("/download", RequireDownloadToken(app.DownloadTokens))

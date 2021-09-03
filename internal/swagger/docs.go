@@ -395,6 +395,40 @@ var doc = `{
                 }
             }
         },
+        "/api/libraries/{libraryId}/entries/move": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Move a file or folder",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "The library id",
+                        "name": "libraryId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "The source and target path",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.MoveEntryDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/libraries/{libraryId}/shares": {
             "post": {
                 "security": [
@@ -973,6 +1007,21 @@ var doc = `{
                         "shows",
                         "music"
                     ]
+                }
+            }
+        },
+        "controller.MoveEntryDTO": {
+            "type": "object",
+            "required": [
+                "source",
+                "target"
+            ],
+            "properties": {
+                "source": {
+                    "type": "string"
+                },
+                "target": {
+                    "type": "string"
                 }
             }
         },

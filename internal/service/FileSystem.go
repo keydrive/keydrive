@@ -152,6 +152,12 @@ func (fs *FileSystem) DeleteEntryInLibrary(library model.Library, path string) e
 	return nil
 }
 
+func (fs *FileSystem) MoveEntryInLibrary(library model.Library, source string, target string) error {
+	source = fs.resolve(library, fs.cleanRelativePath(source))
+	target = fs.resolve(library, fs.cleanRelativePath(target))
+	return os.Rename(source, target)
+}
+
 func (fs *FileSystem) toInfo(file os.FileInfo, parent string, mimeType string) FileInfo {
 	name := file.Name()
 	category, mimeType := GetFileCategory(name, mimeType, file.IsDir())
