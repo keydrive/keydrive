@@ -152,12 +152,11 @@ export const FilesPage: React.FC = () => {
   // File and folder operations.
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [newFolderName, setNewFolderName] = useState<string>();
-  const [renamingEntry, setRenamingEntry] = useState<Entry>();
-  useKeyBind(KeyCode.F2, () => selectedEntry && setRenamingEntry(selectedEntry));
 
   useEffect(() => setSelectedEntry(undefined), [setSelectedEntry, path, libraryId]);
 
-  // This effect triggers when the path changes. This means we should enter a loading state
+  // This effect triggers when the path changes. This means we should enter a loading state.
+  // This function should not be called directly. Instead, call `refresh`.
   const loadEntries = useCallback(async () => {
     setLoadingEntries(true);
     setSelectedEntry(undefined);
@@ -180,16 +179,33 @@ export const FilesPage: React.FC = () => {
   }, [setSelectedEntry, libraryId, path, libraries]);
 
   const refresh = useCallback(() => {
-    loadEntries().catch((e) => {
-      console.error(e);
+    return loadEntries().catch((e) => {
+      console.error('Error while loading entries:', e);
+      return [];
     });
   }, [loadEntries]);
 
   useEffect(() => {
+    // noinspection JSIgnoredPromiseFromCall
     refresh();
   }, [refresh, libraries, path]);
 
   useEffect(() => setHighlightedEntry(undefined), [libraryId]);
+
+  const [renamingEntry, setRenamingEntry] = useState<Entry>();
+  useKeyBind(KeyCode.F2, () => selectedEntry && setRenamingEntry(selectedEntry));
+  const renameEntry = useCallback(
+    async (newName: string) => {
+      if (!renamingEntry) {
+        return;
+      }
+      await libraries.moveEntry(libraryId, resolvePath(renamingEntry), resolvePath(path, newName));
+      setRenamingEntry(undefined);
+      const newEntries = await refresh();
+      setSelectedEntry(newEntries.find((e) => e.name === newName));
+    },
+    [libraries, libraryId, path, refresh, renamingEntry, setSelectedEntry]
+  );
 
   const deleteEntry = useCallback(
     async (target: Entry) => {
@@ -229,11 +245,11 @@ export const FilesPage: React.FC = () => {
 
         lastEntry = await libraries.uploadFile(libraryId, path, file);
       }
-      const newList = await loadEntries();
+      const newList = await refresh();
       setSelectedEntry(newList.find((entry) => entry.name === lastEntry?.name));
       setIsUploading(false);
     },
-    [loadEntries, setSelectedEntry, libraries, libraryId, path]
+    [refresh, setSelectedEntry, libraries, libraryId, path]
   );
   const uploadEntries = useCallback(
     async (items: DataTransferItemList) => {
@@ -259,21 +275,21 @@ export const FilesPage: React.FC = () => {
         }
       }
 
-      const newList = await loadEntries();
+      const newList = await refresh();
       setSelectedEntry(newList.find((entry) => entry.name === lastEntry?.name));
       setIsUploading(false);
     },
-    [loadEntries, setSelectedEntry, libraries, libraryId, path]
+    [refresh, setSelectedEntry, libraries, libraryId, path]
   );
 
   const createFolder = useCallback(
     async (name: string) => {
       const newEntry = await libraries.createFolder(libraryId, path, name);
       setNewFolderName(undefined);
-      const newList = await loadEntries();
+      const newList = await refresh();
       setSelectedEntry(newList.find((e) => e.name === newEntry.name));
     },
-    [loadEntries, libraries, libraryId, path, setSelectedEntry]
+    [refresh, libraries, libraryId, path, setSelectedEntry]
   );
 
   // Current library info.
@@ -439,7 +455,7 @@ export const FilesPage: React.FC = () => {
                   onSelect={setSelectedEntry}
                   onContextMenu={showContextMenu}
                   renaming={!!renamingEntry && renamingEntry.name === entry.name}
-                  onRename={(newName) => console.log(newName)}
+                  onRename={(newName) => renameEntry(newName)}
                   cancelRename={() => setRenamingEntry(undefined)}
                 />
               ))}
