@@ -248,10 +248,31 @@ func TestMoveEntry(t *testing.T) {
 
 		assertStatus(t, recorder, 401)
 		if _, err := os.Stat(sourceFile); err != nil {
-			t.Errorf("File should not be moved: %s", err)
+			t.Errorf("Source file should not be moved: %s", err)
 		}
 		if _, err := os.Stat(filepath.Join(tempDir, "yes.txt")); err == nil {
-			t.Errorf("File should not be moved: %s", err)
+			t.Errorf("Target file should not be created: %s", err)
+		}
+	})
+
+	t.Run("it requires access to the library", func(t *testing.T) {
+		sourceFile := filepath.Join(tempDir, "nope.txt")
+		_ = os.WriteFile(sourceFile, []byte("Can't move this\n"), 0777)
+
+		req := noAccessUserRequest(
+			"POST",
+			fmt.Sprintf("/api/libraries/%d/entries/move", lib.ID),
+			strings.NewReader("{\"source\":\"/nope.txt\",\"target\":\"/yes.txt\"}"),
+		)
+		recorder := httptest.NewRecorder()
+		testApp.Router.ServeHTTP(recorder, req)
+
+		assertStatus(t, recorder, 404)
+		if _, err := os.Stat(sourceFile); err != nil {
+			t.Errorf("Source file should not be moved: %s", err)
+		}
+		if _, err := os.Stat(filepath.Join(tempDir, "yes.txt")); err == nil {
+			t.Errorf("Target file should not be created: %s", err)
 		}
 	})
 
@@ -272,7 +293,7 @@ func TestMoveEntry(t *testing.T) {
 			t.Errorf("Source file should have moved")
 		}
 		if bytes, err := os.ReadFile(filepath.Join(tempDir, "target.txt")); err != nil {
-			t.Errorf("Target file should have been created: %s", err)
+			t.Errorf("Target file should be created: %s", err)
 		} else if string(bytes) != "Source file\n" {
 			t.Errorf("File content changed: %s", string(bytes))
 		}
@@ -281,13 +302,13 @@ func TestMoveEntry(t *testing.T) {
 	t.Run("overwrites the target file", func(t *testing.T) {
 		sourceFile := filepath.Join(tempDir, "source.txt")
 		_ = os.WriteFile(sourceFile, []byte("Source file\n"), 0777)
-		targetFile := filepath.Join(tempDir, "target.txt")
+		targetFile := filepath.Join(tempDir, "overwrite.txt")
 		_ = os.WriteFile(targetFile, []byte("Target file\n"), 0777)
 
 		req := adminRequest(
 			"POST",
 			fmt.Sprintf("/api/libraries/%d/entries/move", lib.ID),
-			strings.NewReader("{\"source\":\"/source.txt\",\"target\":\"/target.txt\"}"),
+			strings.NewReader("{\"source\":\"/source.txt\",\"target\":\"/overwrite.txt\"}"),
 		)
 		recorder := httptest.NewRecorder()
 		testApp.Router.ServeHTTP(recorder, req)
@@ -296,10 +317,25 @@ func TestMoveEntry(t *testing.T) {
 		if _, err := os.Stat(sourceFile); err == nil {
 			t.Errorf("Source file should have moved")
 		}
-		if bytes, err := os.ReadFile(filepath.Join(tempDir, "target.txt")); err != nil {
-			t.Errorf("Target file should have been created: %s", err)
+		if bytes, err := os.ReadFile(filepath.Join(tempDir, "overwrite.txt")); err != nil {
+			t.Errorf("Target file should be created: %s", err)
 		} else if string(bytes) != "Source file\n" {
 			t.Errorf("File content changed: %s", string(bytes))
+		}
+	})
+
+	t.Run("it returns not found when the source does not exist", func(t *testing.T) {
+		req := adminRequest(
+			"POST",
+			fmt.Sprintf("/api/libraries/%d/entries/move", lib.ID),
+			strings.NewReader("{\"source\":\"/source.txt\",\"target\":\"/not-exist.txt\"}"),
+		)
+		recorder := httptest.NewRecorder()
+		testApp.Router.ServeHTTP(recorder, req)
+
+		assertStatus(t, recorder, 404)
+		if _, err := os.ReadFile(filepath.Join(tempDir, "not-exist.txt")); err == nil {
+			t.Errorf("Target file should not be created")
 		}
 	})
 }
