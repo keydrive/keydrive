@@ -809,4 +809,136 @@ describe('FilesPage', () => {
     await screen.findByText('upload.txt', { selector: 'td' });
     await screen.findByText('another.zip', { selector: 'td' });
   });
+
+  it('renames a file on clicking the rename menu item', async () => {
+    fetchMock.postOnce(
+      {
+        url: 'path:/api/libraries/4/entries/move',
+        body: {
+          source: '/Ballmers Peak Label.xcf',
+          target: '/New name.xcf',
+        },
+      },
+      {
+        status: 204,
+      }
+    );
+    fetchMock.getOnce(
+      {
+        url: 'path:/api/libraries/4/entries',
+        query: {
+          parent: '',
+        },
+        overwriteRoutes: false,
+      },
+      {
+        status: 200,
+        body: [
+          {
+            name: 'New name.xcf',
+            modified: '2021-03-26T23:32:42.139992387+01:00',
+            parent: '/',
+            category: 'Binary',
+            size: 2785246,
+          },
+        ],
+      }
+    );
+
+    await render(<FilesPage />, {
+      path: '/files/4',
+      route: '/files/:library/:path?',
+      loggedIn: true,
+      initialState,
+    });
+
+    fireEvent.contextMenu(await screen.findByText('Ballmers Peak Label.xcf'));
+    userEvent.click(screen.getByText('Rename', { selector: '.context-menu *' }));
+    userEvent.keyboard('New name.xcf');
+    userEvent.click(screen.getByDisplayValue('New name.xcf').nextElementSibling as Element);
+    expect(await screen.findByText('New name.xcf', { selector: '.details *' })).toBeDefined();
+  });
+
+  it('renames a file on pressing F2 and enter', async () => {
+    fetchMock.postOnce(
+      {
+        url: 'path:/api/libraries/4/entries/move',
+        body: {
+          source: '/Ballmers Peak Label.xcf',
+          target: '/New name.xcf',
+        },
+      },
+      {
+        status: 204,
+      }
+    );
+    fetchMock.getOnce(
+      {
+        url: 'path:/api/libraries/4/entries',
+        query: {
+          parent: '',
+        },
+        overwriteRoutes: false,
+      },
+      {
+        status: 200,
+        body: [
+          {
+            name: 'New name.xcf',
+            modified: '2021-03-26T23:32:42.139992387+01:00',
+            parent: '/',
+            category: 'Binary',
+            size: 2785246,
+          },
+        ],
+      }
+    );
+
+    await render(<FilesPage />, {
+      path: '/files/4',
+      route: '/files/:library/:path?',
+      loggedIn: true,
+      initialState,
+    });
+
+    userEvent.click(await screen.findByText('Ballmers Peak Label.xcf'));
+    fireEvent.keyDown(document, { key: 'F2' });
+    userEvent.keyboard('New name.xcf');
+    fireEvent.keyDown(screen.getByDisplayValue('New name.xcf'), { key: 'Enter' });
+    expect(await screen.findByText('New name.xcf', { selector: '.details *' })).toBeDefined();
+  });
+
+  it('cancels renaming the entry when blurring the input', async () => {
+    await render(<FilesPage />, {
+      path: '/files/4',
+      route: '/files/:library/:path?',
+      loggedIn: true,
+      initialState,
+    });
+
+    fireEvent.contextMenu(await screen.findByText('Documents'));
+    userEvent.click(screen.getByText('Rename', { selector: '.context-menu *' }));
+    userEvent.keyboard('Hold On');
+    fireEvent.blur(screen.getByDisplayValue('Hold On'));
+    expect(screen.queryByDisplayValue('Hold On')).toBeNull();
+    expect(screen.queryByText('Hold On')).toBeNull();
+  });
+
+  it('cancels renaming the entry when pressing escape', async () => {
+    await render(<FilesPage />, {
+      path: '/files/4',
+      route: '/files/:library/:path?',
+      loggedIn: true,
+      initialState,
+    });
+
+    fireEvent.contextMenu(await screen.findByText('Documents'));
+    userEvent.click(screen.getByText('Rename', { selector: '.context-menu *' }));
+    userEvent.keyboard('Hold On');
+    fireEvent.keyDown(screen.getByDisplayValue('Hold On'), {
+      key: 'Escape',
+    });
+    expect(screen.queryByDisplayValue('Hold On')).toBeNull();
+    expect(screen.queryByText('Hold On')).toBeNull();
+  });
 });
