@@ -120,6 +120,16 @@
         .category {
           color: var(--light-gray);
         }
+
+        .name-actions {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .context-menu {
+          right: 12px;
+        }
       }
 
       .metadata {
