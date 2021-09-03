@@ -73,7 +73,7 @@ const FileRow = ({
         {renaming ? (
           <TextInput
             autoFocus
-            id="new-folder-name"
+            id="new-entry-name"
             value={newName}
             onChange={setNewName}
             iconButton="check"
