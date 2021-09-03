@@ -20,7 +20,7 @@ export const EntryDetailsPanel: React.FC<Props> = ({ entry, onDownload, onRename
   const [showMenu, setShowMenu] = useState(false);
 
   return (
-    <>
+    <div className="details-panel">
       <Panel className="info">
         <div className="preview">
           <EntryIcon entry={entry} />
@@ -62,6 +62,6 @@ export const EntryDetailsPanel: React.FC<Props> = ({ entry, onDownload, onRename
           </div>
         )}
       </Panel>
-    </>
+    </div>
   );
 };

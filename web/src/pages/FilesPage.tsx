@@ -462,18 +462,16 @@ export const FilesPage: React.FC = () => {
             </tbody>
           </table>
         </Panel>
-        <div className="details">
-          {highlightedEntry ? (
-            <EntryDetailsPanel
-              entry={highlightedEntry}
-              onDownload={() => libraries.download(libraryId, resolvePath(highlightedEntry))}
-              onRename={() => setRenamingEntry(highlightedEntry)}
-              onDelete={() => deleteEntry(highlightedEntry)}
-            />
-          ) : (
-            <LibraryDetailsPanel library={library} />
-          )}
-        </div>
+        {highlightedEntry ? (
+          <EntryDetailsPanel
+            entry={highlightedEntry}
+            onDownload={() => libraries.download(libraryId, resolvePath(highlightedEntry))}
+            onRename={() => setRenamingEntry(highlightedEntry)}
+            onDelete={() => deleteEntry(highlightedEntry)}
+          />
+        ) : (
+          <LibraryDetailsPanel library={library} />
+        )}
       </main>
     </Layout>
   );
