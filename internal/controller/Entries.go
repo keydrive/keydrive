@@ -238,7 +238,7 @@ type MoveEntryDTO struct {
 func MoveEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var request MoveEntryDTO
-		if err := c.ShouldBind(&request); err != nil {
+		if err := c.ShouldBindJSON(&request); err != nil {
 			writeError(c, err)
 			return
 		}
