@@ -547,6 +547,7 @@ describe('FilesPage', () => {
     });
 
     userEvent.click(await screen.findByText('Ballmers Peak Label.xcf'));
+    userEvent.click(screen.getByLabelText('Actions'));
     userEvent.click(screen.getByText('Download'));
     await waitFor(() => {
       expect(window.open).toBeCalledWith('/api/download?token=i_am_a_download_token', '_self');
@@ -595,13 +596,14 @@ describe('FilesPage', () => {
     });
 
     userEvent.click(await screen.findByText('Documents'));
+    userEvent.click(screen.getByLabelText('Actions'));
     userEvent.click(screen.getByText('Delete'));
     await waitFor(() => {
       expect(screen.queryByText('Documents')).toBeNull();
     });
   });
 
-  it('downloads a file on clicking the download menu item', async () => {
+  it('downloads a file on clicking the download context menu item', async () => {
     fetchMock.postOnce(
       {
         url: 'path:/api/libraries/4/entries/download',
@@ -636,7 +638,7 @@ describe('FilesPage', () => {
     });
   });
 
-  it('deletes an entry on clicking the delete menu item', async () => {
+  it('deletes an entry on clicking the delete context menu item', async () => {
     fetchMock.deleteOnce(
       {
         url: 'path:/api/libraries/4/entries',
@@ -810,7 +812,7 @@ describe('FilesPage', () => {
     await screen.findByText('another.zip', { selector: 'td' });
   });
 
-  it('renames a file on clicking the rename menu item', async () => {
+  it('renames a file on clicking the rename context menu item', async () => {
     fetchMock.postOnce(
       {
         url: 'path:/api/libraries/4/entries/move',
@@ -854,6 +856,56 @@ describe('FilesPage', () => {
 
     fireEvent.contextMenu(await screen.findByText('Ballmers Peak Label.xcf'));
     userEvent.click(screen.getByText('Rename', { selector: '.context-menu *' }));
+    userEvent.keyboard('New name.xcf');
+    userEvent.click(screen.getByDisplayValue('New name.xcf').nextElementSibling as Element);
+    expect(await screen.findByText('New name.xcf', { selector: '.details *' })).toBeDefined();
+  });
+
+  it('renames a file on clicking the rename button', async () => {
+    fetchMock.postOnce(
+      {
+        url: 'path:/api/libraries/4/entries/move',
+        body: {
+          source: '/Ballmers Peak Label.xcf',
+          target: '/New name.xcf',
+        },
+      },
+      {
+        status: 204,
+      }
+    );
+    fetchMock.getOnce(
+      {
+        url: 'path:/api/libraries/4/entries',
+        query: {
+          parent: '',
+        },
+        overwriteRoutes: false,
+      },
+      {
+        status: 200,
+        body: [
+          {
+            name: 'New name.xcf',
+            modified: '2021-03-26T23:32:42.139992387+01:00',
+            parent: '/',
+            category: 'Binary',
+            size: 2785246,
+          },
+        ],
+      }
+    );
+
+    await render(<FilesPage />, {
+      path: '/files/4',
+      route: '/files/:library/:path?',
+      loggedIn: true,
+      initialState,
+    });
+
+    userEvent.click(await screen.findByText('Ballmers Peak Label.xcf'));
+    userEvent.click(screen.getByLabelText('Actions'));
+    userEvent.click(screen.getByText('Rename'));
     userEvent.keyboard('New name.xcf');
     userEvent.click(screen.getByDisplayValue('New name.xcf').nextElementSibling as Element);
     expect(await screen.findByText('New name.xcf', { selector: '.details *' })).toBeDefined();

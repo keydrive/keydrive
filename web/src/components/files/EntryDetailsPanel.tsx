@@ -30,7 +30,7 @@ export const EntryDetailsPanel: React.FC<Props> = ({ entry, onDownload, onRename
             <div className="name">{entry.name}</div>
             <div className="category">{entry.category}</div>
           </div>
-          <IconButton icon="ellipsis-h" onClick={() => setShowMenu((prevState) => !prevState)} />
+          <IconButton icon="ellipsis-h" onClick={() => setShowMenu((prevState) => !prevState)} aria-label="Actions" />
         </div>
         {showMenu && (
           <ContextMenu onClose={() => setShowMenu(false)}>
