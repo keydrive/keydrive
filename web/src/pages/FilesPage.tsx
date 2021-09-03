@@ -167,8 +167,7 @@ export const FilesPage: React.FC = () => {
       const getCurrentEntity = pathIsRoot ? Promise.resolve(undefined) : libraries.getEntry(libraryId, path);
       const getCurrentChildren = libraries.getEntries(libraryId, path);
 
-      const newCurrentDir = await getCurrentEntity;
-      const newEntries = await getCurrentChildren;
+      const [newCurrentDir, newEntries] = await Promise.all([getCurrentEntity, getCurrentChildren]);
       setCurrentDir(newCurrentDir);
       setEntries(newEntries);
       return newEntries;
