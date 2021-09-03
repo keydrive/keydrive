@@ -397,6 +397,11 @@ var doc = `{
         },
         "/api/libraries/{libraryId}/entries/move": {
             "post": {
+                "security": [
+                    {
+                        "OAuth2": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],

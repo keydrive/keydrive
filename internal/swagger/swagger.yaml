@@ -497,6 +497,8 @@ paths:
       responses:
         "204":
           description: ""
+      security:
+      - OAuth2: []
       summary: Move a file or folder
       tags:
       - Files

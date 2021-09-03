@@ -230,7 +230,7 @@ type MoveEntryDTO struct {
 // @Tags Files
 // @Router /api/libraries/{libraryId}/entries/move [post]
 // @Summary Move a file or folder
-// @Secutiry OAuth2
+// @Security OAuth2
 // @Produce json
 // @Success 204
 // @Param libraryId path int true "The library id"
