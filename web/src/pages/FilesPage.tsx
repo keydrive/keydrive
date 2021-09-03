@@ -30,12 +30,18 @@ const FileRow = ({
   onSelect,
   selected,
   onContextMenu,
+  renaming,
+  onRename,
+  cancelRename,
 }: {
   entry: Entry;
   selected: boolean;
   onActivate: (entry: Entry) => void;
   onSelect: (entry: Entry) => void;
   onContextMenu: (e: React.MouseEvent<unknown, MouseEvent>, entry?: Entry) => void;
+  renaming: boolean;
+  onRename: (newName: string) => void;
+  cancelRename: () => void;
 }) => {
   const ref = useRef<HTMLTableRowElement | null>(null);
   useEffect(() => {
@@ -45,6 +51,10 @@ const FileRow = ({
       });
     }
   }, [ref, selected]);
+
+  const [newName, setNewName] = useState(entry.name);
+  useEffect(() => setNewName(entry.name), [entry.name, renaming]);
+
   return (
     <tr
       ref={ref}
@@ -59,7 +69,31 @@ const FileRow = ({
       <td className="icon">
         <EntryIcon entry={entry} />
       </td>
-      <td>{entry.name}</td>
+      <td>
+        {renaming ? (
+          <TextInput
+            autoFocus
+            id="new-folder-name"
+            value={newName}
+            onChange={setNewName}
+            iconButton="check"
+            onButtonClick={() => onRename(newName)}
+            onKeyDown={(e) => {
+              e.stopPropagation();
+              if (e.key === 'Escape') {
+                cancelRename();
+              }
+              if (e.key === 'Enter') {
+                onRename(newName);
+              }
+            }}
+            onFocus={(e) => e.currentTarget.select()}
+            onFieldBlur={cancelRename}
+          />
+        ) : (
+          entry.name
+        )}
+      </td>
       <td>{humanReadableDateTime(entry.modified)}</td>
       <td>{entry.category === 'Folder' ? '--' : humanReadableSize(entry.size)}</td>
       <td>{entry.category}</td>
@@ -118,6 +152,8 @@ export const FilesPage: React.FC = () => {
   // File and folder operations.
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [newFolderName, setNewFolderName] = useState<string>();
+  const [renamingEntry, setRenamingEntry] = useState<Entry>();
+  useKeyBind(KeyCode.F2, () => selectedEntry && setRenamingEntry(selectedEntry));
 
   useEffect(() => setSelectedEntry(undefined), [setSelectedEntry, path, libraryId]);
 
@@ -311,6 +347,7 @@ export const FilesPage: React.FC = () => {
             setContextMenuEntry(undefined);
           }}
           onDownload={contextMenuEntry ? () => libraries.download(libraryId, resolvePath(contextMenuEntry)) : undefined}
+          onRename={contextMenuEntry ? () => setRenamingEntry(contextMenuEntry) : undefined}
           onDelete={contextMenuEntry ? () => deleteEntry(contextMenuEntry) : undefined}
           onUpload={() => fileInputRef.current?.click()}
           onNewFolder={() => setNewFolderName('New Folder')}
@@ -401,6 +438,9 @@ export const FilesPage: React.FC = () => {
                   onActivate={onClickEntry}
                   onSelect={setSelectedEntry}
                   onContextMenu={showContextMenu}
+                  renaming={!!renamingEntry && renamingEntry.name === entry.name}
+                  onRename={(newName) => console.log(newName)}
+                  cancelRename={() => setRenamingEntry(undefined)}
                 />
               ))}
             </tbody>
@@ -411,6 +451,7 @@ export const FilesPage: React.FC = () => {
             <EntryDetailsPanel
               entry={highlightedEntry}
               onDownload={() => libraries.download(libraryId, resolvePath(highlightedEntry))}
+              onRename={() => setRenamingEntry(highlightedEntry)}
               onDelete={() => deleteEntry(highlightedEntry)}
             />
           ) : (

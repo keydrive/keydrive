@@ -8,6 +8,7 @@ export enum KeyCode {
   Home = 'Home',
   End = 'End',
   Delete = 'Delete',
+  F2 = 'F2',
 }
 
 export const useKeyBind = (key: KeyCode, handler: () => void): void => {

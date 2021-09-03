@@ -10,10 +10,11 @@ import { humanReadableSize } from '../../utils/humanReadableSize';
 export interface Props {
   entry: Entry;
   onDownload: () => void;
+  onRename: () => void;
   onDelete: () => void;
 }
 
-export const EntryDetailsPanel: React.FC<Props> = ({ entry, onDownload, onDelete }) => (
+export const EntryDetailsPanel: React.FC<Props> = ({ entry, onDownload, onRename, onDelete }) => (
   <>
     <Panel className="info">
       <div className="preview">
@@ -23,12 +24,15 @@ export const EntryDetailsPanel: React.FC<Props> = ({ entry, onDownload, onDelete
       <div className="category">{entry.category}</div>
     </Panel>
     <Panel className="actions">
-      <ButtonGroup fullWidth>
+      <ButtonGroup fullWidth vertical>
         {entry.category !== 'Folder' && (
           <Button onClick={onDownload} icon="download">
             Download
           </Button>
         )}
+        <Button onClick={onRename} icon="pencil-alt">
+          Rename
+        </Button>
         <Button onClick={onDelete} icon="trash">
           Delete
         </Button>
