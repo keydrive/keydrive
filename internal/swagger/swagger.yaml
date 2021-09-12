@@ -137,6 +137,16 @@ definitions:
         - music
         type: string
     type: object
+  controller.MoveEntryDTO:
+    properties:
+      source:
+        type: string
+      target:
+        type: string
+    required:
+    - source
+    - target
+    type: object
   controller.ShareLibraryDTO:
     properties:
       canWrite:
@@ -466,6 +476,30 @@ paths:
       security:
       - OAuth2: []
       summary: Create a download token
+      tags:
+      - Files
+  /api/libraries/{libraryId}/entries/move:
+    post:
+      parameters:
+      - description: The library id
+        in: path
+        name: libraryId
+        required: true
+        type: integer
+      - description: The source and target path
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.MoveEntryDTO'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      security:
+      - OAuth2: []
+      summary: Move a file or folder
       tags:
       - Files
   /api/libraries/{libraryId}/shares:

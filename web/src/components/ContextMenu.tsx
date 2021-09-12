@@ -4,7 +4,7 @@ import { KeyCode, useKeyBind } from '../hooks/useKeyBind';
 import { useDocumentEvent } from '../hooks/useDocumentEvent';
 
 export interface Props {
-  position: Position;
+  position?: Position;
   onClose: () => void;
 }
 
@@ -14,6 +14,14 @@ export const ContextMenu: React.FC<Props> = ({ position, onClose, children }) =>
   useDocumentEvent('contextmenu', onClose);
 
   const [offsetY, setOffsetY] = useState(0);
+
+  let style: React.CSSProperties | undefined;
+  if (position) {
+    style = {
+      left: position.x,
+      top: position.y - offsetY,
+    };
+  }
 
   return (
     <div
@@ -28,10 +36,7 @@ export const ContextMenu: React.FC<Props> = ({ position, onClose, children }) =>
         }
       }}
       className="context-menu"
-      style={{
-        left: position.x,
-        top: position.y - offsetY,
-      }}
+      style={style}
     >
       {children}
     </div>

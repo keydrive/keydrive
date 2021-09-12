@@ -30,12 +30,18 @@ const FileRow = ({
   onSelect,
   selected,
   onContextMenu,
+  renaming,
+  onRename,
+  cancelRename,
 }: {
   entry: Entry;
   selected: boolean;
   onActivate: (entry: Entry) => void;
   onSelect: (entry: Entry) => void;
   onContextMenu: (e: React.MouseEvent<unknown, MouseEvent>, entry?: Entry) => void;
+  renaming: boolean;
+  onRename: (newName: string) => void;
+  cancelRename: () => void;
 }) => {
   const ref = useRef<HTMLTableRowElement | null>(null);
   useEffect(() => {
@@ -45,6 +51,10 @@ const FileRow = ({
       });
     }
   }, [ref, selected]);
+
+  const [newName, setNewName] = useState(entry.name);
+  useEffect(() => setNewName(entry.name), [entry.name, renaming]);
+
   return (
     <tr
       ref={ref}
@@ -59,7 +69,31 @@ const FileRow = ({
       <td className="icon">
         <EntryIcon entry={entry} />
       </td>
-      <td>{entry.name}</td>
+      <td>
+        {renaming ? (
+          <TextInput
+            autoFocus
+            id="new-entry-name"
+            value={newName}
+            onChange={setNewName}
+            iconButton="check"
+            onButtonClick={() => onRename(newName)}
+            onKeyDown={(e) => {
+              e.stopPropagation();
+              if (e.key === 'Escape') {
+                cancelRename();
+              }
+              if (e.key === 'Enter') {
+                onRename(newName);
+              }
+            }}
+            onFocus={(e) => e.currentTarget.select()}
+            onFieldBlur={cancelRename}
+          />
+        ) : (
+          entry.name
+        )}
+      </td>
       <td>{humanReadableDateTime(entry.modified)}</td>
       <td>{entry.category === 'Folder' ? '--' : humanReadableSize(entry.size)}</td>
       <td>{entry.category}</td>
@@ -121,7 +155,8 @@ export const FilesPage: React.FC = () => {
 
   useEffect(() => setSelectedEntry(undefined), [setSelectedEntry, path, libraryId]);
 
-  // This effect triggers when the path changes. This means we should enter a loading state
+  // This effect triggers when the path changes. This means we should enter a loading state.
+  // This function should not be called directly. Instead, call `refresh`.
   const loadEntries = useCallback(async () => {
     setLoadingEntries(true);
     setSelectedEntry(undefined);
@@ -144,16 +179,33 @@ export const FilesPage: React.FC = () => {
   }, [setSelectedEntry, libraryId, path, libraries]);
 
   const refresh = useCallback(() => {
-    loadEntries().catch((e) => {
-      console.error(e);
+    return loadEntries().catch((e) => {
+      console.error('Error while loading entries:', e);
+      return [];
     });
   }, [loadEntries]);
 
   useEffect(() => {
+    // noinspection JSIgnoredPromiseFromCall
     refresh();
   }, [refresh, libraries, path]);
 
   useEffect(() => setHighlightedEntry(undefined), [libraryId]);
+
+  const [renamingEntry, setRenamingEntry] = useState<Entry>();
+  useKeyBind(KeyCode.F2, () => selectedEntry && setRenamingEntry(selectedEntry));
+  const renameEntry = useCallback(
+    async (newName: string) => {
+      if (!renamingEntry) {
+        return;
+      }
+      await libraries.moveEntry(libraryId, resolvePath(renamingEntry), resolvePath(path, newName));
+      setRenamingEntry(undefined);
+      const newEntries = await refresh();
+      setSelectedEntry(newEntries.find((e) => e.name === newName));
+    },
+    [libraries, libraryId, path, refresh, renamingEntry, setSelectedEntry]
+  );
 
   const deleteEntry = useCallback(
     async (target: Entry) => {
@@ -193,11 +245,11 @@ export const FilesPage: React.FC = () => {
 
         lastEntry = await libraries.uploadFile(libraryId, path, file);
       }
-      const newList = await loadEntries();
+      const newList = await refresh();
       setSelectedEntry(newList.find((entry) => entry.name === lastEntry?.name));
       setIsUploading(false);
     },
-    [loadEntries, setSelectedEntry, libraries, libraryId, path]
+    [refresh, setSelectedEntry, libraries, libraryId, path]
   );
   const uploadEntries = useCallback(
     async (items: DataTransferItemList) => {
@@ -223,21 +275,21 @@ export const FilesPage: React.FC = () => {
         }
       }
 
-      const newList = await loadEntries();
+      const newList = await refresh();
       setSelectedEntry(newList.find((entry) => entry.name === lastEntry?.name));
       setIsUploading(false);
     },
-    [loadEntries, setSelectedEntry, libraries, libraryId, path]
+    [refresh, setSelectedEntry, libraries, libraryId, path]
   );
 
   const createFolder = useCallback(
     async (name: string) => {
       const newEntry = await libraries.createFolder(libraryId, path, name);
       setNewFolderName(undefined);
-      const newList = await loadEntries();
+      const newList = await refresh();
       setSelectedEntry(newList.find((e) => e.name === newEntry.name));
     },
-    [loadEntries, libraries, libraryId, path, setSelectedEntry]
+    [refresh, libraries, libraryId, path, setSelectedEntry]
   );
 
   // Current library info.
@@ -311,6 +363,7 @@ export const FilesPage: React.FC = () => {
             setContextMenuEntry(undefined);
           }}
           onDownload={contextMenuEntry ? () => libraries.download(libraryId, resolvePath(contextMenuEntry)) : undefined}
+          onRename={contextMenuEntry ? () => setRenamingEntry(contextMenuEntry) : undefined}
           onDelete={contextMenuEntry ? () => deleteEntry(contextMenuEntry) : undefined}
           onUpload={() => fileInputRef.current?.click()}
           onNewFolder={() => setNewFolderName('New Folder')}
@@ -401,22 +454,24 @@ export const FilesPage: React.FC = () => {
                   onActivate={onClickEntry}
                   onSelect={setSelectedEntry}
                   onContextMenu={showContextMenu}
+                  renaming={!!renamingEntry && renamingEntry.name === entry.name}
+                  onRename={(newName) => renameEntry(newName)}
+                  cancelRename={() => setRenamingEntry(undefined)}
                 />
               ))}
             </tbody>
           </table>
         </Panel>
-        <div className="details">
-          {highlightedEntry ? (
-            <EntryDetailsPanel
-              entry={highlightedEntry}
-              onDownload={() => libraries.download(libraryId, resolvePath(highlightedEntry))}
-              onDelete={() => deleteEntry(highlightedEntry)}
-            />
-          ) : (
-            <LibraryDetailsPanel library={library} />
-          )}
-        </div>
+        {highlightedEntry ? (
+          <EntryDetailsPanel
+            entry={highlightedEntry}
+            onDownload={() => libraries.download(libraryId, resolvePath(highlightedEntry))}
+            onRename={() => setRenamingEntry(highlightedEntry)}
+            onDelete={() => deleteEntry(highlightedEntry)}
+          />
+        ) : (
+          <LibraryDetailsPanel library={library} />
+        )}
       </main>
     </Layout>
   );

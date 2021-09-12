@@ -33,6 +33,12 @@ table {
   }
 
   tbody {
+    &:before {
+      // This is required, otherwise the first row will be 1 pixel too high when it contains an input element.
+      content: '';
+      display: block;
+    }
+
     tr {
       outline: none;
 

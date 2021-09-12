@@ -104,7 +104,7 @@ type DownloadTokenDTO struct {
 // @Tags Files
 // @Router /api/libraries/{libraryId}/entries/download [post]
 // @Summary Create a download token
-// @security OAuth2
+// @Security OAuth2
 // @Produce json
 // @Param body body CreateDownloadTokenDTO true "The file to create a download token for"
 // @Success 201 {object} DownloadTokenDTO
@@ -213,6 +213,41 @@ func DeleteEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin
 			return
 		}
 		err = fs.DeleteEntryInLibrary(library, path)
+		if err != nil {
+			writeError(c, err)
+			return
+		}
+		c.Status(http.StatusNoContent)
+	}
+}
+
+type MoveEntryDTO struct {
+	Source string `binding:"required" json:"source"`
+	Target string `binding:"required" json:"target"`
+}
+
+// MoveEntry
+// @Tags Files
+// @Router /api/libraries/{libraryId}/entries/move [post]
+// @Summary Move a file or folder
+// @Security OAuth2
+// @Produce json
+// @Success 204
+// @Param libraryId path int true "The library id"
+// @Param body body MoveEntryDTO true "The source and target path"
+func MoveEntry(db *gorm.DB, libs *service.Library, fs *service.FileSystem) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var request MoveEntryDTO
+		if err := c.ShouldBindJSON(&request); err != nil {
+			writeError(c, err)
+			return
+		}
+		library, err := getAccessToLib(c, libs, true, db)
+		if err != nil {
+			writeError(c, err)
+			return
+		}
+		err = fs.MoveEntryInLibrary(library, request.Source, request.Target)
 		if err != nil {
 			writeError(c, err)
 			return

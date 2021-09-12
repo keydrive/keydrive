@@ -7,17 +7,31 @@ import { Entry } from '../../services/LibrariesService';
 export interface Props extends ContextMenuProps {
   entry?: Entry;
   onDownload?: () => void;
+  onRename?: () => void;
   onDelete?: () => void;
   onUpload: () => void;
   onNewFolder: () => void;
 }
 
-export const FilesContextMenu: React.FC<Props> = ({ entry, onDownload, onDelete, onUpload, onNewFolder, ...props }) => (
+export const FilesContextMenu: React.FC<Props> = ({
+  entry,
+  onDownload,
+  onRename,
+  onDelete,
+  onUpload,
+  onNewFolder,
+  ...props
+}) => (
   <ContextMenu {...props}>
     <ButtonGroup vertical>
       {entry && entry.category !== 'Folder' && (
         <Button onClick={onDownload} icon="download">
           Download
+        </Button>
+      )}
+      {entry && (
+        <Button onClick={onRename} icon="pencil-alt">
+          Rename
         </Button>
       )}
       {entry && (

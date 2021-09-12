@@ -125,4 +125,11 @@ export class LibrariesService {
     });
     window.open(`/api/download?token=${response.token}`, '_self');
   }
+
+  public moveEntry(libraryId: string, source: string, target: string): Promise<void> {
+    return this.api.jsonPost(`/libraries/${libraryId}/entries/move`, {
+      source,
+      target,
+    });
+  }
 }
