@@ -101,6 +101,12 @@
       display: flex;
       flex-direction: column;
     }
+
+    & > .actions {
+      margin-top: 12px;
+      display: flex;
+      justify-content: flex-end;
+    }
   }
 
   @keyframes fly-in {

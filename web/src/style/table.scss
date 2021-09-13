@@ -59,6 +59,8 @@ table {
   }
 
   &.clickable {
+    user-select: none;
+
     tbody {
       tr {
         &:hover,

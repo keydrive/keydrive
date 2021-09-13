@@ -1,0 +1,16 @@
+.modal.move {
+  .current-dir {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+
+    .parent-dir {
+      margin: 0 12px;
+    }
+  }
+
+  table {
+    background-color: var(--panel-color);
+    border-radius: $border-radius;
+  }
+}

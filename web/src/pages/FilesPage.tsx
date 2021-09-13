@@ -61,9 +61,7 @@ const FileRow = ({
     <tr
       ref={ref}
       key={entry.name}
-      onDoubleClick={() => {
-        onActivate(entry);
-      }}
+      onDoubleClick={() => onActivate(entry)}
       onClick={() => onSelect(entry)}
       className={classNames(selected && 'is-selected')}
       onContextMenu={(e) => onContextMenu(e, entry)}
@@ -325,7 +323,7 @@ export const FilesPage: React.FC = () => {
   }
   return (
     <>
-      {movingEntry && <MoveModal onClose={() => setMovingEntry(false)} />}
+      {movingEntry && <MoveModal onClose={() => setMovingEntry(false)} startPath={path} libraryId={libraryId} />}
       {contextMenuPos && (
         <FilesContextMenu
           position={contextMenuPos}
