@@ -9,6 +9,7 @@
   transform: translateX(-50%);
   box-shadow: 0 4px 48px -10px rgba(0, 0, 0, 0.4);
   animation: fly-in 0.4s forwards;
+  z-index: 2001;
 
   &.closing {
     animation: fly-out 0.4s forwards;
@@ -126,6 +127,7 @@
   height: 100vh;
   background-color: black;
   animation: fade-in 0.4s forwards;
+  z-index: 2000;
 
   &.closing {
     animation: fade-out 0.4s forwards;
