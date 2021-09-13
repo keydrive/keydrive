@@ -23,6 +23,7 @@ import { KeyCode, useKeyBind } from '../hooks/useKeyBind';
 import { LibraryDetailsPanel } from '../components/files/LibraryDetailsPanel';
 import { EntryDetailsPanel } from '../components/files/EntryDetailsPanel';
 import { getAllEntriesRecursive, getFsEntryFile, isDirectoryEntry, isFileEntry } from '../utils/fileSystemEntry';
+import { icons } from '../utils/icons';
 
 const FileRow = ({
   entry,
@@ -345,10 +346,10 @@ export const FilesPage: React.FC = () => {
             data-testid="file-input"
           />
           <ButtonGroup>
-            <Button onClick={() => fileInputRef.current?.click()} icon="upload">
+            <Button onClick={() => fileInputRef.current?.click()} icon={icons.upload}>
               Upload
             </Button>
-            <Button onClick={() => setNewFolderName('New Folder')} icon="folder-plus">
+            <Button onClick={() => setNewFolderName('New Folder')} icon={icons.newFolder}>
               New Folder
             </Button>
           </ButtonGroup>
@@ -395,7 +396,7 @@ export const FilesPage: React.FC = () => {
             }}
             onDragLeave={() => setIsDropping(false)}
           >
-            <Icon icon="upload" />
+            <Icon icon={icons.upload} />
             <div className="text">Drop files to upload</div>
           </div>
           <table className="clickable">
