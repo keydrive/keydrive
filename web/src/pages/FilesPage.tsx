@@ -364,6 +364,7 @@ export const FilesPage: React.FC = () => {
           }}
           onDownload={contextMenuEntry ? () => libraries.download(libraryId, resolvePath(contextMenuEntry)) : undefined}
           onRename={contextMenuEntry ? () => setRenamingEntry(contextMenuEntry) : undefined}
+          onMove={() => console.log('TODO')}
           onDelete={contextMenuEntry ? () => deleteEntry(contextMenuEntry) : undefined}
           onUpload={() => fileInputRef.current?.click()}
           onNewFolder={() => setNewFolderName('New Folder')}
@@ -467,6 +468,7 @@ export const FilesPage: React.FC = () => {
             entry={highlightedEntry}
             onDownload={() => libraries.download(libraryId, resolvePath(highlightedEntry))}
             onRename={() => setRenamingEntry(highlightedEntry)}
+            onMove={() => console.log('TODO')}
             onDelete={() => deleteEntry(highlightedEntry)}
           />
         ) : (

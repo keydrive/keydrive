@@ -9,6 +9,7 @@ export interface Props extends ContextMenuProps {
   onDownload?: () => void;
   onRename?: () => void;
   onDelete?: () => void;
+  onMove?: () => void;
   onUpload: () => void;
   onNewFolder: () => void;
 }
@@ -17,6 +18,7 @@ export const FilesContextMenu: React.FC<Props> = ({
   entry,
   onDownload,
   onRename,
+  onMove,
   onDelete,
   onUpload,
   onNewFolder,
@@ -32,6 +34,11 @@ export const FilesContextMenu: React.FC<Props> = ({
       {entry && (
         <Button onClick={onRename} icon="pencil-alt">
           Rename
+        </Button>
+      )}
+      {entry && (
+        <Button onClick={onMove} icon="reply">
+          Move
         </Button>
       )}
       {entry && (

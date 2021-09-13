@@ -13,10 +13,11 @@ export interface Props {
   entry: Entry;
   onDownload: () => void;
   onRename: () => void;
+  onMove: () => void;
   onDelete: () => void;
 }
 
-export const EntryDetailsPanel: React.FC<Props> = ({ entry, onDownload, onRename, onDelete }) => {
+export const EntryDetailsPanel: React.FC<Props> = ({ entry, onDownload, onRename, onMove, onDelete }) => {
   const [showMenu, setShowMenu] = useState(false);
 
   return (
@@ -42,6 +43,9 @@ export const EntryDetailsPanel: React.FC<Props> = ({ entry, onDownload, onRename
               )}
               <Button onClick={onRename} icon="pencil-alt">
                 Rename
+              </Button>
+              <Button onClick={onMove} icon="reply">
+                Move
               </Button>
               <Button onClick={onDelete} icon="trash">
                 Delete
