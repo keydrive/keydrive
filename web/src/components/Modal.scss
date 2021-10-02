@@ -50,6 +50,7 @@
 
       & > .items {
         flex-grow: 1;
+        overflow-y: auto;
 
         & > .item {
           padding: 12px;
