@@ -19,6 +19,7 @@ var categoryTests = []struct {
 	{"error.log", "", false, model.CategoryDocument, "text/plain"},
 	{"unknown", "", false, model.CategoryBinary, ""},
 	{"uppercase.JPG", "", false, model.CategoryImage, "image/jpeg"},
+	{"excel_template.xltx", "", false, model.CategoryDocument, "application/vnd.openxmlformats-officedocument.spreadsheetml.template"},
 }
 
 func TestGetFileCategory(t *testing.T) {
