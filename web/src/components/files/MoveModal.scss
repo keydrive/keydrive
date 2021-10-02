@@ -9,9 +9,11 @@
     }
   }
 
-  table {
+  .table-wrapper {
     background-color: var(--panel-color);
     border-radius: $border-radius;
+    height: 400px;
+    overflow: auto;
 
     .no-entries {
       font-style: italic;

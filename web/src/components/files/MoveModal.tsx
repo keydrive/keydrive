@@ -69,28 +69,37 @@ export const MoveModal: React.FC<Props> = ({ onClose, libraryId, startPath }) =>
           {currentDir ? resolvePath(currentDir) : '/'} {loadingEntries && <Icon icon="spinner" pulse />}
         </h3>
       </div>
-      <table className="clickable">
-        <colgroup>
-          <col className="icon" />
-          <col />
-        </colgroup>
-        <tbody>
-          {entries.map((entry) => (
-            <tr key={entry.name} onDoubleClick={() => setPath(resolvePath(entry))}>
-              <td className="icon">
-                <EntryIcon entry={entry} />
-              </td>
-              <td>{entry.name}</td>
-            </tr>
-          ))}
-          {!entries.length && (
-            <tr>
-              <td className="icon" />
-              <td className="no-entries">No entries</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+      <div className="table-wrapper">
+        <table className="clickable">
+          <colgroup>
+            <col className="icon" />
+            <col />
+          </colgroup>
+          <tbody>
+            {entries.map((entry) => (
+              <tr
+                key={entry.name}
+                onClick={() => {
+                  if (entry.category === 'Folder') {
+                    setPath(resolvePath(entry));
+                  }
+                }}
+              >
+                <td className="icon">
+                  <EntryIcon entry={entry} />
+                </td>
+                <td>{entry.name}</td>
+              </tr>
+            ))}
+            {!entries.length && (
+              <tr>
+                <td className="icon" />
+                <td className="no-entries">No entries</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
       <div className="actions">
         <Button primary>Move</Button>
       </div>
