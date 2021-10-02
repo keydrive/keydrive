@@ -738,7 +738,7 @@ func GetFileCategory(name string, mimeType string, isDir bool) (model.Category, 
 		return model.CategoryFolder, ""
 	}
 	if mimeType == "" || mimeType == "application/octet-stream" {
-		if trueMimeType, ok := ExtToMime[filepath.Ext(name)]; ok {
+		if trueMimeType, ok := ExtToMime[strings.ToLower(filepath.Ext(name))]; ok {
 			mimeType = trueMimeType
 		}
 	}

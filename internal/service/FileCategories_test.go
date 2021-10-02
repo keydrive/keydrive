@@ -18,6 +18,7 @@ var categoryTests = []struct {
 	{"arbirary_without_ext", "text/arbitrary", false, model.CategoryDocument, "text/arbitrary"},
 	{"error.log", "", false, model.CategoryDocument, "text/plain"},
 	{"unknown", "", false, model.CategoryBinary, ""},
+	{"uppercase.JPG", "", false, model.CategoryImage, "image/jpeg"},
 }
 
 func TestGetFileCategory(t *testing.T) {
