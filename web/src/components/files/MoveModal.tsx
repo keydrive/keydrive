@@ -6,6 +6,7 @@ import { EntryIcon } from '../EntryIcon';
 import { Button } from '../Button';
 import { IconButton } from '../IconButton';
 import { resolvePath } from '../../utils/path';
+import { Icon } from '../Icon';
 
 export interface Props {
   onClose: () => void;
@@ -64,7 +65,9 @@ export const MoveModal: React.FC<Props> = ({ onClose, libraryId, startPath }) =>
             }
           }}
         />
-        <h3>{currentDir?.name || '/'}</h3>
+        <h3>
+          {currentDir ? resolvePath(currentDir) : '/'} {loadingEntries && <Icon icon="spinner" pulse />}
+        </h3>
       </div>
       <table className="clickable">
         <colgroup>
