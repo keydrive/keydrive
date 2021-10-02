@@ -83,6 +83,12 @@ export const MoveModal: React.FC<Props> = ({ onClose, libraryId, startPath }) =>
               <td>{entry.name}</td>
             </tr>
           ))}
+          {!entries.length && (
+            <tr>
+              <td className="icon" />
+              <td className="no-entries">No entries</td>
+            </tr>
+          )}
         </tbody>
       </table>
       <div className="actions">

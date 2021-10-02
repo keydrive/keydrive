@@ -12,5 +12,9 @@
   table {
     background-color: var(--panel-color);
     border-radius: $border-radius;
+
+    .no-entries {
+      font-style: italic;
+    }
   }
 }
