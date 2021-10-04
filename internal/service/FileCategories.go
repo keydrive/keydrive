@@ -710,22 +710,19 @@ var MimeToCategory = map[string]model.Category{
 	"text":  model.CategoryDocument,
 	"video": model.CategoryVideo,
 
-	"application/gzip":             model.CategoryArchive,
-	"application/octet-stream":     model.CategoryBinary,
-	"application/epub+zip":         model.CategoryDocument,
-	"application/msword":           model.CategoryDocument,
-	"application/pdf":              model.CategoryDocument,
-	"application/x-7z-compressed":  model.CategoryArchive,
-	"application/x-rar-compressed": model.CategoryArchive,
-	"application/x-tar":            model.CategoryArchive,
-	"application/zip":              model.CategoryArchive,
-}
-
-var MimePrefixToCategory = map[string]model.Category{
+	"application/gzip":                              model.CategoryArchive,
+	"application/octet-stream":                      model.CategoryBinary,
+	"application/epub+zip":                          model.CategoryDocument,
+	"application/msword":                            model.CategoryDocument,
+	"application/pdf":                               model.CategoryDocument,
 	"application/vnd.ms-excel":                      model.CategoryDocument,
 	"application/vnd.ms-word":                       model.CategoryDocument,
 	"application/vnd.oasis.opendocument":            model.CategoryDocument,
 	"application/vnd.openxmlformats-officedocument": model.CategoryDocument,
+	"application/x-7z-compressed":                   model.CategoryArchive,
+	"application/x-rar-compressed":                  model.CategoryArchive,
+	"application/x-tar":                             model.CategoryArchive,
+	"application/zip":                               model.CategoryArchive,
 }
 
 func GetFileCategory(name string, mimeType string, isDir bool) (model.Category, string) {
@@ -752,10 +749,12 @@ func GetFileCategory(name string, mimeType string, isDir bool) (model.Category, 
 	}
 
 	// Check if the mime type has a known prefix.
-	for prefix, cat := range MimePrefixToCategory {
-		if strings.HasPrefix(mimeType, prefix) {
+	mimeTypePart := mimeType
+	for dotIndex := strings.LastIndex(mimeTypePart, "."); dotIndex != -1; mimeTypePart = mimeTypePart[0:dotIndex] {
+		if cat, ok := MimeToCategory[mimeTypePart]; ok {
 			return cat, mimeType
 		}
+		dotIndex = strings.LastIndex(mimeTypePart, ".")
 	}
 
 	return model.CategoryBinary, mimeType
