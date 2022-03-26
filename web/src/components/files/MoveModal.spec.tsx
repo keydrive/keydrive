@@ -160,7 +160,7 @@ describe('MoveModal', () => {
 
     userEvent.click(await screen.findByText('subdir'));
     expect(await screen.findByText('another')).toBeDefined();
-    userEvent.click(screen.getByText('Move', { selector: 'button span' }));
+    userEvent.click(screen.getByText('Move', { selector: 'button *' }));
     expect(onMove).toBeCalledWith('/subdir');
   });
 });
