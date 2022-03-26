@@ -12,18 +12,22 @@ import { icons } from '../../utils/icons';
 
 export interface Props {
   entry: Entry;
+  onClose: () => void;
   onDownload: () => void;
   onRename: () => void;
   onMove: () => void;
   onDelete: () => void;
 }
 
-export const EntryDetailsPanel: React.FC<Props> = ({ entry, onDownload, onRename, onMove, onDelete }) => {
+export const EntryDetailsPanel: React.FC<Props> = ({ entry, onClose, onDownload, onRename, onMove, onDelete }) => {
   const [showMenu, setShowMenu] = useState(false);
 
   return (
     <div className="details-panel">
       <Panel className="info">
+        <div className="small-screen-actions">
+          <IconButton icon="arrow-left" onClick={onClose} />
+        </div>
         <div className="preview">
           <EntryIcon entry={entry} />
         </div>

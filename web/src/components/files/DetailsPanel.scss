@@ -27,6 +27,14 @@
       flex: 1 1 auto;
     }
 
+    .small-screen-actions {
+      display: none;
+
+      @include screen-max-medium {
+        display: initial;
+      }
+    }
+
     .preview {
       margin: 12px;
       height: 240px;

@@ -491,13 +491,14 @@ export const FilesPage: React.FC = () => {
           {highlightedEntry ? (
             <EntryDetailsPanel
               entry={highlightedEntry}
+              onClose={() => setHighlightedEntry(undefined)}
               onDownload={() => libraries.download(libraryId, resolvePath(highlightedEntry))}
               onRename={() => setRenamingEntry(highlightedEntry)}
               onMove={() => setMovingEntry(highlightedEntry)}
               onDelete={() => deleteEntry(highlightedEntry)}
             />
           ) : (
-            <LibraryDetailsPanel library={library} />
+            <LibraryDetailsPanel library={library} onClose={() => undefined} />
           )}
         </main>
       </Layout>
