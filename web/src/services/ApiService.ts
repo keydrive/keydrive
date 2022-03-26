@@ -22,6 +22,13 @@ export interface ApiErrorDetails {
   codes: string[];
 }
 
+export function isApiError(e: unknown): e is ApiError {
+  if (!e || typeof e !== 'object') {
+    return false;
+  }
+  return 'status' in e && 'error' in e;
+}
+
 export class ApiService {
   public static readonly NAME = 'ApiService';
 

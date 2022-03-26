@@ -1,9 +1,4 @@
-import {
-  FileSystemDirectoryEntry,
-  FileSystemEntry,
-  FileSystemFileEntry,
-  getAllEntriesRecursive,
-} from './fileSystemEntry';
+import { getAllEntriesRecursive } from './fileSystemEntry';
 
 describe('getAllEntriesRecursive', () => {
   it('skips items which are not an entry', async () => {
@@ -54,7 +49,7 @@ function mockFileEntry(fullPath: string): FileSystemFileEntry {
     file: () => {
       throw new Error('Cannot call `file` on mock FileSystemFileEntry.');
     },
-  };
+  } as unknown as FileSystemFileEntry;
 }
 
 function mockDirectoryEntry(fullPath: string, children: FileSystemEntry[]): FileSystemDirectoryEntry {
@@ -73,5 +68,5 @@ function mockDirectoryEntry(fullPath: string, children: FileSystemEntry[]): File
         },
       };
     },
-  };
+  } as FileSystemDirectoryEntry;
 }

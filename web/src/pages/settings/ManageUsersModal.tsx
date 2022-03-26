@@ -5,6 +5,8 @@ import { Modal, ModalLeftPanel, ModalRightPanel } from '../../components/Modal';
 import { Form } from '../../components/input/Form';
 import { TextInput } from '../../components/input/TextInput';
 import { PasswordInput } from '../../components/input/PasswordInput';
+import { errorMessage } from '../../utils/errorMessage';
+import { isApiError } from '../../services/ApiService';
 
 export interface Props {
   onClose: () => void;
@@ -61,10 +63,10 @@ const CreateOrEditUserForm: React.FC<{
               onDone(newUser.id);
             }
           } catch (e) {
-            if (e.error === 'Conflict') {
+            if (isApiError(e) && e.error === 'Conflict') {
               setError('That username is already taken');
             } else {
-              setError(e.message);
+              setError(errorMessage(e));
             }
           }
         }}
@@ -116,7 +118,7 @@ export const ManageUsersModal: React.FC<Props> = ({ onClose }) => {
           try {
             await userService.deleteUser(id);
           } catch (e) {
-            alert(e.description || e.message);
+            alert(errorMessage(e));
           }
           refreshUsers();
         }}

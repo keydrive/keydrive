@@ -95,7 +95,7 @@ swag init --output ./internal/swagger
 go run ./main.go
 ----
 
-You can now access the API docs at http://localhost:5555/docs/index.html
+You can now access the API docs at http://localhost:5555/docs/index.html.
 
 To start the frontend:
 
@@ -111,4 +111,4 @@ yarn
 yarn start
 ----
 
-You can now access the application at http://localhost:3000
+You can now access the application at http://localhost:3000. The default username and password are `admin` and `admin`.

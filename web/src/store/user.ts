@@ -38,7 +38,7 @@ export const userStore = (injector: Injector) => {
       try {
         return (await authService.login(username, password)).accessToken;
       } catch (e) {
-        return rejectWithValue(e);
+        return rejectWithValue(e as ApiError);
       }
     }
   );
@@ -49,7 +49,7 @@ export const userStore = (injector: Injector) => {
       try {
         return await userService.getCurrentUser();
       } catch (e) {
-        return rejectWithValue(e);
+        return rejectWithValue(e as ApiError);
       }
     }
   );
@@ -60,7 +60,7 @@ export const userStore = (injector: Injector) => {
       try {
         return await userService.updateCurrentUser(updates);
       } catch (e) {
-        return rejectWithValue(e);
+        return rejectWithValue(e as ApiError);
       }
     }
   );

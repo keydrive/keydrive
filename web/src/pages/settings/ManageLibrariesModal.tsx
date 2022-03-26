@@ -8,6 +8,7 @@ import { IconButton } from '../../components/IconButton';
 import { useAppDispatch } from '../../store';
 import { librariesStore } from '../../store/libraries';
 import { Modal, ModalLeftPanel, ModalRightPanel } from '../../components/Modal';
+import { errorMessage } from '../../utils/errorMessage';
 
 const CreateLibraryForm: React.FC<{ onDone: (id: number) => void }> = ({ onDone }) => {
   const [name, setName] = useState('');
@@ -35,7 +36,7 @@ const CreateLibraryForm: React.FC<{ onDone: (id: number) => void }> = ({ onDone 
             });
             onDone(lib.id);
           } catch (e) {
-            setError(e.description || e.message);
+            setError(errorMessage(e));
           }
         }}
         submitLabel="Create"
@@ -91,7 +92,7 @@ const EditLibraryForm: React.FC<{ library: LibraryDetails; onDone: () => void }>
             });
             onDone();
           } catch (e) {
-            setError(e.description || e.message);
+            setError(errorMessage(e));
           }
         }}
         submitLabel="Save"
