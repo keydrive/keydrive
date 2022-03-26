@@ -18,6 +18,12 @@
     .parent-dir {
       margin: 0 12px;
     }
+
+    .actions {
+      @include screen-max-small {
+        display: none;
+      }
+    }
   }
 
   main {
@@ -43,9 +49,16 @@
             }
           }
 
-          .size,
+          .size {
+            width: 120px;
+          }
+
           .category {
             width: 120px;
+
+            @include screen-max-small {
+              width: 0;
+            }
           }
         }
       }

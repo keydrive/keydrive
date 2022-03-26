@@ -23,13 +23,25 @@
 }
 
 @mixin screen-min-medium() {
-  @media screen and (min-width: 720px) {
+  @media screen and (min-width: 768px) {
     @content;
   }
 }
 
 @mixin screen-max-medium() {
-  @media screen and (max-width: 719px) {
+  @media screen and (max-width: 767px) {
+    @content;
+  }
+}
+
+@mixin screen-min-small() {
+  @media screen and (min-width: 480px) {
+    @content;
+  }
+}
+
+@mixin screen-max-small() {
+  @media screen and (max-width: 479px) {
     @content;
   }
 }

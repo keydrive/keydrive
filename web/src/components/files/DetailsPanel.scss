@@ -5,6 +5,10 @@
   flex-direction: column;
   background-color: var(--background);
 
+  @include screen-max-large {
+    flex-basis: 320px;
+  }
+
   @include screen-max-medium {
     position: absolute;
     left: 0;
