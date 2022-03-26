@@ -1,4 +1,12 @@
 .files-page {
+  &.sidebar-hidden {
+    main {
+      .files {
+        margin-left: 0;
+      }
+    }
+  }
+
   .top-bar {
     justify-content: space-between;
 

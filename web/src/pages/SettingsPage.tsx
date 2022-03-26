@@ -11,6 +11,7 @@ import { EditProfileModal } from './settings/EditProfileModal';
 import { ManageLibrariesModal } from './settings/ManageLibrariesModal';
 import { useHistory, useParams } from 'react-router-dom';
 import userPlaceholder from '../images/user_placeholder.png';
+import { IconButton } from '../components/IconButton';
 
 interface ModalProps {
   onClose: () => void;
@@ -45,6 +46,7 @@ export const SettingsPage: React.FC = () => {
       {Modal && <Modal onClose={() => history.push('/settings')} />}
       <Layout className="settings-page">
         <div className="top-bar">
+          <IconButton icon="bars" aria-label="Show sidebar" className="show-sidebar" />
           <h1>Settings</h1>
         </div>
         <main>
