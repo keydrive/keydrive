@@ -25,7 +25,7 @@ export const librariesStore = (injector: Injector) => {
       try {
         return await librariesService.listLibraries();
       } catch (e) {
-        return rejectWithValue(e);
+        return rejectWithValue(e as ApiError);
       }
     }
   );

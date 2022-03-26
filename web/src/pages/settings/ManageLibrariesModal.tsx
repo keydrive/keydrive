@@ -34,7 +34,7 @@ const CreateLibraryForm: React.FC<{ onDone: (id: number) => void }> = ({ onDone 
               rootFolder: folder,
             });
             onDone(lib.id);
-          } catch (e) {
+          } catch (e: any) {
             setError(e.description || e.message);
           }
         }}
@@ -90,7 +90,7 @@ const EditLibraryForm: React.FC<{ library: LibraryDetails; onDone: () => void }>
               name: name.trim(),
             });
             onDone();
-          } catch (e) {
+          } catch (e: any) {
             setError(e.description || e.message);
           }
         }}

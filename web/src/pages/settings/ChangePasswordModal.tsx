@@ -31,7 +31,7 @@ export const ChangePasswordModal: React.FC<Props> = ({ onClose }) => {
               password,
             });
             setDone(true);
-          } catch (e) {
+          } catch (e: any) {
             setError(e.message);
           }
         }}

@@ -1,23 +1,3 @@
-// https://developer.mozilla.org/en-US/docs/Web/API/FileSystemEntry
-export interface FileSystemEntry {
-  isFile: boolean;
-  isDirectory: boolean;
-  name: string;
-  fullPath: string;
-}
-
-export interface FileSystemDirectoryEntry extends FileSystemEntry {
-  createReader: () => FileSystemDirectoryReader;
-}
-
-export interface FileSystemFileEntry extends FileSystemEntry {
-  file: (success: (file: File) => void, error: (error: unknown) => void) => void;
-}
-
-export interface FileSystemDirectoryReader {
-  readEntries: (success: (entries: FileSystemEntry[]) => void, error: (error: unknown) => void) => void;
-}
-
 export function isFileEntry(entry: FileSystemEntry): entry is FileSystemFileEntry {
   return entry.isFile;
 }
@@ -34,7 +14,7 @@ export async function getAllEntriesRecursive(items: DataTransferItemList): Promi
   const result: FileSystemEntry[] = [];
 
   for (const item of Array.from(items)) {
-    const entry: FileSystemEntry = item.webkitGetAsEntry();
+    const entry = item.webkitGetAsEntry();
     if (!entry) {
       continue;
     }

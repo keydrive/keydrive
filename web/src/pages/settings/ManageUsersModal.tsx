@@ -60,7 +60,7 @@ const CreateOrEditUserForm: React.FC<{
               });
               onDone(newUser.id);
             }
-          } catch (e) {
+          } catch (e: any) {
             if (e.error === 'Conflict') {
               setError('That username is already taken');
             } else {
@@ -115,7 +115,7 @@ export const ManageUsersModal: React.FC<Props> = ({ onClose }) => {
           setSelectedUser(undefined);
           try {
             await userService.deleteUser(id);
-          } catch (e) {
+          } catch (e: any) {
             alert(e.description || e.message);
           }
           refreshUsers();
