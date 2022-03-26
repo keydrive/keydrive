@@ -152,7 +152,6 @@ export const FilesPage: React.FC = () => {
   // File and folder operations.
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [newFolderName, setNewFolderName] = useState<string>();
-  const [movingEntry, setMovingEntry] = useState(false);
 
   useEffect(() => setSelectedEntry(undefined), [setSelectedEntry, path, libraryId]);
 
@@ -206,6 +205,20 @@ export const FilesPage: React.FC = () => {
       setSelectedEntry(newEntries.find((e) => e.name === newName));
     },
     [libraries, libraryId, path, refresh, renamingEntry, setSelectedEntry]
+  );
+
+  const [movingEntry, setMovingEntry] = useState<Entry>();
+  const moveEntry = useCallback(
+    async (targetDir: string) => {
+      if (!movingEntry) {
+        return;
+      }
+      await libraries.moveEntry(libraryId, resolvePath(movingEntry), resolvePath(targetDir, movingEntry.name));
+      refresh();
+      setMovingEntry(undefined);
+      setHighlightedEntry(undefined);
+    },
+    [libraries, libraryId, refresh, movingEntry]
   );
 
   const deleteEntry = useCallback(
@@ -323,7 +336,14 @@ export const FilesPage: React.FC = () => {
   }
   return (
     <>
-      {movingEntry && <MoveModal onClose={() => setMovingEntry(false)} startPath={path} libraryId={libraryId} />}
+      {movingEntry && (
+        <MoveModal
+          onClose={() => setMovingEntry(undefined)}
+          startPath={path}
+          libraryId={libraryId}
+          onMove={moveEntry}
+        />
+      )}
       {contextMenuPos && (
         <FilesContextMenu
           position={contextMenuPos}
@@ -334,7 +354,7 @@ export const FilesPage: React.FC = () => {
           }}
           onDownload={contextMenuEntry ? () => libraries.download(libraryId, resolvePath(contextMenuEntry)) : undefined}
           onRename={contextMenuEntry ? () => setRenamingEntry(contextMenuEntry) : undefined}
-          onMove={() => setMovingEntry(true)}
+          onMove={contextMenuEntry ? () => setMovingEntry(contextMenuEntry) : undefined}
           onDelete={contextMenuEntry ? () => deleteEntry(contextMenuEntry) : undefined}
           onUpload={() => fileInputRef.current?.click()}
           onNewFolder={() => setNewFolderName('New Folder')}
@@ -471,7 +491,7 @@ export const FilesPage: React.FC = () => {
               entry={highlightedEntry}
               onDownload={() => libraries.download(libraryId, resolvePath(highlightedEntry))}
               onRename={() => setRenamingEntry(highlightedEntry)}
-              onMove={() => setMovingEntry(true)}
+              onMove={() => setMovingEntry(highlightedEntry)}
               onDelete={() => deleteEntry(highlightedEntry)}
             />
           ) : (

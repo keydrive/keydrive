@@ -12,9 +12,10 @@ export interface Props {
   onClose: () => void;
   libraryId: string;
   startPath: string;
+  onMove: (targetDir: string) => void;
 }
 
-export const MoveModal: React.FC<Props> = ({ onClose, libraryId, startPath }) => {
+export const MoveModal: React.FC<Props> = ({ onClose, libraryId, startPath, onMove }) => {
   const libraries = useService(LibrariesService);
   const [path, setPath] = useState(startPath);
   const [currentDir, setCurrentDir] = useState<Entry>();
@@ -101,7 +102,9 @@ export const MoveModal: React.FC<Props> = ({ onClose, libraryId, startPath }) =>
         </table>
       </div>
       <div className="actions">
-        <Button primary>Move</Button>
+        <Button primary onClick={() => onMove(path)}>
+          Move
+        </Button>
       </div>
     </Modal>
   );
