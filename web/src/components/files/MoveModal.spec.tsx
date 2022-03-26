@@ -107,4 +107,60 @@ describe('MoveModal', () => {
     userEvent.click(screen.getByLabelText('Parent directory'));
     expect(await screen.findByText('subdir')).toBeDefined();
   });
+
+  it('calls onMove with the current directory when clicking the move button', async () => {
+    fetchMock.getOnce(
+      {
+        url: 'path:/api/libraries/4/entries',
+        query: {
+          path: '/subdir',
+        },
+        overwriteRoutes: false,
+      },
+      {
+        status: 200,
+        body: [
+          {
+            name: 'subdir',
+            parent: '/',
+            modified: '2021-07-01T19:35:16.658563977+02:00',
+            category: 'Folder',
+            size: 4096,
+          },
+        ],
+      }
+    );
+    fetchMock.getOnce(
+      {
+        url: 'path:/api/libraries/4/entries',
+        query: {
+          parent: '/subdir',
+        },
+        overwriteRoutes: false,
+      },
+      {
+        status: 200,
+        body: [
+          {
+            name: 'another',
+            parent: '/subdir',
+            modified: '2021-07-01T19:35:16.658563977+02:00',
+            category: 'Folder',
+            size: 4096,
+          },
+        ],
+      }
+    );
+
+    const onMove = jest.fn();
+    await render(<MoveModal onClose={jest.fn()} libraryId="4" startPath="/" onMove={onMove} />, {
+      initialState,
+      loggedIn: true,
+    });
+
+    userEvent.click(await screen.findByText('subdir'));
+    expect(await screen.findByText('another')).toBeDefined();
+    userEvent.click(screen.getByText('Move', { selector: 'button span' }));
+    expect(onMove).toBeCalledWith('/subdir');
+  });
 });
