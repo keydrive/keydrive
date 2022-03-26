@@ -75,7 +75,7 @@ const FileRow = ({
             autoFocus
             id="new-entry-name"
             value={newName}
-            onChange={setNewName}
+            onChange={(n) => setNewName(n.replaceAll('/', '').replaceAll('\\', ''))}
             iconButton="check"
             onButtonClick={() => onRename(newName)}
             onKeyDown={(e) => {
