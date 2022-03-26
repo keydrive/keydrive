@@ -29,6 +29,10 @@
         colgroup {
           .modified {
             width: 300px;
+
+            @include screen-max-x-large {
+              width: 0;
+            }
           }
 
           .size,
