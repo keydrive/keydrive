@@ -4,6 +4,7 @@ import { UserService } from '../../services/UserService';
 import { Modal } from '../../components/Modal';
 import { Form } from '../../components/input/Form';
 import { PasswordInput } from '../../components/input/PasswordInput';
+import { errorMessage } from '../../utils/errorMessage';
 
 export interface Props {
   onClose: () => void;
@@ -31,8 +32,8 @@ export const ChangePasswordModal: React.FC<Props> = ({ onClose }) => {
               password,
             });
             setDone(true);
-          } catch (e: any) {
-            setError(e.message);
+          } catch (e) {
+            setError(errorMessage(e));
           }
         }}
         submitLabel="Change"
