@@ -87,5 +87,11 @@
         }
       }
     }
+
+    .details-panel.library {
+      @include screen-max-medium {
+        display: none;
+      }
+    }
   }
 }

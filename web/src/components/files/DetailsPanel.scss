@@ -3,6 +3,16 @@
   margin-left: 12px;
   display: flex;
   flex-direction: column;
+  background-color: var(--background);
+
+  @include screen-max-medium {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: 0;
+  }
 
   .panel {
     padding: 12px;

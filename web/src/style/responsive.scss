@@ -21,3 +21,15 @@
     @content;
   }
 }
+
+@mixin screen-min-medium() {
+  @media screen and (min-width: 720px) {
+    @content;
+  }
+}
+
+@mixin screen-max-medium() {
+  @media screen and (max-width: 719px) {
+    @content;
+  }
+}

@@ -8,7 +8,7 @@ export interface Props {
 }
 
 export const LibraryDetailsPanel: React.FC<Props> = ({ library }) => (
-  <div className="details-panel">
+  <div className="details-panel library">
     <Panel className="info full">
       <div className="preview">
         <Icon icon="folder" />
