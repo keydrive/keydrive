@@ -167,9 +167,7 @@ export const FilesPage: React.FC = () => {
       const getCurrentEntity = pathIsRoot ? Promise.resolve(undefined) : libraries.getEntry(libraryId, path);
       const getCurrentChildren = libraries.getEntries(libraryId, path);
 
-      // TODO: Handle 404 on getCurrentEntity
-      const newCurrentDir = await getCurrentEntity;
-      const newEntries = await getCurrentChildren;
+      const [newCurrentDir, newEntries] = await Promise.all([getCurrentEntity, getCurrentChildren]);
       setCurrentDir(newCurrentDir);
       setEntries(newEntries);
       return newEntries;
@@ -181,9 +179,12 @@ export const FilesPage: React.FC = () => {
   const refresh = useCallback(() => {
     return loadEntries().catch((e) => {
       console.error('Error while loading entries:', e);
+      if (e.status === 404) {
+        history.push('/files');
+      }
       return [];
     });
-  }, [loadEntries]);
+  }, [loadEntries, history]);
 
   useEffect(() => {
     // noinspection JSIgnoredPromiseFromCall

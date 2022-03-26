@@ -710,27 +710,19 @@ var MimeToCategory = map[string]model.Category{
 	"text":  model.CategoryDocument,
 	"video": model.CategoryVideo,
 
-	"application/gzip":                                model.CategoryArchive,
-	"application/octet-stream":                        model.CategoryBinary,
-	"application/epub+zip":                            model.CategoryDocument,
-	"application/pdf":                                 model.CategoryDocument,
-	"application/vnd.oasis.opendocument.presentation": model.CategoryDocument,
-	"application/vnd.oasis.opendocument.spreadsheet":  model.CategoryDocument,
-	"application/vnd.oasis.opendocument.text":         model.CategoryDocument,
-	"application/x-7z-compressed":                     model.CategoryArchive,
-	"application/x-rar-compressed":                    model.CategoryArchive,
-	"application/x-tar":                               model.CategoryArchive,
-	"application/zip":                                 model.CategoryArchive,
-
-	// office formats
-	"application/vnd.openxmlformats-officedocument.wordprocessingml.document":   model.CategoryDocument,
-	"application/vnd.openxmlformats-officedocument.wordprocessingml.template":   model.CategoryDocument,
-	"application/vnd.openxmlformats-officedocument.presentationml.template":     model.CategoryDocument,
-	"application/vnd.openxmlformats-officedocument.presentationml.slideshow":    model.CategoryDocument,
-	"application/vnd.openxmlformats-officedocument.presentationml.presentation": model.CategoryDocument,
-	"application/vnd.openxmlformats-officedocument.presentationml.slide":        model.CategoryDocument,
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":         model.CategoryDocument,
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.template":      model.CategoryDocument,
+	"application/gzip":                              model.CategoryArchive,
+	"application/octet-stream":                      model.CategoryBinary,
+	"application/epub+zip":                          model.CategoryDocument,
+	"application/msword":                            model.CategoryDocument,
+	"application/pdf":                               model.CategoryDocument,
+	"application/vnd.ms-excel":                      model.CategoryDocument,
+	"application/vnd.ms-word":                       model.CategoryDocument,
+	"application/vnd.oasis.opendocument":            model.CategoryDocument,
+	"application/vnd.openxmlformats-officedocument": model.CategoryDocument,
+	"application/x-7z-compressed":                   model.CategoryArchive,
+	"application/x-rar-compressed":                  model.CategoryArchive,
+	"application/x-tar":                             model.CategoryArchive,
+	"application/zip":                               model.CategoryArchive,
 }
 
 func GetFileCategory(name string, mimeType string, isDir bool) (model.Category, string) {
@@ -738,19 +730,32 @@ func GetFileCategory(name string, mimeType string, isDir bool) (model.Category, 
 		return model.CategoryFolder, ""
 	}
 	if mimeType == "" || mimeType == "application/octet-stream" {
-		if trueMimeType, ok := ExtToMime[filepath.Ext(name)]; ok {
+		if trueMimeType, ok := ExtToMime[strings.ToLower(filepath.Ext(name))]; ok {
 			mimeType = trueMimeType
 		}
 	}
 
+	// Check if the mime type matches a known category.
 	if cat, ok := MimeToCategory[mimeType]; ok {
 		return cat, mimeType
 	}
+
+	// Check if the mime type category matches.
 	slash := strings.IndexRune(mimeType, '/')
 	if slash > 0 {
 		if cat, ok := MimeToCategory[mimeType[0:slash]]; ok {
 			return cat, mimeType
 		}
 	}
+
+	// Check if the mime type has a known prefix.
+	mimeTypePart := mimeType
+	for dotIndex := strings.LastIndex(mimeTypePart, "."); dotIndex != -1; mimeTypePart = mimeTypePart[0:dotIndex] {
+		if cat, ok := MimeToCategory[mimeTypePart]; ok {
+			return cat, mimeType
+		}
+		dotIndex = strings.LastIndex(mimeTypePart, ".")
+	}
+
 	return model.CategoryBinary, mimeType
 }
