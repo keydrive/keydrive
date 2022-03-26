@@ -8,15 +8,17 @@ import { humanReadableDateTime } from '../../utils/humanReadableDateTime';
 import { humanReadableSize } from '../../utils/humanReadableSize';
 import { IconButton } from '../IconButton';
 import { ContextMenu } from '../ContextMenu';
+import { icons } from '../../utils/icons';
 
 export interface Props {
   entry: Entry;
   onDownload: () => void;
   onRename: () => void;
+  onMove: () => void;
   onDelete: () => void;
 }
 
-export const EntryDetailsPanel: React.FC<Props> = ({ entry, onDownload, onRename, onDelete }) => {
+export const EntryDetailsPanel: React.FC<Props> = ({ entry, onDownload, onRename, onMove, onDelete }) => {
   const [showMenu, setShowMenu] = useState(false);
 
   return (
@@ -36,14 +38,17 @@ export const EntryDetailsPanel: React.FC<Props> = ({ entry, onDownload, onRename
           <ContextMenu onClose={() => setShowMenu(false)}>
             <ButtonGroup vertical>
               {entry.category !== 'Folder' && (
-                <Button onClick={onDownload} icon="download">
+                <Button onClick={onDownload} icon={icons.download}>
                   Download
                 </Button>
               )}
-              <Button onClick={onRename} icon="pencil-alt">
+              <Button onClick={onRename} icon={icons.rename}>
                 Rename
               </Button>
-              <Button onClick={onDelete} icon="trash">
+              <Button onClick={onMove} icon={icons.move}>
+                Move
+              </Button>
+              <Button onClick={onDelete} icon={icons.delete}>
                 Delete
               </Button>
             </ButtonGroup>
