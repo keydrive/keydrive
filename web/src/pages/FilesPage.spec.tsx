@@ -444,6 +444,7 @@ describe('FilesPage', () => {
     await screen.findByText('Documents');
     userEvent.click(screen.getByText('New Folder'));
     userEvent.keyboard('Create Me');
+    // eslint-disable-next-line testing-library/no-node-access
     userEvent.click(screen.getByDisplayValue('Create Me').nextElementSibling as Element);
     await screen.findByText('Folder Details Pane');
     await screen.findByText('I Am Of Exist');
@@ -857,6 +858,7 @@ describe('FilesPage', () => {
     fireEvent.contextMenu(await screen.findByText('Ballmers Peak Label.xcf'));
     userEvent.click(screen.getByText('Rename', { selector: '.context-menu *' }));
     userEvent.keyboard('New name.xcf');
+    // eslint-disable-next-line testing-library/no-node-access
     userEvent.click(screen.getByDisplayValue('New name.xcf').nextElementSibling as Element);
     expect(await screen.findByText('New name.xcf', { selector: '.details-panel *' })).toBeDefined();
   });
@@ -907,6 +909,7 @@ describe('FilesPage', () => {
     userEvent.click(screen.getByLabelText('Actions'));
     userEvent.click(screen.getByText('Rename'));
     userEvent.keyboard('New name.xcf');
+    // eslint-disable-next-line testing-library/no-node-access
     userEvent.click(screen.getByDisplayValue('New name.xcf').nextElementSibling as Element);
     expect(await screen.findByText('New name.xcf', { selector: '.details-panel *' })).toBeDefined();
   });
