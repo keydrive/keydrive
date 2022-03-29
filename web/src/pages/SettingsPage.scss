@@ -5,12 +5,21 @@
     }
   }
 
-  .panel {
+  .profile-panel {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     padding: 12px;
+
+    @include screen-max-medium {
+      flex-direction: column;
+      align-items: flex-start;
+
+      .profile-info {
+        margin-bottom: 24px;
+      }
+    }
 
     .profile-info {
       display: flex;

@@ -50,7 +50,7 @@ export const SettingsPage: React.FC = () => {
           <h1>Settings</h1>
         </div>
         <main>
-          <Panel>
+          <Panel className="profile-panel">
             <div className="profile-info">
               <img src={userPlaceholder} alt="Profile" />
               <div className="profile-details">
@@ -62,6 +62,11 @@ export const SettingsPage: React.FC = () => {
             <div className="profile-buttons">
               <SettingButton icon="user-edit" label="Edit Profile" onClick={() => history.push('/settings/profile')} />
               <SettingButton
+                icon="user-lock"
+                label="Change Password"
+                onClick={() => history.push('/settings/password')}
+              />
+              <SettingButton
                 icon="sign-out-alt"
                 label="Sign Out"
                 onClick={() => {
@@ -71,11 +76,6 @@ export const SettingsPage: React.FC = () => {
             </div>
           </Panel>
           <div className="settings">
-            <SettingButton
-              icon="user-lock"
-              label="Change Password"
-              onClick={() => history.push('/settings/password')}
-            />
             {user?.isAdmin && (
               <>
                 <SettingButton
