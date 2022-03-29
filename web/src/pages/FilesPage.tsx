@@ -28,8 +28,8 @@ import { MoveModal } from '../components/files/MoveModal';
 
 const FileRow = ({
   entry,
-  onActivate,
-  onSelect,
+  onDoubleClick,
+  onClick,
   selected,
   onContextMenu,
   renaming,
@@ -38,8 +38,8 @@ const FileRow = ({
 }: {
   entry: Entry;
   selected: boolean;
-  onActivate: (entry: Entry) => void;
-  onSelect: (entry: Entry) => void;
+  onDoubleClick?: (entry: Entry) => void;
+  onClick: (entry: Entry) => void;
   onContextMenu: (e: React.MouseEvent<unknown, MouseEvent>, entry?: Entry) => void;
   renaming: boolean;
   onRename: (newName: string) => void;
@@ -61,8 +61,8 @@ const FileRow = ({
     <tr
       ref={ref}
       key={entry.name}
-      onDoubleClick={() => onActivate(entry)}
-      onClick={() => onSelect(entry)}
+      onDoubleClick={onDoubleClick && (() => onDoubleClick(entry))}
+      onClick={() => onClick(entry)}
       className={classNames(selected && 'is-selected')}
       onContextMenu={(e) => onContextMenu(e, entry)}
     >
@@ -116,8 +116,8 @@ export const FilesPage: React.FC = () => {
   const [entries, setEntries] = useState<Entry[]>([]);
   const [loadingEntries, setLoadingEntries] = useState(false);
 
-  // Current directory info and details.
-  const onClickEntry = useCallback(
+  // Activate an entry. For directories (string or Folder entry) this navigates to it. For files this downloads them.
+  const activateEntry = useCallback(
     async (target: string | Entry) => {
       if (typeof target === 'string') {
         history.push(`/files/${libraryId}/${encodeURIComponent(target)}`);
@@ -129,7 +129,7 @@ export const FilesPage: React.FC = () => {
     },
     [history, libraries, libraryId]
   );
-  const { selectedEntry, setSelectedEntry } = useFileNavigator(entries, onClickEntry);
+  const { selectedEntry, setSelectedEntry } = useFileNavigator(entries, activateEntry);
 
   // Context menu info.
   const [contextMenuEntry, setContextMenuEntry] = useState<Entry>();
@@ -367,7 +367,7 @@ export const FilesPage: React.FC = () => {
             <IconButton icon="bars" aria-label="Show sidebar" className="show-sidebar" />
             <IconButton
               className="parent-dir"
-              onClick={() => onClickEntry(currentDir?.parent || '')}
+              onClick={() => activateEntry(currentDir?.parent || '')}
               aria-label="Parent directory"
               icon="level-up-alt"
               disabled={!currentDir}
@@ -477,8 +477,8 @@ export const FilesPage: React.FC = () => {
                     key={entry.name}
                     entry={entry}
                     selected={selectedEntry?.name === entry.name}
-                    onActivate={onClickEntry}
-                    onSelect={setSelectedEntry}
+                    onDoubleClick={entry.category === 'Folder' ? undefined : activateEntry}
+                    onClick={entry.category === 'Folder' ? activateEntry : setSelectedEntry}
                     onContextMenu={showContextMenu}
                     renaming={!!renamingEntry && renamingEntry.name === entry.name}
                     onRename={(newName) => renameEntry(newName)}
