@@ -95,7 +95,7 @@ const FileRow = ({
         )}
       </td>
       <td>{humanReadableDateTime(entry.modified)}</td>
-      <td>{entry.category === 'Folder' ? '--' : humanReadableSize(entry.size)}</td>
+      <td className="size">{entry.category === 'Folder' ? '--' : humanReadableSize(entry.size)}</td>
       <td>{entry.category}</td>
     </tr>
   );
