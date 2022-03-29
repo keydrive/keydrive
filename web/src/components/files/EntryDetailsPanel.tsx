@@ -9,21 +9,32 @@ import { humanReadableSize } from '../../utils/humanReadableSize';
 import { IconButton } from '../IconButton';
 import { ContextMenu } from '../ContextMenu';
 import { icons } from '../../utils/icons';
+import { classNames } from '../../utils/classNames';
 
 export interface Props {
+  className?: string;
   entry: Entry;
   onClose: () => void;
   onDownload: () => void;
   onRename: () => void;
   onMove: () => void;
   onDelete: () => void;
+  active?: boolean;
 }
 
-export const EntryDetailsPanel: React.FC<Props> = ({ entry, onClose, onDownload, onRename, onMove, onDelete }) => {
+export const EntryDetailsPanel: React.FC<Props> = ({
+  entry,
+  onClose,
+  onDownload,
+  onRename,
+  onMove,
+  onDelete,
+  active,
+}) => {
   const [showMenu, setShowMenu] = useState(false);
 
   return (
-    <div className="details-panel">
+    <div className={classNames('details-panel', active && 'active')}>
       <Panel className="info">
         <div className="small-screen-actions">
           <IconButton icon="arrow-left" onClick={onClose} />

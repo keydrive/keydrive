@@ -115,6 +115,7 @@ export const FilesPage: React.FC = () => {
   const [currentDir, setCurrentDir] = useState<Entry>();
   const [entries, setEntries] = useState<Entry[]>([]);
   const [loadingEntries, setLoadingEntries] = useState(false);
+  const [detailsPanelActive, setDetailsPanelActive] = useState(false);
 
   // Activate an entry. For directories (string or Folder entry) this navigates to it. For files this downloads them.
   const activateEntry = useCallback(
@@ -376,23 +377,28 @@ export const FilesPage: React.FC = () => {
               {library.name} {loading && <Icon icon="spinner" pulse />}
             </h1>
           </div>
-          <div className="actions">
-            <input
-              ref={fileInputRef}
-              hidden
-              type="file"
-              onChange={(e) => uploadFiles(e.currentTarget.files)}
-              multiple
-              data-testid="file-input"
-            />
-            <ButtonGroup>
-              <Button onClick={() => fileInputRef.current?.click()} icon={icons.upload}>
-                Upload
-              </Button>
-              <Button onClick={() => setNewFolderName('New Folder')} icon={icons.newFolder}>
-                New Folder
-              </Button>
-            </ButtonGroup>
+          <div>
+            <div className="info">
+              <IconButton icon="circle-info" onClick={() => setDetailsPanelActive(true)} />
+            </div>
+            <div className="actions">
+              <input
+                ref={fileInputRef}
+                hidden
+                type="file"
+                onChange={(e) => uploadFiles(e.currentTarget.files)}
+                multiple
+                data-testid="file-input"
+              />
+              <ButtonGroup>
+                <Button onClick={() => fileInputRef.current?.click()} icon={icons.upload}>
+                  Upload
+                </Button>
+                <Button onClick={() => setNewFolderName('New Folder')} icon={icons.newFolder}>
+                  New Folder
+                </Button>
+              </ButtonGroup>
+            </div>
           </div>
         </div>
         <main>
@@ -491,14 +497,19 @@ export const FilesPage: React.FC = () => {
           {highlightedEntry ? (
             <EntryDetailsPanel
               entry={highlightedEntry}
-              onClose={() => setHighlightedEntry(undefined)}
+              onClose={() => setDetailsPanelActive(false)}
               onDownload={() => libraries.download(libraryId, resolvePath(highlightedEntry))}
               onRename={() => setRenamingEntry(highlightedEntry)}
               onMove={() => setMovingEntry(highlightedEntry)}
               onDelete={() => deleteEntry(highlightedEntry)}
+              active={detailsPanelActive}
             />
           ) : (
-            <LibraryDetailsPanel library={library} onClose={() => undefined} />
+            <LibraryDetailsPanel
+              active={detailsPanelActive}
+              library={library}
+              onClose={() => setDetailsPanelActive(false)}
+            />
           )}
         </main>
       </Layout>

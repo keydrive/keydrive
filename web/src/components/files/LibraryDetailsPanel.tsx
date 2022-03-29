@@ -3,14 +3,16 @@ import { Library } from '../../services/LibrariesService';
 import { Panel } from '../Panel';
 import { Icon } from '../Icon';
 import { IconButton } from '../IconButton';
+import { classNames } from '../../utils/classNames';
 
 export interface Props {
   library: Library;
   onClose: () => void;
+  active?: boolean;
 }
 
-export const LibraryDetailsPanel: React.FC<Props> = ({ library, onClose }) => (
-  <div className="details-panel library">
+export const LibraryDetailsPanel: React.FC<Props> = ({ library, onClose, active }) => (
+  <div className={classNames('details-panel library', active && 'active')}>
     <Panel className="info full">
       <div className="small-screen-actions">
         <IconButton icon="arrow-left" onClick={onClose} />

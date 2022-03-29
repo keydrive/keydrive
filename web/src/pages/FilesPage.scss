@@ -19,7 +19,17 @@
       margin: 0 12px;
     }
 
+    .info {
+      display: none;
+
+      @include screen-max-medium {
+        display: initial;
+      }
+    }
+
     .actions {
+      margin-left: 12px;
+
       @include screen-max-small {
         display: none;
       }
@@ -98,12 +108,6 @@
           // This is necessary to prevent any child elements from handling drag events.
           pointer-events: none;
         }
-      }
-    }
-
-    .details-panel.library {
-      @include screen-max-medium {
-        display: none;
       }
     }
   }
