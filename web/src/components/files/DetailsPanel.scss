@@ -4,7 +4,6 @@
   display: flex;
   flex-direction: column;
   background-color: var(--background);
-  scroll-snap-align: center;
 
   @include screen-max-large {
     flex-basis: 320px;
@@ -25,14 +24,6 @@
   .info {
     &.full {
       flex: 1 1 auto;
-    }
-
-    .small-screen-actions {
-      display: none;
-
-      @include screen-max-medium {
-        display: initial;
-      }
     }
 
     .preview {

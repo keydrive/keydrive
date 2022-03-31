@@ -1,12 +1,4 @@
 .files-page {
-  &.sidebar-hidden {
-    main {
-      .files {
-        margin-left: 0;
-      }
-    }
-  }
-
   .content-wrapper {
     @include screen-max-medium {
       flex: 0 0 calc(200vw + 24px);
@@ -32,22 +24,6 @@
     .parent-dir {
       margin: 0 12px;
     }
-
-    .info {
-      display: none;
-
-      @include screen-max-medium {
-        display: initial;
-      }
-    }
-
-    .actions {
-      margin-left: 12px;
-
-      @include screen-max-small {
-        display: none;
-      }
-    }
   }
 
   main {
@@ -58,7 +34,6 @@
       margin-left: 12px;
       overflow-y: auto;
       position: relative;
-      scroll-snap-align: center;
 
       @include screen-max-medium {
         flex: 0 0 100vw;
