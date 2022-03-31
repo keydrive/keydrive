@@ -47,10 +47,6 @@
         colgroup {
           .modified {
             width: 300px;
-
-            @include screen-max-x-large {
-              width: 0;
-            }
           }
 
           .size {
@@ -59,17 +55,25 @@
 
           .category {
             width: 120px;
-
-            @include screen-max-large {
-              width: 0;
-            }
           }
         }
 
-        td.size {
+        .modified {
+          @include screen-max-x-large {
+            display: none;
+          }
+        }
+
+        .size {
           @include screen-max-small {
             border-top-right-radius: $border-radius;
             border-bottom-right-radius: $border-radius;
+          }
+        }
+
+        .category {
+          @include screen-max-large {
+            display: none;
           }
         }
       }
