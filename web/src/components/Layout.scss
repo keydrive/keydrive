@@ -90,6 +90,15 @@
   .content-wrapper {
     flex: 1 1 auto;
     height: 100vh;
+    position: relative;
+
+    &::after {
+      display: block;
+      content: '';
+      position: absolute;
+      right: 0;
+      scroll-snap-align: end;
+    }
 
     .top-bar {
       height: $top-bar-height;

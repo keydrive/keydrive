@@ -1,4 +1,10 @@
 .settings-page {
+  .content-wrapper {
+    @include screen-max-medium {
+      flex: 0 0 100vw;
+    }
+  }
+
   .top-bar {
     .show-sidebar {
       margin-right: 12px;

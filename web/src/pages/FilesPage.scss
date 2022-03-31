@@ -12,22 +12,12 @@
       flex: 0 0 calc(200vw + 24px);
     }
 
-    position: relative;
-
     &::before {
       display: block;
       content: '';
       position: absolute;
       left: 12px;
       scroll-snap-align: start;
-    }
-
-    &::after {
-      display: block;
-      content: '';
-      position: absolute;
-      right: 0;
-      scroll-snap-align: end;
     }
   }
 
