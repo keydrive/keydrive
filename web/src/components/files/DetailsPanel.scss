@@ -4,23 +4,14 @@
   display: flex;
   flex-direction: column;
   background-color: var(--background);
+  scroll-snap-align: center;
 
   @include screen-max-large {
     flex-basis: 320px;
   }
 
   @include screen-max-medium {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    margin: 0;
-    display: none;
-
-    &.active {
-      display: flex;
-    }
+    flex: 0 0 100vw;
   }
 
   .panel {

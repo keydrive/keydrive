@@ -7,6 +7,30 @@
     }
   }
 
+  .content-wrapper {
+    @include screen-max-medium {
+      flex: 0 0 calc(200vw + 24px);
+    }
+
+    position: relative;
+
+    &::before {
+      display: block;
+      content: '';
+      position: absolute;
+      left: 12px;
+      scroll-snap-align: start;
+    }
+
+    &::after {
+      display: block;
+      content: '';
+      position: absolute;
+      right: 0;
+      scroll-snap-align: end;
+    }
+  }
+
   .top-bar {
     justify-content: space-between;
 
@@ -44,6 +68,11 @@
       margin-left: 12px;
       overflow-y: auto;
       position: relative;
+      scroll-snap-align: center;
+
+      @include screen-max-medium {
+        flex: 0 0 100vw;
+      }
 
       .icon {
         color: var(--primary);

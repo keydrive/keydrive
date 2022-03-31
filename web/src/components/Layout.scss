@@ -1,6 +1,12 @@
 .layout {
   display: flex;
   height: 100%;
+  position: relative;
+
+  @include screen-max-medium {
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+  }
 
   &.sidebar-hidden {
     .content-wrapper {
@@ -20,9 +26,14 @@
     display: flex;
     flex-direction: column;
     padding-bottom: 12px;
+    scroll-snap-align: start;
 
     &.hidden {
       flex-basis: 0;
+    }
+
+    @include screen-max-medium {
+      flex: 0 0 100vw;
     }
 
     .top {
