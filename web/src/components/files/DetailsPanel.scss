@@ -6,7 +6,7 @@
   background-color: var(--background);
 
   @include screen-max-large {
-    flex-basis: 320px;
+    flex-basis: 260px;
   }
 
   @include screen-max-medium {

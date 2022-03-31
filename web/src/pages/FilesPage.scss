@@ -60,7 +60,7 @@
           .category {
             width: 120px;
 
-            @include screen-max-small {
+            @include screen-max-large {
               width: 0;
             }
           }
