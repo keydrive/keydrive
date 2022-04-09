@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Layout } from '../components/Layout';
 import { Panel } from '../components/Panel';
 import { useAppDispatch, useAppSelector } from '../store';
@@ -25,6 +25,11 @@ export const SettingsPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const { setting: activeSetting } = useParams<{ setting?: string }>();
   const history = useHistory();
+  const mainRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    mainRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, []);
 
   let Modal: React.FC<ModalProps> | undefined = undefined;
   switch (activeSetting) {
@@ -47,7 +52,7 @@ export const SettingsPage: React.FC = () => {
         <div className="top-bar">
           <h1>Settings</h1>
         </div>
-        <main>
+        <main ref={mainRef}>
           <Panel className="profile-panel">
             <div className="profile-info">
               <img src={userPlaceholder} alt="Profile" />

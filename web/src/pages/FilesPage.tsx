@@ -111,6 +111,11 @@ export const FilesPage: React.FC = () => {
   const { library: libraryId, path: encodedPath } = useParams<{ library: string; path?: string }>();
   const path = decodeURIComponent(encodedPath || '');
   const history = useHistory();
+  const mainRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    mainRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, []);
 
   const [currentDir, setCurrentDir] = useState<Entry>();
   const [entries, setEntries] = useState<Entry[]>([]);
@@ -361,7 +366,7 @@ export const FilesPage: React.FC = () => {
           onNewFolder={() => setNewFolderName('New Folder')}
         />
       )}
-      <Layout className="files-page">
+      <Layout className="files-page" mainRef={mainRef}>
         <div className="top-bar">
           <div>
             <IconButton
@@ -402,6 +407,7 @@ export const FilesPage: React.FC = () => {
               e.preventDefault();
               setIsDropping(true);
             }}
+            ref={mainRef}
           >
             <div
               className={classNames('drop-overlay', isDropping && 'active')}
