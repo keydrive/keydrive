@@ -65,7 +65,7 @@
         }
 
         .size {
-          @include screen-max-small {
+          @include screen-max-large {
             border-top-right-radius: $border-radius;
             border-bottom-right-radius: $border-radius;
           }
