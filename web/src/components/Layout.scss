@@ -1,6 +1,12 @@
 .layout {
   display: flex;
   height: 100%;
+  position: relative;
+  scroll-snap-type: x mandatory;
+
+  @include screen-max-medium {
+    overflow-x: scroll;
+  }
 
   .sidebar {
     flex: 0 0 220px;
@@ -10,6 +16,11 @@
     display: flex;
     flex-direction: column;
     padding-bottom: 12px;
+    scroll-snap-align: start;
+
+    @include screen-max-medium {
+      flex: 0 0 100vw;
+    }
 
     .logo {
       height: $top-bar-height;
@@ -57,6 +68,15 @@
   .content-wrapper {
     flex: 1 1 auto;
     height: 100vh;
+    position: relative;
+
+    &::after {
+      display: block;
+      content: '';
+      position: absolute;
+      right: 0;
+      scroll-snap-align: end;
+    }
 
     .top-bar {
       height: $top-bar-height;

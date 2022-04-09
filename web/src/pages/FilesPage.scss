@@ -1,4 +1,18 @@
 .files-page {
+  .content-wrapper {
+    @include screen-max-medium {
+      flex: 0 0 calc(200vw + 24px);
+    }
+
+    &::before {
+      display: block;
+      content: '';
+      position: absolute;
+      left: 12px;
+      scroll-snap-align: start;
+    }
+  }
+
   .top-bar {
     justify-content: space-between;
 
@@ -21,6 +35,10 @@
       overflow-y: auto;
       position: relative;
 
+      @include screen-max-medium {
+        flex: 0 0 100vw;
+      }
+
       .icon {
         color: var(--primary);
       }
@@ -31,9 +49,31 @@
             width: 300px;
           }
 
-          .size,
+          .size {
+            width: 120px;
+          }
+
           .category {
             width: 120px;
+          }
+        }
+
+        .modified {
+          @include screen-max-x-large {
+            display: none;
+          }
+        }
+
+        .size {
+          @include screen-max-large {
+            border-top-right-radius: $border-radius;
+            border-bottom-right-radius: $border-radius;
+          }
+        }
+
+        .category {
+          @include screen-max-large {
+            display: none;
           }
         }
       }

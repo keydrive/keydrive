@@ -11,6 +11,7 @@ import { ContextMenu } from '../ContextMenu';
 import { icons } from '../../utils/icons';
 
 export interface Props {
+  className?: string;
   entry: Entry;
   onDownload: () => void;
   onRename: () => void;

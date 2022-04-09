@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Layout } from '../components/Layout';
 import { Panel } from '../components/Panel';
 import { useAppDispatch, useAppSelector } from '../store';
@@ -25,6 +25,11 @@ export const SettingsPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const { setting: activeSetting } = useParams<{ setting?: string }>();
   const history = useHistory();
+  const mainRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    mainRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, []);
 
   let Modal: React.FC<ModalProps> | undefined = undefined;
   switch (activeSetting) {
@@ -47,8 +52,8 @@ export const SettingsPage: React.FC = () => {
         <div className="top-bar">
           <h1>Settings</h1>
         </div>
-        <main>
-          <Panel>
+        <main ref={mainRef}>
+          <Panel className="profile-panel">
             <div className="profile-info">
               <img src={userPlaceholder} alt="Profile" />
               <div className="profile-details">
@@ -60,6 +65,11 @@ export const SettingsPage: React.FC = () => {
             <div className="profile-buttons">
               <SettingButton icon="user-edit" label="Edit Profile" onClick={() => history.push('/settings/profile')} />
               <SettingButton
+                icon="user-lock"
+                label="Change Password"
+                onClick={() => history.push('/settings/password')}
+              />
+              <SettingButton
                 icon="sign-out-alt"
                 label="Sign Out"
                 onClick={() => {
@@ -69,11 +79,6 @@ export const SettingsPage: React.FC = () => {
             </div>
           </Panel>
           <div className="settings">
-            <SettingButton
-              icon="user-lock"
-              label="Change Password"
-              onClick={() => history.push('/settings/password')}
-            />
             {user?.isAdmin && (
               <>
                 <SettingButton

@@ -28,8 +28,8 @@ import { MoveModal } from '../components/files/MoveModal';
 
 const FileRow = ({
   entry,
-  onActivate,
-  onSelect,
+  onDoubleClick,
+  onClick,
   selected,
   onContextMenu,
   renaming,
@@ -38,8 +38,8 @@ const FileRow = ({
 }: {
   entry: Entry;
   selected: boolean;
-  onActivate: (entry: Entry) => void;
-  onSelect: (entry: Entry) => void;
+  onDoubleClick?: (entry: Entry) => void;
+  onClick: (entry: Entry) => void;
   onContextMenu: (e: React.MouseEvent<unknown, MouseEvent>, entry?: Entry) => void;
   renaming: boolean;
   onRename: (newName: string) => void;
@@ -61,8 +61,8 @@ const FileRow = ({
     <tr
       ref={ref}
       key={entry.name}
-      onDoubleClick={() => onActivate(entry)}
-      onClick={() => onSelect(entry)}
+      onDoubleClick={onDoubleClick && (() => onDoubleClick(entry))}
+      onClick={() => onClick(entry)}
       className={classNames(selected && 'is-selected')}
       onContextMenu={(e) => onContextMenu(e, entry)}
     >
@@ -94,9 +94,9 @@ const FileRow = ({
           entry.name
         )}
       </td>
-      <td>{humanReadableDateTime(entry.modified)}</td>
-      <td>{entry.category === 'Folder' ? '--' : humanReadableSize(entry.size)}</td>
-      <td>{entry.category}</td>
+      <td className="modified">{humanReadableDateTime(entry.modified)}</td>
+      <td className="size">{entry.category === 'Folder' ? '--' : humanReadableSize(entry.size)}</td>
+      <td className="category">{entry.category}</td>
     </tr>
   );
 };
@@ -111,13 +111,18 @@ export const FilesPage: React.FC = () => {
   const { library: libraryId, path: encodedPath } = useParams<{ library: string; path?: string }>();
   const path = decodeURIComponent(encodedPath || '');
   const history = useHistory();
+  const mainRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    mainRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, []);
 
   const [currentDir, setCurrentDir] = useState<Entry>();
   const [entries, setEntries] = useState<Entry[]>([]);
   const [loadingEntries, setLoadingEntries] = useState(false);
 
-  // Current directory info and details.
-  const onClickEntry = useCallback(
+  // Activate an entry. For directories (string or Folder entry) this navigates to it. For files this downloads them.
+  const activateEntry = useCallback(
     async (target: string | Entry) => {
       if (typeof target === 'string') {
         history.push(`/files/${libraryId}/${encodeURIComponent(target)}`);
@@ -129,7 +134,7 @@ export const FilesPage: React.FC = () => {
     },
     [history, libraries, libraryId]
   );
-  const { selectedEntry, setSelectedEntry } = useFileNavigator(entries, onClickEntry);
+  const { selectedEntry, setSelectedEntry } = useFileNavigator(entries, activateEntry);
 
   // Context menu info.
   const [contextMenuEntry, setContextMenuEntry] = useState<Entry>();
@@ -361,12 +366,12 @@ export const FilesPage: React.FC = () => {
           onNewFolder={() => setNewFolderName('New Folder')}
         />
       )}
-      <Layout className="files-page">
+      <Layout className="files-page" mainRef={mainRef}>
         <div className="top-bar">
           <div>
             <IconButton
               className="parent-dir"
-              onClick={() => onClickEntry(currentDir?.parent || '')}
+              onClick={() => activateEntry(currentDir?.parent || '')}
               aria-label="Parent directory"
               icon="level-up-alt"
               disabled={!currentDir}
@@ -402,6 +407,7 @@ export const FilesPage: React.FC = () => {
               e.preventDefault();
               setIsDropping(true);
             }}
+            ref={mainRef}
           >
             <div
               className={classNames('drop-overlay', isDropping && 'active')}
@@ -434,9 +440,9 @@ export const FilesPage: React.FC = () => {
                 <tr>
                   <th />
                   <th>Name</th>
-                  <th>Modified</th>
-                  <th>Size</th>
-                  <th>Kind</th>
+                  <th className="modified">Modified</th>
+                  <th className="size">Size</th>
+                  <th className="category">Kind</th>
                 </tr>
               </thead>
               <tbody>
@@ -466,9 +472,9 @@ export const FilesPage: React.FC = () => {
                         onFieldBlur={() => setNewFolderName(undefined)}
                       />
                     </td>
-                    <td />
-                    <td />
-                    <td />
+                    <th className="modified" />
+                    <th className="size" />
+                    <th className="category" />
                   </tr>
                 )}
                 {entries.map((entry) => (
@@ -476,8 +482,8 @@ export const FilesPage: React.FC = () => {
                     key={entry.name}
                     entry={entry}
                     selected={selectedEntry?.name === entry.name}
-                    onActivate={onClickEntry}
-                    onSelect={setSelectedEntry}
+                    onDoubleClick={entry.category === 'Folder' ? undefined : activateEntry}
+                    onClick={entry.category === 'Folder' ? activateEntry : setSelectedEntry}
                     onContextMenu={showContextMenu}
                     renaming={!!renamingEntry && renamingEntry.name === entry.name}
                     onRename={(newName) => renameEntry(newName)}

@@ -3,6 +3,15 @@
   margin-left: 12px;
   display: flex;
   flex-direction: column;
+  background-color: var(--background);
+
+  @include screen-max-large {
+    flex-basis: 260px;
+  }
+
+  @include screen-max-medium {
+    flex: 0 0 100vw;
+  }
 
   .panel {
     padding: 12px;

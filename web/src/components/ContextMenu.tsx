@@ -14,11 +14,12 @@ export const ContextMenu: React.FC<Props> = ({ position, onClose, children }) =>
   useDocumentEvent('contextmenu', onClose);
 
   const [offsetY, setOffsetY] = useState(0);
+  const [offsetX, setOffsetX] = useState(0);
 
   let style: React.CSSProperties | undefined;
   if (position) {
     style = {
-      left: position.x,
+      left: position.x - offsetX,
       top: position.y - offsetY,
     };
   }
@@ -32,6 +33,11 @@ export const ContextMenu: React.FC<Props> = ({ position, onClose, children }) =>
             setOffsetY(rect.height);
           } else {
             setOffsetY(0);
+          }
+          if (rect.right + offsetX >= window.innerWidth) {
+            setOffsetX(rect.width);
+          } else {
+            setOffsetX(0);
           }
         }
       }}
