@@ -364,7 +364,6 @@ export const FilesPage: React.FC = () => {
       <Layout className="files-page">
         <div className="top-bar">
           <div>
-            <IconButton icon="bars" aria-label="Show sidebar" className="show-sidebar" />
             <IconButton
               className="parent-dir"
               onClick={() => activateEntry(currentDir?.parent || '')}
