@@ -81,28 +81,28 @@ jobs:
           path: |
             coverage.out
             junit.xml
-  sonar_analysis:
-    name: SonarCloud Analysis
-    needs:
-      - test_go
-      - test_react
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - uses: actions/download-artifact@v2
-        with:
-          name: frontend-tests
-          path: web
-      - uses: actions/download-artifact@v2
-        with:
-          name: backend-tests
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_LOGIN }}
+#  sonar_analysis:
+#    name: SonarCloud Analysis
+#    needs:
+#      - test_go
+#      - test_react
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v2
+#        with:
+#          fetch-depth: 0
+#      - uses: actions/download-artifact@v2
+#        with:
+#          name: frontend-tests
+#          path: web
+#      - uses: actions/download-artifact@v2
+#        with:
+#          name: backend-tests
+#      - name: SonarCloud Scan
+#        uses: sonarsource/sonarcloud-github-action@master
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          SONAR_TOKEN: ${{ secrets.SONAR_LOGIN }}
   build_react:
     name: Build Frontend
     runs-on: ubuntu-20.04
