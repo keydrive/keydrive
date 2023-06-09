@@ -95,9 +95,9 @@ const FileRow = ({
           entry.name
         )}
       </td>
-      <td>{humanReadableDateTime(entry.modified)}</td>
-      <td>{entry.category === 'Folder' ? '--' : humanReadableSize(entry.size)}</td>
-      <td>{entry.category}</td>
+      <td className="modified">{humanReadableDateTime(entry.modified)}</td>
+      <td className="size">{entry.category === 'Folder' ? '--' : humanReadableSize(entry.size)}</td>
+      <td className="category">{entry.category}</td>
     </tr>
   );
 };
@@ -433,9 +433,9 @@ export const FilesPage: React.FC = () => {
                 <tr>
                   <th />
                   <th>Name</th>
-                  <th>Modified</th>
-                  <th>Size</th>
-                  <th>Kind</th>
+                  <th className="modified">Modified</th>
+                  <th className="size">Size</th>
+                  <th className="category">Kind</th>
                 </tr>
               </thead>
               <tbody>
@@ -465,9 +465,9 @@ export const FilesPage: React.FC = () => {
                         onFieldBlur={() => setNewFolderName(undefined)}
                       />
                     </td>
-                    <td />
-                    <td />
-                    <td />
+                    <td className="modified" />
+                    <td className="size" />
+                    <td className="category" />
                   </tr>
                 )}
                 {entries.map((entry) => (

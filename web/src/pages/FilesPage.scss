@@ -36,6 +36,18 @@
             width: 120px;
           }
         }
+
+        .modified {
+          @include screen-lt-x-large {
+            display: none;
+          }
+        }
+
+        .category {
+          @include screen-lt-large {
+            display: none;
+          }
+        }
       }
     }
   }
