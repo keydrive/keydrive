@@ -69,6 +69,7 @@ export const EntryDetailsPanel: React.FC<Props> = ({
           </ContextMenu>
         )}
       </Panel>
+      <div className="spacer" />
       <Panel className="metadata">
         <div>
           <span>Modified</span>

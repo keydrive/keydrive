@@ -26,10 +26,6 @@
 
   .panel {
     padding: 12px;
-
-    &:not(:last-child) {
-      margin-bottom: 2px;
-    }
   }
 
   .info {
@@ -83,6 +79,19 @@
       :first-child {
         color: var(--light-gray);
       }
+    }
+  }
+
+  .spacer {
+    height: 2px;
+    padding: 0 12px;
+    background-color: var(--panel-color);
+
+    &::after {
+      background-color: var(--background);
+      height: 100%;
+      content: '';
+      display: block;
     }
   }
 }
