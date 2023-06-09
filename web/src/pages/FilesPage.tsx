@@ -30,7 +30,6 @@ import { DropZone } from '../components/files/DropZone';
 const FileRow = ({
   entry,
   onActivate,
-  onSelect,
   selected,
   onContextMenu,
   renaming,
@@ -40,7 +39,6 @@ const FileRow = ({
   entry: Entry;
   selected: boolean;
   onActivate: (entry: Entry) => void;
-  onSelect: (entry: Entry) => void;
   onContextMenu: (e: React.MouseEvent<unknown, MouseEvent>, entry?: Entry) => void;
   renaming: boolean;
   onRename: (newName: string) => void;
@@ -62,8 +60,7 @@ const FileRow = ({
     <tr
       ref={ref}
       key={entry.name}
-      onDoubleClick={() => onActivate(entry)}
-      onClick={() => onSelect(entry)}
+      onClick={() => onActivate(entry)}
       className={classNames(selected && 'is-selected')}
       onContextMenu={(e) => onContextMenu(e, entry)}
     >
@@ -118,20 +115,19 @@ export const FilesPage: React.FC = () => {
   const [loadingEntries, setLoadingEntries] = useState(false);
   const [detailsPanelActive, setDetailsPanelActive] = useState(false);
 
-  // Current directory info and details.
-  const onClickEntry = useCallback(
-    async (target: string | Entry) => {
-      if (typeof target === 'string') {
-        history.push(`/files/${libraryId}/${encodeURIComponent(target)}`);
-      } else if (target.category === 'Folder') {
-        history.push(`/files/${libraryId}/${encodeURIComponent(resolvePath(target))}`);
-      } else {
-        await libraries.download(libraryId, resolvePath(target));
-      }
-    },
-    [history, libraries, libraryId]
-  );
-  const { selectedEntry, setSelectedEntry } = useFileNavigator(entries, onClickEntry);
+  const { selectedEntry, setSelectedEntry } = useFileNavigator(entries, activateEntry);
+
+  // Activate an entry. For directories (string or Folder entry) this navigates to it. For files this selects them.
+  async function activateEntry(target: string | Entry) {
+    if (typeof target === 'string') {
+      history.push(`/files/${libraryId}/${encodeURIComponent(target)}`);
+    } else if (target.category === 'Folder') {
+      history.push(`/files/${libraryId}/${encodeURIComponent(resolvePath(target))}`);
+    } else {
+      setSelectedEntry(target);
+      setDetailsPanelActive(true);
+    }
+  }
 
   // Context menu info.
   const [contextMenuEntry, setContextMenuEntry] = useState<Entry>();
@@ -378,7 +374,7 @@ export const FilesPage: React.FC = () => {
           <div>
             <IconButton
               className="parent-dir"
-              onClick={() => onClickEntry(currentDir?.parent || '')}
+              onClick={() => activateEntry(currentDir?.parent || '')}
               aria-label="Parent directory"
               icon="level-up-alt"
               disabled={!currentDir}
@@ -494,8 +490,7 @@ export const FilesPage: React.FC = () => {
                     key={entry.name}
                     entry={entry}
                     selected={selectedEntry?.name === entry.name}
-                    onActivate={onClickEntry}
-                    onSelect={setSelectedEntry}
+                    onActivate={activateEntry}
                     onContextMenu={showContextMenu}
                     renaming={!!renamingEntry && renamingEntry.name === entry.name}
                     onRename={(newName) => renameEntry(newName)}
