@@ -19,4 +19,9 @@
   .text {
     font-size: 32px;
   }
+
+  * {
+    // This is necessary to prevent any child elements from handling drag events.
+    pointer-events: none;
+  }
 }
