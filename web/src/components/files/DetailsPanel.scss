@@ -4,6 +4,10 @@
   display: flex;
   flex-direction: column;
 
+  @include screen-lt-small {
+    display: none;
+  }
+
   .panel {
     padding: 12px;
 

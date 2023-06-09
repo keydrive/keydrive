@@ -8,6 +8,12 @@
     .parent-dir {
       margin: 0 12px;
     }
+
+    .actions {
+      @include screen-lt-tiny {
+        display: none;
+      }
+    }
   }
 
   main {
