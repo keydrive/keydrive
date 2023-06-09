@@ -366,6 +366,14 @@ export const FilesPage: React.FC = () => {
       )}
       <Layout className="files-page">
         <div className="top-bar">
+          <IconButton
+            className="toggle-sidebar"
+            onClick={() => {
+              // TODO
+            }}
+            aria-label="Show sidebar"
+            icon="bars"
+          />
           <div>
             <IconButton
               className="parent-dir"
@@ -378,6 +386,7 @@ export const FilesPage: React.FC = () => {
               {library.name} {loading && <Icon icon="spinner" pulse />}
             </h1>
           </div>
+          <div className="spacer" />
           <div className="actions">
             <input
               ref={fileInputRef}

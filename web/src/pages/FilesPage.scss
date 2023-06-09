@@ -1,7 +1,5 @@
 .files-page {
   .top-bar {
-    justify-content: space-between;
-
     > div {
       display: flex;
       align-items: center;
@@ -20,6 +18,10 @@
       margin-left: 12px;
       overflow-y: auto;
       position: relative;
+
+      @include screen-lt-medium {
+        margin-left: 0;
+      }
 
       .icon {
         color: var(--primary);
