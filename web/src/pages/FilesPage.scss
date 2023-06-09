@@ -43,6 +43,13 @@
           }
         }
 
+        .size {
+          @include screen-lt-large {
+            border-top-right-radius: $border-radius;
+            border-bottom-right-radius: $border-radius;
+          }
+        }
+
         .category {
           @include screen-lt-large {
             display: none;
