@@ -10,6 +10,8 @@
     }
 
     .actions {
+      margin-left: 12px;
+
       @include screen-lt-tiny {
         display: none;
       }
@@ -18,6 +20,7 @@
 
   main {
     display: flex;
+    position: relative;
 
     .files {
       flex: 1 1 auto;

@@ -6,6 +6,22 @@
 
   @include screen-lt-small {
     display: none;
+    margin-left: 0;
+
+    &.active {
+      display: flex;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+    }
+  }
+
+  .close-panel {
+    @include screen-gt-small {
+      display: none;
+    }
   }
 
   .panel {

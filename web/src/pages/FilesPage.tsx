@@ -116,6 +116,7 @@ export const FilesPage: React.FC = () => {
   const [currentDir, setCurrentDir] = useState<Entry>();
   const [entries, setEntries] = useState<Entry[]>([]);
   const [loadingEntries, setLoadingEntries] = useState(false);
+  const [detailsPanelActive, setDetailsPanelActive] = useState(false);
 
   // Current directory info and details.
   const onClickEntry = useCallback(
@@ -387,6 +388,15 @@ export const FilesPage: React.FC = () => {
             </h1>
           </div>
           <div className="spacer" />
+          <div className="info">
+            <IconButton
+              icon="circle-info"
+              onClick={() => {
+                setDetailsPanelActive(true);
+                setSelectedEntry(undefined);
+              }}
+            />
+          </div>
           <div className="actions">
             <input
               ref={fileInputRef}
@@ -502,9 +512,15 @@ export const FilesPage: React.FC = () => {
               onRename={() => setRenamingEntry(highlightedEntry)}
               onMove={() => setMovingEntry(highlightedEntry)}
               onDelete={() => deleteEntry(highlightedEntry)}
+              active={detailsPanelActive}
+              onClose={() => setDetailsPanelActive(false)}
             />
           ) : (
-            <LibraryDetailsPanel library={library} />
+            <LibraryDetailsPanel
+              library={library}
+              active={detailsPanelActive}
+              onClose={() => setDetailsPanelActive(false)}
+            />
           )}
         </main>
       </Layout>
