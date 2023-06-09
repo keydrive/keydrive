@@ -68,7 +68,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
       - name: Install go dependencies
-        run: go install github.com/jstemmer/go-junit-report
+        run: go get -u github.com/jstemmer/go-junit-report
       - name: Run Backend Tests
         run: go test -v -coverprofile=coverage.out ./... 2>&1 | go-junit-report > junit.xml
       - name: Publish Test Report
