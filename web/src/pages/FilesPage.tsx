@@ -25,6 +25,7 @@ import { EntryDetailsPanel } from '../components/files/EntryDetailsPanel';
 import { getAllEntriesRecursive, getFsEntryFile, isDirectoryEntry, isFileEntry } from '../utils/fileSystemEntry';
 import { icons } from '../utils/icons';
 import { MoveModal } from '../components/files/MoveModal';
+import { DropZone } from '../components/files/DropZone';
 
 const FileRow = ({
   entry,
@@ -403,25 +404,19 @@ export const FilesPage: React.FC = () => {
               setIsDropping(true);
             }}
           >
-            <div
-              className={classNames('drop-overlay', isDropping && 'active')}
-              onDrop={(e) => {
-                e.preventDefault();
-                setIsDropping(false);
-                if (
-                  typeof DataTransferItem === 'function' &&
-                  typeof DataTransferItem.prototype.webkitGetAsEntry === 'function'
-                ) {
-                  uploadEntries(e.dataTransfer.items);
-                } else {
-                  uploadFiles(e.dataTransfer.files);
-                }
-              }}
-              onDragLeave={() => setIsDropping(false)}
-            >
-              <Icon icon={icons.upload} />
-              <div className="text">Drop files to upload</div>
-            </div>
+            {isDropping && (
+              <DropZone
+                onDropEntries={(items) => {
+                  setIsDropping(false);
+                  uploadEntries(items);
+                }}
+                onDropFiles={(items) => {
+                  setIsDropping(false);
+                  uploadFiles(items);
+                }}
+                onDragEnd={() => setIsDropping(false)}
+              />
+            )}
             <table className="clickable">
               <colgroup>
                 <col className="icon" />
