@@ -9,7 +9,6 @@
 
   .button {
     border: none;
-    font-size: 0.85rem;
 
     &:not(:disabled):not(.loading):hover {
       background-color: var(--primary-highlight);
