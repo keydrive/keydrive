@@ -7,9 +7,10 @@ export interface Props {
   onDropEntries: (items: DataTransferItemList) => void;
   onDropFiles: (items: FileList) => void;
   onDragEnd: () => void;
+  top?: number;
 }
 
-export const DropZone = ({ onDropEntries, onDropFiles, ...props }: Props) => {
+export const DropZone = ({ onDropEntries, onDropFiles, top, ...props }: Props) => {
   return (
     <div
       {...props}
@@ -26,6 +27,9 @@ export const DropZone = ({ onDropEntries, onDropFiles, ...props }: Props) => {
         }
       }}
       onDragLeave={props.onDragEnd}
+      style={{
+        top,
+      }}
     >
       <Icon icon={icons.upload} />
       <div className="text">Drop files to upload</div>

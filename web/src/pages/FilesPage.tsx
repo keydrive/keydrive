@@ -235,6 +235,7 @@ export const FilesPage: React.FC = () => {
 
   const [isUploading, setIsUploading] = useState(false);
   const [isDropping, setIsDropping] = useState(false);
+  const [dropZoneTop, setDropZoneTop] = useState(0);
   const uploadFiles = useCallback(
     async (files: FileList | null) => {
       if (!files || files.length === 0) {
@@ -336,6 +337,7 @@ export const FilesPage: React.FC = () => {
     // this library does not exist!
     return <Redirect to="/" />;
   }
+
   return (
     <>
       {movingEntry && (
@@ -403,6 +405,7 @@ export const FilesPage: React.FC = () => {
               e.preventDefault();
               setIsDropping(true);
             }}
+            onScroll={(e) => setDropZoneTop(e.currentTarget.scrollTop)}
           >
             {isDropping && (
               <DropZone
@@ -415,6 +418,7 @@ export const FilesPage: React.FC = () => {
                   uploadFiles(items);
                 }}
                 onDragEnd={() => setIsDropping(false)}
+                top={dropZoneTop}
               />
             )}
             <table className="clickable">
