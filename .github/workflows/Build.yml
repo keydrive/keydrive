@@ -70,7 +70,7 @@ jobs:
       - name: Install go dependencies
         run: go get -u github.com/jstemmer/go-junit-report
       - name: Run Backend Tests
-        run: go test -v -coverprofile=coverage.out ./... 2>&1 | go-junit-report > junit.xml
+        run: PATH="$PATH:$HOME/go/bin" go test -v -coverprofile=coverage.out ./... 2>&1 | go-junit-report > junit.xml
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v2
         with:
