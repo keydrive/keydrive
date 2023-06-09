@@ -46,7 +46,7 @@ services:
       POSTGRES_USER: keydrive
       POSTGRES_PASSWORD: "ChangeMeToASecurePassword"
   database:
-    image: library/postgres:13
+    image: postgres:13
     restart: unless-stopped
     networks:
       - default
