@@ -35,7 +35,7 @@
     "test": "react-scripts test --watchAll=false",
     "eject": "react-scripts eject",
     "lint": "eslint \"src/**/*.{tsx,ts}\"",
-    "clean": "yarn lint --fix && prettier -w \"src/**/*.scss\""
+    "format": "yarn lint --fix && prettier -w \"src/**/*.scss\""
   },
   "browserslist": {
     "production": [
