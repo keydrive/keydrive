@@ -806,6 +806,7 @@ describe('FilesPage', () => {
       loggedIn: true,
       initialState,
     });
+    fireEvent.dragOver(screen.getByText('Name'));
     fireEvent.drop(await screen.findByText('Drop files to upload'), {
       dataTransfer: { files: [dirFile, fileOne, fileTwo] },
     });

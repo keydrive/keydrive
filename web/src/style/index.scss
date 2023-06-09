@@ -20,6 +20,7 @@ $top-bar-height: 64px;
 #root {
   @import 'table';
   @import '../components/files/DetailsPanel';
+  @import '../components/files/DropZone';
   @import '../components/files/MoveModal';
   @import '../components/input/Field';
   @import '../components/input/Form';
