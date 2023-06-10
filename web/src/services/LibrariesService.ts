@@ -1,4 +1,4 @@
-import { ApiService } from './ApiService';
+import { ApiService, isApiError } from './ApiService';
 import { Injector } from './Injector';
 import { User } from './UserService';
 
@@ -92,8 +92,17 @@ export class LibrariesService {
     });
   }
 
-  public getEntries(libraryId: number | string, parent: string): Promise<Entry[]> {
-    return this.api.jsonGet(`/libraries/${libraryId}/entries`, { parent });
+  public async getEntries(libraryId: number | string, parent: string): Promise<Entry[]> {
+    try {
+      return await this.api.jsonGet(`/libraries/${libraryId}/entries`, { parent });
+    } catch (e) {
+      if (isApiError(e) && e.status === 404) {
+        // TODO: Improve error handling.
+        return [];
+      } else {
+        throw e;
+      }
+    }
   }
 
   public async getEntry(libraryId: number | string, path: string): Promise<Entry | undefined> {
