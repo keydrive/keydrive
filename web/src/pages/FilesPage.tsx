@@ -61,7 +61,6 @@ const FileRow = ({
   return (
     <tr
       ref={ref}
-      key={entry.name}
       onClick={() => onActivate(entry)}
       onDoubleClick={() => onDoubleClick(entry)}
       className={classNames(selected && 'is-selected')}
@@ -500,7 +499,7 @@ export const FilesPage: React.FC = () => {
                 )}
                 {entries.map((entry) => (
                   <FileRow
-                    key={entry.name}
+                    key={`${libraryId}/${resolvePath(entry)}`}
                     entry={entry}
                     selected={selectedEntry?.name === entry.name}
                     onActivate={activateEntry}
