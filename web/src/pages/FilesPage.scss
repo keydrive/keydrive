@@ -12,7 +12,7 @@
     .actions {
       margin-left: 12px;
 
-      @include screen-lt-tiny {
+      @include screen-lt-x-small {
         display: none;
       }
     }

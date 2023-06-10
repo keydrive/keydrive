@@ -29,7 +29,7 @@
         }
       }
 
-      @include screen-lt-x-tiny {
+      @include screen-lt-tiny {
         flex-direction: column;
         align-items: flex-start;
 
