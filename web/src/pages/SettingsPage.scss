@@ -29,11 +29,12 @@
         }
       }
 
-      @include screen-lt-small {
+      @include screen-lt-x-tiny {
         flex-direction: column;
+        align-items: flex-start;
 
-        .profile-info {
-          margin-bottom: 24px;
+        img {
+          margin-bottom: 12px;
         }
       }
     }

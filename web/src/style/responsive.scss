@@ -57,3 +57,15 @@
     @content;
   }
 }
+
+@mixin screen-gt-x-tiny() {
+  @media screen and (min-width: 360px) {
+    @content;
+  }
+}
+
+@mixin screen-lt-x-tiny() {
+  @media screen and (max-width: 359px) {
+    @content;
+  }
+}
