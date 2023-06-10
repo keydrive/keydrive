@@ -30,6 +30,7 @@ import { DropZone } from '../components/files/DropZone';
 const FileRow = ({
   entry,
   onActivate,
+  onDoubleClick,
   selected,
   onContextMenu,
   renaming,
@@ -39,6 +40,7 @@ const FileRow = ({
   entry: Entry;
   selected: boolean;
   onActivate: (entry: Entry) => void;
+  onDoubleClick: (entry: Entry) => void;
   onContextMenu: (e: React.MouseEvent<unknown, MouseEvent>, entry?: Entry) => void;
   renaming: boolean;
   onRename: (newName: string) => void;
@@ -61,6 +63,7 @@ const FileRow = ({
       ref={ref}
       key={entry.name}
       onClick={() => onActivate(entry)}
+      onDoubleClick={() => onDoubleClick(entry)}
       className={classNames(selected && 'is-selected')}
       onContextMenu={(e) => onContextMenu(e, entry)}
     >
@@ -128,6 +131,16 @@ export const FilesPage: React.FC = () => {
       setDetailsPanelActive(true);
     }
   }
+
+  // Download an entry. This only works for files.
+  const downloadEntry = useCallback(
+    (target: Entry) => {
+      if (target.category !== 'Folder') {
+        libraries.download(libraryId, resolvePath(target));
+      }
+    },
+    [libraries, libraryId]
+  );
 
   // Context menu info.
   const [contextMenuEntry, setContextMenuEntry] = useState<Entry>();
@@ -491,6 +504,7 @@ export const FilesPage: React.FC = () => {
                     entry={entry}
                     selected={selectedEntry?.name === entry.name}
                     onActivate={activateEntry}
+                    onDoubleClick={downloadEntry}
                     onContextMenu={showContextMenu}
                     renaming={!!renamingEntry && renamingEntry.name === entry.name}
                     onRename={(newName) => renameEntry(newName)}
