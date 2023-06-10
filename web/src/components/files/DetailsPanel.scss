@@ -61,6 +61,11 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+
+      .actions {
+        display: flex;
+        gap: 12px;
+      }
     }
 
     .context-menu {

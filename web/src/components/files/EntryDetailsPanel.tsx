@@ -42,20 +42,22 @@ export const EntryDetailsPanel: React.FC<Props> = ({
           <EntryIcon entry={entry} />
         </div>
         <div className="name-actions">
-          <div>
+          <div className="name-category">
             <div className="name">{entry.name}</div>
             <div className="category">{entry.category}</div>
           </div>
-          <IconButton icon="ellipsis-h" onClick={() => setShowMenu((prevState) => !prevState)} aria-label="Actions" />
+          <div className="actions">
+            {entry.category !== 'Folder' && (
+              <IconButton onClick={onDownload} icon={icons.download} aria-label="Download">
+                Download
+              </IconButton>
+            )}
+            <IconButton icon="ellipsis-h" onClick={() => setShowMenu((prevState) => !prevState)} aria-label="Actions" />
+          </div>
         </div>
         {showMenu && (
           <ContextMenu onClose={() => setShowMenu(false)}>
             <ButtonGroup vertical>
-              {entry.category !== 'Folder' && (
-                <Button onClick={onDownload} icon={icons.download}>
-                  Download
-                </Button>
-              )}
               <Button onClick={onRename} icon={icons.rename}>
                 Rename
               </Button>

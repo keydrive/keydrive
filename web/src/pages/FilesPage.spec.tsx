@@ -548,8 +548,7 @@ describe('FilesPage', () => {
     });
 
     userEvent.click(await screen.findByText('Ballmers Peak Label.xcf'));
-    userEvent.click(screen.getByLabelText('Actions'));
-    userEvent.click(screen.getByText('Download'));
+    userEvent.click(screen.getByLabelText('Download'));
     await waitFor(() => {
       expect(window.open).toBeCalledWith('/api/download?token=i_am_a_download_token', '_self');
     });
