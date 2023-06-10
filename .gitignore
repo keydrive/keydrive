@@ -8,6 +8,7 @@ node_modules/
 coverage/
 junit.xml
 coverage.out
+keydrive
 
 ## MISC ##
 *.log
