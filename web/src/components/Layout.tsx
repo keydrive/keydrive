@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import logo from '../images/logo.svg';
 import { Icon } from './Icon';
@@ -28,7 +28,11 @@ const libraryIcons: Record<LibraryType, string> = {
 export const Layout: React.FC<Props> = ({ children, className }) => {
   const { selectors } = useService(librariesStore);
   const libraries = useAppSelector(selectors.libraries);
-  const [sidebarActive, setSidebarActive] = useState(true);
+  const [sidebarActive, setSidebarActive] = useState(false);
+
+  useEffect(() => {
+    setSidebarActive(false);
+  }, []);
 
   return (
     <div className={classNames('layout', className)}>
@@ -39,7 +43,12 @@ export const Layout: React.FC<Props> = ({ children, className }) => {
         <div className="libraries">
           {libraries ? (
             libraries.map((library) => (
-              <NavLink key={library.id} className="entry" to={`/files/${library.id}`}>
+              <NavLink
+                key={library.id}
+                className="entry"
+                to={`/files/${library.id}`}
+                onClick={() => setSidebarActive(false)}
+              >
                 <Icon icon={libraryIcons[library.type]} />
                 {library.name}
               </NavLink>
@@ -51,7 +60,7 @@ export const Layout: React.FC<Props> = ({ children, className }) => {
           )}
         </div>
         <div>
-          <NavLink to="/settings" className="entry">
+          <NavLink to="/settings" className="entry" onClick={() => setSidebarActive(false)}>
             <Icon icon="cog" />
             Settings
           </NavLink>
