@@ -75,6 +75,8 @@
       }
 
       .toggle-sidebar {
+        margin-right: 12px;
+
         @include screen-gt-medium {
           display: none;
         }
