@@ -1,12 +1,21 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { KeyCode, useKeyBind } from './useKeyBind';
 import { Entry } from '../services/LibrariesService';
+import { useLocation } from 'react-router-dom';
 
 export const useFileNavigator = (
   entries: Entry[] | undefined,
   onActivateEntry: (entry: Entry) => void
 ): { selectedEntry: Entry | undefined; setSelectedEntry: (entry: Entry | undefined) => void } => {
+  const location = useLocation();
+  const hash = decodeURIComponent(location.hash ? location.hash.substring(1) : '');
+
   const [selectedEntry, setSelectedEntry] = useState<Entry>();
+
+  useEffect(() => {
+    setSelectedEntry(entries?.find((e) => e.name === hash));
+  }, [entries, hash]);
+
   const shiftSelectToFirst = useCallback(() => {
     if (entries && entries.length > 0) {
       setSelectedEntry(entries[0]);

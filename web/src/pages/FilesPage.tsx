@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Layout } from '../components/Layout';
 import { Panel } from '../components/Panel';
-import { Redirect, useHistory, useParams } from 'react-router-dom';
+import { Redirect, useHistory, useLocation, useParams } from 'react-router-dom';
 import { useService } from '../hooks/useService';
 import { Entry, LibrariesService } from '../services/LibrariesService';
 import { Icon } from '../components/Icon';
@@ -111,11 +111,12 @@ export const FilesPage: React.FC = () => {
   const { library: libraryId, path: encodedPath } = useParams<{ library: string; path?: string }>();
   const path = decodeURIComponent(encodedPath || '');
   const history = useHistory();
+  const location = useLocation();
+  const hash = decodeURIComponent(location.hash ? location.hash.substring(1) : '');
 
   const [currentDir, setCurrentDir] = useState<Entry>();
   const [entries, setEntries] = useState<Entry[]>([]);
   const [loadingEntries, setLoadingEntries] = useState(false);
-  const [detailsPanelActive, setDetailsPanelActive] = useState(false);
 
   const { selectedEntry, setSelectedEntry } = useFileNavigator(entries, activateEntry);
 
@@ -126,8 +127,8 @@ export const FilesPage: React.FC = () => {
     } else if (target.category === 'Folder') {
       history.push(`/files/${libraryId}/${encodeURIComponent(resolvePath(target))}`);
     } else {
+      history.push(`#${encodeURIComponent(target.name)}`);
       setSelectedEntry(target);
-      setDetailsPanelActive(true);
     }
   }
 
@@ -400,7 +401,7 @@ export const FilesPage: React.FC = () => {
             <IconButton
               icon="circle-info"
               onClick={() => {
-                setDetailsPanelActive(true);
+                history.push(`#.`);
                 setSelectedEntry(undefined);
               }}
             />
@@ -520,15 +521,11 @@ export const FilesPage: React.FC = () => {
               onRename={() => setRenamingEntry(highlightedEntry)}
               onMove={() => setMovingEntry(highlightedEntry)}
               onDelete={() => deleteEntry(highlightedEntry)}
-              active={detailsPanelActive}
-              onClose={() => setDetailsPanelActive(false)}
+              active={hash.length > 0}
+              onClose={() => history.push('#')}
             />
           ) : (
-            <LibraryDetailsPanel
-              library={library}
-              active={detailsPanelActive}
-              onClose={() => setDetailsPanelActive(false)}
-            />
+            <LibraryDetailsPanel library={library} active={hash === '.'} onClose={() => history.push('#')} />
           )}
         </main>
       </Layout>
