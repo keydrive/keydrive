@@ -1,7 +1,6 @@
 .modal {
   position: fixed;
-  width: 33vw;
-  min-width: 600px;
+  width: 600px;
   background-color: var(--side-bar-color);
   border-bottom-right-radius: 12px;
   border-bottom-left-radius: 12px;
@@ -10,6 +9,10 @@
   box-shadow: 0 4px 48px -10px rgba(0, 0, 0, 0.4);
   animation: fly-in 0.4s forwards;
   z-index: 2001;
+
+  @include screen-lt-small {
+    width: 100vw;
+  }
 
   &.closing {
     animation: fly-out 0.4s forwards;
@@ -146,12 +149,12 @@
       opacity: 0;
     }
     100% {
-      opacity: 0.1;
+      opacity: 0.3;
     }
   }
   @keyframes fade-out {
     0% {
-      opacity: 0.1;
+      opacity: 0.3;
     }
     100% {
       opacity: 0;
