@@ -375,159 +375,156 @@ export const FilesPage: React.FC = () => {
         />
       )}
       <Layout className="files-page">
-        <div className="top-bar">
-          <IconButton
-            className="toggle-sidebar"
-            onClick={() => {
-              // TODO
-            }}
-            aria-label="Show sidebar"
-            icon="bars"
-          />
-          <div>
-            <IconButton
-              className="parent-dir"
-              onClick={() => activateEntry(currentDir?.parent || '')}
-              aria-label="Parent directory"
-              icon="level-up-alt"
-              disabled={!currentDir}
-            />
-            <h1>
-              {library.name} {loading && <Icon icon="spinner" pulse />}
-            </h1>
-          </div>
-          <div className="spacer" />
-          <div className="info">
-            <IconButton
-              icon="circle-info"
-              onClick={() => {
-                history.push(`#.`);
-                setSelectedEntry(undefined);
-              }}
-            />
-          </div>
-          <div className="actions">
-            <input
-              ref={fileInputRef}
-              hidden
-              type="file"
-              onChange={(e) => uploadFiles(e.currentTarget.files)}
-              multiple
-              data-testid="file-input"
-            />
-            <ButtonGroup>
-              <Button onClick={() => fileInputRef.current?.click()} icon={icons.upload}>
-                Upload
-              </Button>
-              <Button onClick={() => setNewFolderName('New Folder')} icon={icons.newFolder}>
-                New Folder
-              </Button>
-            </ButtonGroup>
-          </div>
-        </div>
-        <main>
-          <Panel
-            className="files"
-            onContextMenu={(e) => showContextMenu(e)}
-            onDragOver={(e) => {
-              e.preventDefault();
-              setIsDropping(true);
-            }}
-            onScroll={(e) => setDropZoneTop(e.currentTarget.scrollTop)}
-          >
-            {isDropping && (
-              <DropZone
-                onDropEntries={(items) => {
-                  setIsDropping(false);
-                  uploadEntries(items);
+        {({ activateSidebar }) => (
+          <>
+            <div className="top-bar">
+              <IconButton className="toggle-sidebar" onClick={activateSidebar} aria-label="Show sidebar" icon="bars" />
+              <div>
+                <IconButton
+                  className="parent-dir"
+                  onClick={() => activateEntry(currentDir?.parent || '')}
+                  aria-label="Parent directory"
+                  icon="level-up-alt"
+                  disabled={!currentDir}
+                />
+                <h1>
+                  {library.name} {loading && <Icon icon="spinner" pulse />}
+                </h1>
+              </div>
+              <div className="spacer" />
+              <div className="info">
+                <IconButton
+                  icon="circle-info"
+                  onClick={() => {
+                    history.push(`#.`);
+                    setSelectedEntry(undefined);
+                  }}
+                />
+              </div>
+              <div className="actions">
+                <input
+                  ref={fileInputRef}
+                  hidden
+                  type="file"
+                  onChange={(e) => uploadFiles(e.currentTarget.files)}
+                  multiple
+                  data-testid="file-input"
+                />
+                <ButtonGroup>
+                  <Button onClick={() => fileInputRef.current?.click()} icon={icons.upload}>
+                    Upload
+                  </Button>
+                  <Button onClick={() => setNewFolderName('New Folder')} icon={icons.newFolder}>
+                    New Folder
+                  </Button>
+                </ButtonGroup>
+              </div>
+            </div>
+            <main>
+              <Panel
+                className="files"
+                onContextMenu={(e) => showContextMenu(e)}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setIsDropping(true);
                 }}
-                onDropFiles={(items) => {
-                  setIsDropping(false);
-                  uploadFiles(items);
-                }}
-                onDragEnd={() => setIsDropping(false)}
-                top={dropZoneTop}
-              />
-            )}
-            <table className="clickable">
-              <colgroup>
-                <col className="icon" />
-                <col />
-                <col className="modified" />
-                <col className="size" />
-                <col className="category" />
-              </colgroup>
-              <thead>
-                <tr>
-                  <th />
-                  <th>Name</th>
-                  <th className="modified">Modified</th>
-                  <th className="size">Size</th>
-                  <th className="category">Kind</th>
-                </tr>
-              </thead>
-              <tbody>
-                {newFolderName != null && (
-                  <tr>
-                    <td className="icon" />
-                    <td>
-                      <TextInput
-                        autoFocus
-                        id="new-folder-name"
-                        value={newFolderName}
-                        onChange={setNewFolderName}
-                        iconButton="folder-plus"
-                        onButtonClick={() => createFolder(newFolderName)}
-                        onKeyDown={(e) => {
-                          e.stopPropagation();
-                          if (e.key === 'Escape') {
-                            setNewFolderName(undefined);
-                          }
-                          if (e.key === 'Enter') {
-                            createFolder(newFolderName).catch((err) => {
-                              console.error(err);
-                            });
-                          }
-                        }}
-                        onFocus={(e) => e.currentTarget.select()}
-                        onFieldBlur={() => setNewFolderName(undefined)}
-                      />
-                    </td>
-                    <td className="modified" />
-                    <td className="size" />
-                    <td className="category" />
-                  </tr>
-                )}
-                {entries.map((entry) => (
-                  <FileRow
-                    key={`${libraryId}/${resolvePath(entry)}`}
-                    entry={entry}
-                    selected={selectedEntry?.name === entry.name}
-                    onActivate={activateEntry}
-                    onDoubleClick={downloadEntry}
-                    onContextMenu={showContextMenu}
-                    renaming={!!renamingEntry && renamingEntry.name === entry.name}
-                    onRename={(newName) => renameEntry(newName)}
-                    cancelRename={() => setRenamingEntry(undefined)}
+                onScroll={(e) => setDropZoneTop(e.currentTarget.scrollTop)}
+              >
+                {isDropping && (
+                  <DropZone
+                    onDropEntries={(items) => {
+                      setIsDropping(false);
+                      uploadEntries(items);
+                    }}
+                    onDropFiles={(items) => {
+                      setIsDropping(false);
+                      uploadFiles(items);
+                    }}
+                    onDragEnd={() => setIsDropping(false)}
+                    top={dropZoneTop}
                   />
-                ))}
-              </tbody>
-            </table>
-          </Panel>
-          {highlightedEntry ? (
-            <EntryDetailsPanel
-              entry={highlightedEntry}
-              onDownload={() => libraries.download(libraryId, resolvePath(highlightedEntry))}
-              onRename={() => setRenamingEntry(highlightedEntry)}
-              onMove={() => setMovingEntry(highlightedEntry)}
-              onDelete={() => deleteEntry(highlightedEntry)}
-              active={hash.length > 0}
-              onClose={() => history.push('#')}
-            />
-          ) : (
-            <LibraryDetailsPanel library={library} active={hash === '.'} onClose={() => history.push('#')} />
-          )}
-        </main>
+                )}
+                <table className="clickable">
+                  <colgroup>
+                    <col className="icon" />
+                    <col />
+                    <col className="modified" />
+                    <col className="size" />
+                    <col className="category" />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th />
+                      <th>Name</th>
+                      <th className="modified">Modified</th>
+                      <th className="size">Size</th>
+                      <th className="category">Kind</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {newFolderName != null && (
+                      <tr>
+                        <td className="icon" />
+                        <td>
+                          <TextInput
+                            autoFocus
+                            id="new-folder-name"
+                            value={newFolderName}
+                            onChange={setNewFolderName}
+                            iconButton="folder-plus"
+                            onButtonClick={() => createFolder(newFolderName)}
+                            onKeyDown={(e) => {
+                              e.stopPropagation();
+                              if (e.key === 'Escape') {
+                                setNewFolderName(undefined);
+                              }
+                              if (e.key === 'Enter') {
+                                createFolder(newFolderName).catch((err) => {
+                                  console.error(err);
+                                });
+                              }
+                            }}
+                            onFocus={(e) => e.currentTarget.select()}
+                            onFieldBlur={() => setNewFolderName(undefined)}
+                          />
+                        </td>
+                        <td className="modified" />
+                        <td className="size" />
+                        <td className="category" />
+                      </tr>
+                    )}
+                    {entries.map((entry) => (
+                      <FileRow
+                        key={`${libraryId}/${resolvePath(entry)}`}
+                        entry={entry}
+                        selected={selectedEntry?.name === entry.name}
+                        onActivate={activateEntry}
+                        onDoubleClick={downloadEntry}
+                        onContextMenu={showContextMenu}
+                        renaming={!!renamingEntry && renamingEntry.name === entry.name}
+                        onRename={(newName) => renameEntry(newName)}
+                        cancelRename={() => setRenamingEntry(undefined)}
+                      />
+                    ))}
+                  </tbody>
+                </table>
+              </Panel>
+              {highlightedEntry ? (
+                <EntryDetailsPanel
+                  entry={highlightedEntry}
+                  onDownload={() => libraries.download(libraryId, resolvePath(highlightedEntry))}
+                  onRename={() => setRenamingEntry(highlightedEntry)}
+                  onMove={() => setMovingEntry(highlightedEntry)}
+                  onDelete={() => deleteEntry(highlightedEntry)}
+                  active={hash.length > 0}
+                  onClose={() => history.push('#')}
+                />
+              ) : (
+                <LibraryDetailsPanel library={library} active={hash === '.'} onClose={() => history.push('#')} />
+              )}
+            </main>
+          </>
+        )}
       </Layout>
     </>
   );

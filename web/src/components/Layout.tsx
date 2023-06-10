@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import logo from '../images/logo.svg';
 import { Icon } from './Icon';
@@ -8,8 +8,13 @@ import { classNames } from '../utils/classNames';
 import { librariesStore } from '../store/libraries';
 import { useAppSelector } from '../store';
 
+export interface ChildProps {
+  activateSidebar: () => void;
+}
+
 export interface Props {
   className?: string;
+  children: ({ activateSidebar }: ChildProps) => ReactNode;
 }
 
 const libraryIcons: Record<LibraryType, string> = {
@@ -23,10 +28,11 @@ const libraryIcons: Record<LibraryType, string> = {
 export const Layout: React.FC<Props> = ({ children, className }) => {
   const { selectors } = useService(librariesStore);
   const libraries = useAppSelector(selectors.libraries);
+  const [sidebarActive, setSidebarActive] = useState(true);
 
   return (
     <div className={classNames('layout', className)}>
-      <div className="sidebar">
+      <div className={classNames('sidebar', sidebarActive && 'active')}>
         <Link to="/" className="logo">
           <img src={logo} alt="logo" />
         </Link>
@@ -51,7 +57,7 @@ export const Layout: React.FC<Props> = ({ children, className }) => {
           </NavLink>
         </div>
       </div>
-      <div className="content-wrapper">{children}</div>
+      <div className="content-wrapper">{children({ activateSidebar: () => setSidebarActive(true) })}</div>
     </div>
   );
 };

@@ -45,55 +45,56 @@ export const SettingsPage: React.FC = () => {
     <>
       {Modal && <Modal onClose={() => history.push('/settings')} />}
       <Layout className="settings-page">
-        <div className="top-bar">
-          <IconButton
-            className="toggle-sidebar"
-            onClick={() => {
-              // TODO
-            }}
-            aria-label="Show sidebar"
-            icon="bars"
-          />
-          <h1>Settings</h1>
-        </div>
-        <main>
-          <Panel className="profile-panel">
-            <div className="profile-info">
-              <img src={userPlaceholder} alt="Profile" />
-              <div className="profile-details">
-                <h2>{user?.name}</h2>
-                <span className="subtitle">{user?.username}</span>
-                {user?.isAdmin && <Tag>admin</Tag>}
-              </div>
+        {({ activateSidebar }) => (
+          <>
+            <div className="top-bar">
+              <IconButton className="toggle-sidebar" onClick={activateSidebar} aria-label="Show sidebar" icon="bars" />
+              <h1>Settings</h1>
             </div>
-            <div className="profile-buttons">
-              <SettingButton
-                icon="sign-out-alt"
-                label="Sign Out"
-                onClick={() => {
-                  dispatch(logout());
-                }}
-              />
-            </div>
-          </Panel>
-          <div className="settings">
-            <SettingButton icon="user-edit" label="Edit Profile" onClick={() => history.push('/settings/profile')} />
-            <SettingButton
-              icon="user-lock"
-              label="Change Password"
-              onClick={() => history.push('/settings/password')}
-            />
-            {user?.isAdmin && (
-              <>
+            <main>
+              <Panel className="profile-panel">
+                <div className="profile-info">
+                  <img src={userPlaceholder} alt="Profile" />
+                  <div className="profile-details">
+                    <h2>{user?.name}</h2>
+                    <span className="subtitle">{user?.username}</span>
+                    {user?.isAdmin && <Tag>admin</Tag>}
+                  </div>
+                </div>
+                <div className="profile-buttons">
+                  <SettingButton
+                    icon="sign-out-alt"
+                    label="Sign Out"
+                    onClick={() => {
+                      dispatch(logout());
+                    }}
+                  />
+                </div>
+              </Panel>
+              <div className="settings">
                 <SettingButton
-                  icon="folder"
-                  label="Manage Libraries"
-                  onClick={() => history.push('/settings/libraries')}
+                  icon="user-edit"
+                  label="Edit Profile"
+                  onClick={() => history.push('/settings/profile')}
                 />
-              </>
-            )}
-          </div>
-        </main>
+                <SettingButton
+                  icon="user-lock"
+                  label="Change Password"
+                  onClick={() => history.push('/settings/password')}
+                />
+                {user?.isAdmin && (
+                  <>
+                    <SettingButton
+                      icon="folder"
+                      label="Manage Libraries"
+                      onClick={() => history.push('/settings/libraries')}
+                    />
+                  </>
+                )}
+              </div>
+            </main>
+          </>
+        )}
       </Layout>
     </>
   );
