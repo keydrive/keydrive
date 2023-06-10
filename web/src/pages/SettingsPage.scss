@@ -1,5 +1,5 @@
 .settings-page {
-  .panel {
+  .profile-panel {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -26,6 +26,15 @@
 
         .tag {
           margin-top: 6px;
+        }
+      }
+
+      @include screen-lt-tiny {
+        flex-direction: column;
+        align-items: flex-start;
+
+        img {
+          margin-bottom: 12px;
         }
       }
     }

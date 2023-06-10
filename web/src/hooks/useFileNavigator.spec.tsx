@@ -2,7 +2,7 @@ import { useFileNavigator } from './useFileNavigator';
 import { Entry } from '../services/LibrariesService';
 import { KeyCode } from './useKeyBind';
 import { render } from '../__testutils__/render';
-import { screen, fireEvent } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 
 describe('useFileNavigator', () => {
   it('can navigate using arrow keys', () => {
@@ -95,5 +95,34 @@ describe('useFileNavigator', () => {
     expect(onActivate).toHaveBeenCalledTimes(1);
     fireEvent.keyDown(document, { key: KeyCode.Enter });
     expect(onActivate).toHaveBeenCalledTimes(1);
+  });
+
+  it('sets the selected entry from the hash', async () => {
+    const entries: Entry[] = [
+      {
+        name: 'One.txt',
+        parent: '/',
+        category: 'Document',
+        modified: '',
+        size: 0,
+      },
+      {
+        name: 'One (2).txt',
+        parent: '/',
+        category: 'Document',
+        modified: '',
+        size: 0,
+      },
+    ];
+
+    let selectedEntry: Entry | undefined;
+    const TestComponent = () => {
+      selectedEntry = useFileNavigator(entries, jest.fn).selectedEntry;
+      return null;
+    };
+
+    await render(<TestComponent />, { path: '#One%20(2).txt' });
+
+    expect(selectedEntry).toStrictEqual(entries[1]);
   });
 });

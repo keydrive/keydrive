@@ -4,12 +4,28 @@
   display: flex;
   flex-direction: column;
 
+  @include screen-lt-small {
+    display: none;
+    margin-left: 0;
+
+    &.active {
+      display: flex;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+    }
+  }
+
+  .close-panel {
+    @include screen-gt-small {
+      display: none;
+    }
+  }
+
   .panel {
     padding: 12px;
-
-    &:not(:last-child) {
-      margin-bottom: 2px;
-    }
   }
 
   .info {
@@ -45,6 +61,11 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+
+      .actions {
+        display: flex;
+        gap: 12px;
+      }
     }
 
     .context-menu {
@@ -63,6 +84,19 @@
       :first-child {
         color: var(--light-gray);
       }
+    }
+  }
+
+  .spacer {
+    height: 2px;
+    padding: 0 12px;
+    background-color: var(--panel-color);
+
+    &::after {
+      background-color: var(--background);
+      height: 100%;
+      content: '';
+      display: block;
     }
   }
 }

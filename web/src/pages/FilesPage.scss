@@ -1,7 +1,5 @@
 .files-page {
   .top-bar {
-    justify-content: space-between;
-
     > div {
       display: flex;
       align-items: center;
@@ -10,16 +8,29 @@
     .parent-dir {
       margin: 0 12px;
     }
+
+    .actions {
+      margin-left: 12px;
+
+      @include screen-lt-x-small {
+        display: none;
+      }
+    }
   }
 
   main {
     display: flex;
+    position: relative;
 
     .files {
       flex: 1 1 auto;
       margin-left: 12px;
       overflow-y: auto;
       position: relative;
+
+      @include screen-lt-medium {
+        margin-left: 0;
+      }
 
       .icon {
         color: var(--primary);
@@ -34,6 +45,25 @@
           .size,
           .category {
             width: 120px;
+          }
+        }
+
+        .modified {
+          @include screen-lt-x-large {
+            display: none;
+          }
+        }
+
+        .size {
+          @include screen-lt-large {
+            border-top-right-radius: $border-radius;
+            border-bottom-right-radius: $border-radius;
+          }
+        }
+
+        .category {
+          @include screen-lt-large {
+            display: none;
           }
         }
       }

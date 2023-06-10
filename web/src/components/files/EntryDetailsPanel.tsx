@@ -9,6 +9,7 @@ import { humanReadableSize } from '../../utils/humanReadableSize';
 import { IconButton } from '../IconButton';
 import { ContextMenu } from '../ContextMenu';
 import { icons } from '../../utils/icons';
+import { classNames } from '../../utils/classNames';
 
 export interface Props {
   entry: Entry;
@@ -16,32 +17,47 @@ export interface Props {
   onRename: () => void;
   onMove: () => void;
   onDelete: () => void;
+  active: boolean;
+  onClose: () => void;
 }
 
-export const EntryDetailsPanel: React.FC<Props> = ({ entry, onDownload, onRename, onMove, onDelete }) => {
+export const EntryDetailsPanel: React.FC<Props> = ({
+  entry,
+  onDownload,
+  onRename,
+  onMove,
+  onDelete,
+  active,
+  onClose,
+}) => {
   const [showMenu, setShowMenu] = useState(false);
 
   return (
-    <div className="details-panel">
+    <div className={classNames('details-panel', active && 'active')}>
       <Panel className="info">
+        <div className="close-panel">
+          <IconButton icon="xmark" onClick={onClose} />
+        </div>
         <div className="preview">
           <EntryIcon entry={entry} />
         </div>
         <div className="name-actions">
-          <div>
+          <div className="name-category">
             <div className="name">{entry.name}</div>
             <div className="category">{entry.category}</div>
           </div>
-          <IconButton icon="ellipsis-h" onClick={() => setShowMenu((prevState) => !prevState)} aria-label="Actions" />
+          <div className="actions">
+            {entry.category !== 'Folder' && (
+              <IconButton onClick={onDownload} icon={icons.download} aria-label="Download">
+                Download
+              </IconButton>
+            )}
+            <IconButton icon="ellipsis-h" onClick={() => setShowMenu((prevState) => !prevState)} aria-label="Actions" />
+          </div>
         </div>
         {showMenu && (
           <ContextMenu onClose={() => setShowMenu(false)}>
             <ButtonGroup vertical>
-              {entry.category !== 'Folder' && (
-                <Button onClick={onDownload} icon={icons.download}>
-                  Download
-                </Button>
-              )}
               <Button onClick={onRename} icon={icons.rename}>
                 Rename
               </Button>
@@ -55,6 +71,7 @@ export const EntryDetailsPanel: React.FC<Props> = ({ entry, onDownload, onRename
           </ContextMenu>
         )}
       </Panel>
+      <div className="spacer" />
       <Panel className="metadata">
         <div>
           <span>Modified</span>

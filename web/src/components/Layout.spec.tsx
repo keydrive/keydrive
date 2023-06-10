@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 
 describe('Layout', () => {
   it('displays the libraries', async () => {
-    const { navigation } = await render(<Layout />, {
+    const { navigation } = await render(<Layout>{() => null}</Layout>, {
       initialState: {
         libraries: {
           libraries: [

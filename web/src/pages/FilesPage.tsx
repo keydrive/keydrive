@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Layout } from '../components/Layout';
 import { Panel } from '../components/Panel';
-import { Redirect, useHistory, useParams } from 'react-router-dom';
+import { Redirect, useHistory, useLocation, useParams } from 'react-router-dom';
 import { useService } from '../hooks/useService';
 import { Entry, LibrariesService } from '../services/LibrariesService';
 import { Icon } from '../components/Icon';
@@ -30,7 +30,7 @@ import { DropZone } from '../components/files/DropZone';
 const FileRow = ({
   entry,
   onActivate,
-  onSelect,
+  onDoubleClick,
   selected,
   onContextMenu,
   renaming,
@@ -40,7 +40,7 @@ const FileRow = ({
   entry: Entry;
   selected: boolean;
   onActivate: (entry: Entry) => void;
-  onSelect: (entry: Entry) => void;
+  onDoubleClick: (entry: Entry) => void;
   onContextMenu: (e: React.MouseEvent<unknown, MouseEvent>, entry?: Entry) => void;
   renaming: boolean;
   onRename: (newName: string) => void;
@@ -61,9 +61,8 @@ const FileRow = ({
   return (
     <tr
       ref={ref}
-      key={entry.name}
-      onDoubleClick={() => onActivate(entry)}
-      onClick={() => onSelect(entry)}
+      onClick={() => onActivate(entry)}
+      onDoubleClick={() => onDoubleClick(entry)}
       className={classNames(selected && 'is-selected')}
       onContextMenu={(e) => onContextMenu(e, entry)}
     >
@@ -95,9 +94,9 @@ const FileRow = ({
           entry.name
         )}
       </td>
-      <td>{humanReadableDateTime(entry.modified)}</td>
-      <td>{entry.category === 'Folder' ? '--' : humanReadableSize(entry.size)}</td>
-      <td>{entry.category}</td>
+      <td className="modified">{humanReadableDateTime(entry.modified)}</td>
+      <td className="size">{entry.category === 'Folder' ? '--' : humanReadableSize(entry.size)}</td>
+      <td className="category">{entry.category}</td>
     </tr>
   );
 };
@@ -112,25 +111,36 @@ export const FilesPage: React.FC = () => {
   const { library: libraryId, path: encodedPath } = useParams<{ library: string; path?: string }>();
   const path = decodeURIComponent(encodedPath || '');
   const history = useHistory();
+  const location = useLocation();
+  const hash = decodeURIComponent(location.hash ? location.hash.substring(1) : '');
 
   const [currentDir, setCurrentDir] = useState<Entry>();
   const [entries, setEntries] = useState<Entry[]>([]);
   const [loadingEntries, setLoadingEntries] = useState(false);
 
-  // Current directory info and details.
-  const onClickEntry = useCallback(
-    async (target: string | Entry) => {
-      if (typeof target === 'string') {
-        history.push(`/files/${libraryId}/${encodeURIComponent(target)}`);
-      } else if (target.category === 'Folder') {
-        history.push(`/files/${libraryId}/${encodeURIComponent(resolvePath(target))}`);
-      } else {
-        await libraries.download(libraryId, resolvePath(target));
+  const { selectedEntry, setSelectedEntry } = useFileNavigator(entries, activateEntry);
+
+  // Activate an entry. For directories (string or Folder entry) this navigates to it. For files this selects them.
+  async function activateEntry(target: string | Entry) {
+    if (typeof target === 'string') {
+      history.push(`/files/${libraryId}/${encodeURIComponent(target)}`);
+    } else if (target.category === 'Folder') {
+      history.push(`/files/${libraryId}/${encodeURIComponent(resolvePath(target))}`);
+    } else {
+      history.push(`#${encodeURIComponent(target.name)}`);
+      setSelectedEntry(target);
+    }
+  }
+
+  // Download an entry. This only works for files.
+  const downloadEntry = useCallback(
+    (target: Entry) => {
+      if (target.category !== 'Folder') {
+        libraries.download(libraryId, resolvePath(target));
       }
     },
-    [history, libraries, libraryId]
+    [libraries, libraryId]
   );
-  const { selectedEntry, setSelectedEntry } = useFileNavigator(entries, onClickEntry);
 
   // Context menu info.
   const [contextMenuEntry, setContextMenuEntry] = useState<Entry>();
@@ -365,139 +375,156 @@ export const FilesPage: React.FC = () => {
         />
       )}
       <Layout className="files-page">
-        <div className="top-bar">
-          <div>
-            <IconButton
-              className="parent-dir"
-              onClick={() => onClickEntry(currentDir?.parent || '')}
-              aria-label="Parent directory"
-              icon="level-up-alt"
-              disabled={!currentDir}
-            />
-            <h1>
-              {library.name} {loading && <Icon icon="spinner" pulse />}
-            </h1>
-          </div>
-          <div className="actions">
-            <input
-              ref={fileInputRef}
-              hidden
-              type="file"
-              onChange={(e) => uploadFiles(e.currentTarget.files)}
-              multiple
-              data-testid="file-input"
-            />
-            <ButtonGroup>
-              <Button onClick={() => fileInputRef.current?.click()} icon={icons.upload}>
-                Upload
-              </Button>
-              <Button onClick={() => setNewFolderName('New Folder')} icon={icons.newFolder}>
-                New Folder
-              </Button>
-            </ButtonGroup>
-          </div>
-        </div>
-        <main>
-          <Panel
-            className="files"
-            onContextMenu={(e) => showContextMenu(e)}
-            onDragOver={(e) => {
-              e.preventDefault();
-              setIsDropping(true);
-            }}
-            onScroll={(e) => setDropZoneTop(e.currentTarget.scrollTop)}
-          >
-            {isDropping && (
-              <DropZone
-                onDropEntries={(items) => {
-                  setIsDropping(false);
-                  uploadEntries(items);
+        {({ activateSidebar }) => (
+          <>
+            <div className="top-bar">
+              <IconButton className="toggle-sidebar" onClick={activateSidebar} aria-label="Show sidebar" icon="bars" />
+              <div>
+                <IconButton
+                  className="parent-dir"
+                  onClick={() => activateEntry(currentDir?.parent || '')}
+                  aria-label="Parent directory"
+                  icon="level-up-alt"
+                  disabled={!currentDir}
+                />
+                <h1>
+                  {library.name} {loading && <Icon icon="spinner" pulse />}
+                </h1>
+              </div>
+              <div className="spacer" />
+              <div className="info">
+                <IconButton
+                  icon="circle-info"
+                  onClick={() => {
+                    history.push(`#.`);
+                    setSelectedEntry(undefined);
+                  }}
+                />
+              </div>
+              <div className="actions">
+                <input
+                  ref={fileInputRef}
+                  hidden
+                  type="file"
+                  onChange={(e) => uploadFiles(e.currentTarget.files)}
+                  multiple
+                  data-testid="file-input"
+                />
+                <ButtonGroup>
+                  <Button onClick={() => fileInputRef.current?.click()} icon={icons.upload}>
+                    Upload
+                  </Button>
+                  <Button onClick={() => setNewFolderName('New Folder')} icon={icons.newFolder}>
+                    New Folder
+                  </Button>
+                </ButtonGroup>
+              </div>
+            </div>
+            <main>
+              <Panel
+                className="files"
+                onContextMenu={(e) => showContextMenu(e)}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setIsDropping(true);
                 }}
-                onDropFiles={(items) => {
-                  setIsDropping(false);
-                  uploadFiles(items);
-                }}
-                onDragEnd={() => setIsDropping(false)}
-                top={dropZoneTop}
-              />
-            )}
-            <table className="clickable">
-              <colgroup>
-                <col className="icon" />
-                <col />
-                <col className="modified" />
-                <col className="size" />
-                <col className="category" />
-              </colgroup>
-              <thead>
-                <tr>
-                  <th />
-                  <th>Name</th>
-                  <th>Modified</th>
-                  <th>Size</th>
-                  <th>Kind</th>
-                </tr>
-              </thead>
-              <tbody>
-                {newFolderName != null && (
-                  <tr>
-                    <td className="icon" />
-                    <td>
-                      <TextInput
-                        autoFocus
-                        id="new-folder-name"
-                        value={newFolderName}
-                        onChange={setNewFolderName}
-                        iconButton="folder-plus"
-                        onButtonClick={() => createFolder(newFolderName)}
-                        onKeyDown={(e) => {
-                          e.stopPropagation();
-                          if (e.key === 'Escape') {
-                            setNewFolderName(undefined);
-                          }
-                          if (e.key === 'Enter') {
-                            createFolder(newFolderName).catch((err) => {
-                              console.error(err);
-                            });
-                          }
-                        }}
-                        onFocus={(e) => e.currentTarget.select()}
-                        onFieldBlur={() => setNewFolderName(undefined)}
-                      />
-                    </td>
-                    <td />
-                    <td />
-                    <td />
-                  </tr>
-                )}
-                {entries.map((entry) => (
-                  <FileRow
-                    key={entry.name}
-                    entry={entry}
-                    selected={selectedEntry?.name === entry.name}
-                    onActivate={onClickEntry}
-                    onSelect={setSelectedEntry}
-                    onContextMenu={showContextMenu}
-                    renaming={!!renamingEntry && renamingEntry.name === entry.name}
-                    onRename={(newName) => renameEntry(newName)}
-                    cancelRename={() => setRenamingEntry(undefined)}
+                onScroll={(e) => setDropZoneTop(e.currentTarget.scrollTop)}
+              >
+                {isDropping && (
+                  <DropZone
+                    onDropEntries={(items) => {
+                      setIsDropping(false);
+                      uploadEntries(items);
+                    }}
+                    onDropFiles={(items) => {
+                      setIsDropping(false);
+                      uploadFiles(items);
+                    }}
+                    onDragEnd={() => setIsDropping(false)}
+                    top={dropZoneTop}
                   />
-                ))}
-              </tbody>
-            </table>
-          </Panel>
-          {highlightedEntry ? (
-            <EntryDetailsPanel
-              entry={highlightedEntry}
-              onDownload={() => libraries.download(libraryId, resolvePath(highlightedEntry))}
-              onRename={() => setRenamingEntry(highlightedEntry)}
-              onMove={() => setMovingEntry(highlightedEntry)}
-              onDelete={() => deleteEntry(highlightedEntry)}
-            />
-          ) : (
-            <LibraryDetailsPanel library={library} />
-          )}
-        </main>
+                )}
+                <table className="clickable">
+                  <colgroup>
+                    <col className="icon" />
+                    <col />
+                    <col className="modified" />
+                    <col className="size" />
+                    <col className="category" />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th />
+                      <th>Name</th>
+                      <th className="modified">Modified</th>
+                      <th className="size">Size</th>
+                      <th className="category">Kind</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {newFolderName != null && (
+                      <tr>
+                        <td className="icon" />
+                        <td>
+                          <TextInput
+                            autoFocus
+                            id="new-folder-name"
+                            value={newFolderName}
+                            onChange={setNewFolderName}
+                            iconButton="folder-plus"
+                            onButtonClick={() => createFolder(newFolderName)}
+                            onKeyDown={(e) => {
+                              e.stopPropagation();
+                              if (e.key === 'Escape') {
+                                setNewFolderName(undefined);
+                              }
+                              if (e.key === 'Enter') {
+                                createFolder(newFolderName).catch((err) => {
+                                  console.error(err);
+                                });
+                              }
+                            }}
+                            onFocus={(e) => e.currentTarget.select()}
+                            onFieldBlur={() => setNewFolderName(undefined)}
+                          />
+                        </td>
+                        <td className="modified" />
+                        <td className="size" />
+                        <td className="category" />
+                      </tr>
+                    )}
+                    {entries.map((entry) => (
+                      <FileRow
+                        key={`${libraryId}/${resolvePath(entry)}`}
+                        entry={entry}
+                        selected={selectedEntry?.name === entry.name}
+                        onActivate={activateEntry}
+                        onDoubleClick={downloadEntry}
+                        onContextMenu={showContextMenu}
+                        renaming={!!renamingEntry && renamingEntry.name === entry.name}
+                        onRename={(newName) => renameEntry(newName)}
+                        cancelRename={() => setRenamingEntry(undefined)}
+                      />
+                    ))}
+                  </tbody>
+                </table>
+              </Panel>
+              {highlightedEntry ? (
+                <EntryDetailsPanel
+                  entry={highlightedEntry}
+                  onDownload={() => libraries.download(libraryId, resolvePath(highlightedEntry))}
+                  onRename={() => setRenamingEntry(highlightedEntry)}
+                  onMove={() => setMovingEntry(highlightedEntry)}
+                  onDelete={() => deleteEntry(highlightedEntry)}
+                  active={hash.length > 0}
+                  onClose={() => history.push('#')}
+                />
+              ) : (
+                <LibraryDetailsPanel library={library} active={hash === '.'} onClose={() => history.push('#')} />
+              )}
+            </main>
+          </>
+        )}
       </Layout>
     </>
   );

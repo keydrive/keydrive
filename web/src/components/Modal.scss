@@ -1,7 +1,7 @@
 .modal {
   position: fixed;
-  width: 33vw;
-  min-width: 600px;
+  width: 600px;
+  max-width: 100vw;
   background-color: var(--side-bar-color);
   border-bottom-right-radius: 12px;
   border-bottom-left-radius: 12px;
@@ -131,7 +131,7 @@
 .modal-overlay {
   position: fixed;
   width: 100vw;
-  height: 100vh;
+  height: 100dvh;
   background-color: black;
   animation: fade-in 0.4s forwards;
   z-index: 2000;
@@ -146,12 +146,12 @@
       opacity: 0;
     }
     100% {
-      opacity: 0.1;
+      opacity: 0.3;
     }
   }
   @keyframes fade-out {
     0% {
-      opacity: 0.1;
+      opacity: 0.3;
     }
     100% {
       opacity: 0;

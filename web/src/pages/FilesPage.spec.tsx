@@ -548,8 +548,7 @@ describe('FilesPage', () => {
     });
 
     userEvent.click(await screen.findByText('Ballmers Peak Label.xcf'));
-    userEvent.click(screen.getByLabelText('Actions'));
-    userEvent.click(screen.getByText('Download'));
+    userEvent.click(screen.getByLabelText('Download'));
     await waitFor(() => {
       expect(window.open).toBeCalledWith('/api/download?token=i_am_a_download_token', '_self');
     });
@@ -560,7 +559,7 @@ describe('FilesPage', () => {
       {
         url: 'path:/api/libraries/4/entries',
         query: {
-          path: '/Documents',
+          path: '/Ballmers Peak Label.xcf',
         },
       },
       {
@@ -579,11 +578,11 @@ describe('FilesPage', () => {
         status: 200,
         body: [
           {
-            name: 'Ballmers Peak Label.xcf',
+            name: 'Documents',
             parent: '/',
-            modified: '2021-03-26T23:32:42.139992387+01:00',
-            category: 'Binary',
-            size: 2785246,
+            modified: '2021-07-01T19:35:16.658563977+02:00',
+            category: 'Folder',
+            size: 4096,
           },
         ],
       }
@@ -596,11 +595,11 @@ describe('FilesPage', () => {
       initialState,
     });
 
-    userEvent.click(await screen.findByText('Documents'));
+    userEvent.click(await screen.findByText('Ballmers Peak Label.xcf'));
     userEvent.click(screen.getByLabelText('Actions'));
     userEvent.click(screen.getByText('Delete'));
     await waitFor(() => {
-      expect(screen.queryByText('Documents')).toBeNull();
+      expect(screen.queryByText('Ballmers Peak Label.xcf')).toBeNull();
     });
   });
 
@@ -692,7 +691,7 @@ describe('FilesPage', () => {
       {
         url: 'path:/api/libraries/4/entries',
         query: {
-          path: '/Documents',
+          path: '/Ballmers Peak Label.xcf',
         },
       },
       {
@@ -711,11 +710,11 @@ describe('FilesPage', () => {
         status: 200,
         body: [
           {
-            name: 'Ballmers Peak Label.xcf',
+            name: 'Documents',
             parent: '/',
-            modified: '2021-03-26T23:32:42.139992387+01:00',
-            category: 'Binary',
-            size: 2785246,
+            modified: '2021-07-01T19:35:16.658563977+02:00',
+            category: 'Folder',
+            size: 4096,
           },
         ],
       }
@@ -728,10 +727,10 @@ describe('FilesPage', () => {
       initialState,
     });
 
-    fireEvent.click(await screen.findByText('Documents'));
+    fireEvent.click(await screen.findByText('Ballmers Peak Label.xcf'));
     fireEvent.keyDown(document, { key: 'Delete' });
     await waitFor(() => {
-      expect(screen.queryByText('Documents')).toBeNull();
+      expect(screen.queryByText('Ballmers Peak Label.xcf')).toBeNull();
     });
   });
 
