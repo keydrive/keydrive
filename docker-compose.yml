@@ -6,3 +6,12 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+  keydrive:
+    image: ghcr.io/keydrive/keydrive:edge
+    ports:
+      - 5555:5555
+    environment:
+      POSTGRES_HOST: database
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "postgres"
