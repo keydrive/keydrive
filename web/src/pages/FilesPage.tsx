@@ -27,6 +27,7 @@ import { MoveModal } from '../components/files/MoveModal';
 import { DropZone } from '../components/files/DropZone';
 import { UploadQueue } from '../services/UploadQueue';
 import { UploadProgress } from '../components/UploadProgress';
+import { useUploadStatusHandler } from '../hooks/useUploadStatusHandler';
 
 const FileRow = ({
   entry,
@@ -256,6 +257,7 @@ export const FilesPage: React.FC = () => {
     (items: DataTransferItemList) => uploadQueue.uploadEntries(libraryId, path, items),
     [path, uploadQueue, libraryId]
   );
+  useUploadStatusHandler((e) => e.isDone() && refresh());
 
   const createFolder = useCallback(
     async (name: string) => {
