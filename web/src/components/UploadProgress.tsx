@@ -1,13 +1,16 @@
-import { useService } from '../hooks/useService';
-import { UploadQueue } from '../services/UploadQueue';
+import { useUploadStatus } from '../hooks/useUploadStatus';
 
 export const UploadProgress = () => {
-  const uploads = useService(UploadQueue);
+  const uploadStatus = useUploadStatus();
+
+  if (!uploadStatus) {
+    return null;
+  }
 
   return (
     <div className="upload-progress">
-      <div className="done" style={{ width: `30%` }}>
-        <div className="text">30%</div>
+      <div className="done" style={{ width: `${uploadStatus.currentPercent}%` }}>
+        <div className="text">{uploadStatus.currentPercent}%</div>
       </div>
     </div>
   );
