@@ -12,6 +12,7 @@ import { ManageLibrariesModal } from './settings/ManageLibrariesModal';
 import { useHistory, useParams } from 'react-router-dom';
 import userPlaceholder from '../images/user_placeholder.png';
 import { IconButton } from '../components/IconButton';
+import { UploadProgress } from '../components/UploadProgress';
 
 interface ModalProps {
   onClose: () => void;
@@ -50,6 +51,8 @@ export const SettingsPage: React.FC = () => {
             <div className="top-bar">
               <IconButton className="toggle-sidebar" onClick={activateSidebar} aria-label="Show sidebar" icon="bars" />
               <h1>Settings</h1>
+              <div className="spacer" />
+              <UploadProgress />
             </div>
             <main>
               <Panel className="profile-panel">

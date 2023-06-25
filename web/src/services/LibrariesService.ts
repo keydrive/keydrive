@@ -1,4 +1,4 @@
-import { ApiService, isApiError } from './ApiService';
+import { ApiService, isApiError, ProgressFn } from './ApiService';
 import { Injector } from './Injector';
 import { User } from './UserService';
 
@@ -113,12 +113,16 @@ export class LibrariesService {
     return this.api.delete(`/libraries/${libraryId}/entries`, { path });
   }
 
-  public uploadFile(libraryId: number | string, parent: string, file: File): Promise<Entry> {
-    return this.api.formPost(`/libraries/${libraryId}/entries`, {
-      parent,
-      name: file.name,
-      data: file,
-    });
+  public uploadFile(libraryId: number | string, parent: string, file: File, onProgress?: ProgressFn): Promise<Entry> {
+    return this.api.formPost(
+      `/libraries/${libraryId}/entries`,
+      {
+        parent,
+        name: file.name,
+        data: file,
+      },
+      onProgress
+    );
   }
 
   public createFolder(libraryId: number | string, parent: string, name: string): Promise<Entry> {

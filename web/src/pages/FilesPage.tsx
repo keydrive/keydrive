@@ -7,7 +7,7 @@ import { Entry, LibrariesService } from '../services/LibrariesService';
 import { Icon } from '../components/Icon';
 import { EntryIcon } from '../components/EntryIcon';
 import { humanReadableSize } from '../utils/humanReadableSize';
-import { getParent, resolvePath } from '../utils/path';
+import { resolvePath } from '../utils/path';
 import { humanReadableDateTime } from '../utils/humanReadableDateTime';
 import { librariesStore } from '../store/libraries';
 import { useAppSelector } from '../store';
@@ -22,10 +22,12 @@ import { FilesContextMenu } from '../components/files/FilesContextMenu';
 import { KeyCode, useKeyBind } from '../hooks/useKeyBind';
 import { LibraryDetailsPanel } from '../components/files/LibraryDetailsPanel';
 import { EntryDetailsPanel } from '../components/files/EntryDetailsPanel';
-import { getAllEntriesRecursive, getFsEntryFile, isDirectoryEntry, isFileEntry } from '../utils/fileSystemEntry';
 import { icons } from '../utils/icons';
 import { MoveModal } from '../components/files/MoveModal';
 import { DropZone } from '../components/files/DropZone';
+import { UploadQueue } from '../services/UploadQueue';
+import { UploadProgress } from '../components/UploadProgress';
+import { useUploadStatusHandler } from '../hooks/useUploadStatusHandler';
 
 const FileRow = ({
   entry,
@@ -243,71 +245,19 @@ export const FilesPage: React.FC = () => {
   );
   useKeyBind(KeyCode.Delete, () => selectedEntry && deleteEntry(selectedEntry));
 
-  const [isUploading, setIsUploading] = useState(false);
   const [isDropping, setIsDropping] = useState(false);
   const [dropZoneTop, setDropZoneTop] = useState(0);
+
+  const uploadQueue = useService(UploadQueue);
   const uploadFiles = useCallback(
-    async (files: FileList | null) => {
-      if (!files || files.length === 0) {
-        return;
-      }
-
-      // TODO: Check for already existing file names, modal with skip/overwrite/cancel.
-
-      let lastEntry: Entry | undefined = undefined;
-      setIsUploading(true);
-      for (const file of Array.from(files)) {
-        // Check if the file is actually a folder.
-        // For some reason this messes up the upload.
-        // The only way to check this seems to be to call the `text` or `arrayBuffer` function on the blob.
-        // If that errors, it's not a file.
-        if (file.size === 0 && file.type === '') {
-          try {
-            await file.arrayBuffer();
-          } catch (e) {
-            console.warn("Can't upload folders with the File API, skipping:", file.name);
-            continue;
-          }
-        }
-
-        lastEntry = await libraries.uploadFile(libraryId, path, file);
-      }
-      const newList = await refresh();
-      setSelectedEntry(newList.find((entry) => entry.name === lastEntry?.name));
-      setIsUploading(false);
-    },
-    [refresh, setSelectedEntry, libraries, libraryId, path]
+    (files: FileList | null) => uploadQueue.uploadFiles(libraryId, path, files),
+    [uploadQueue, libraryId, path]
   );
   const uploadEntries = useCallback(
-    async (items: DataTransferItemList) => {
-      let lastEntry: Entry | undefined = undefined;
-      setIsUploading(true);
-
-      const allEntries = await getAllEntriesRecursive(items);
-      for (const entry of allEntries) {
-        const entryParent = getParent(entry.fullPath);
-        const parent = resolvePath(path, entryParent.substring(1));
-        let newLastEntry: Entry | undefined = undefined;
-
-        if (isFileEntry(entry)) {
-          newLastEntry = await libraries.uploadFile(libraryId, parent, await getFsEntryFile(entry));
-        } else if (isDirectoryEntry(entry)) {
-          newLastEntry = await libraries.createFolder(libraryId, parent, entry.name);
-        } else {
-          console.error('Unknown entry:', entry);
-        }
-
-        if (entryParent === '/' && newLastEntry) {
-          lastEntry = newLastEntry;
-        }
-      }
-
-      const newList = await refresh();
-      setSelectedEntry(newList.find((entry) => entry.name === lastEntry?.name));
-      setIsUploading(false);
-    },
-    [refresh, setSelectedEntry, libraries, libraryId, path]
+    (items: DataTransferItemList) => uploadQueue.uploadEntries(libraryId, path, items),
+    [path, uploadQueue, libraryId]
   );
+  useUploadStatusHandler((e) => !e.status && refresh());
 
   const createFolder = useCallback(
     async (name: string) => {
@@ -325,8 +275,7 @@ export const FilesPage: React.FC = () => {
   } = useService(librariesStore);
   const library = useAppSelector(libraryById(parseInt(libraryId)));
 
-  // we can add more loading states later
-  const loading = loadingEntries || isUploading;
+  const loading = loadingEntries;
 
   const [highlightedEntry, setHighlightedEntry] = useState<Entry>();
   useEffect(() => {
@@ -392,6 +341,7 @@ export const FilesPage: React.FC = () => {
                 </h1>
               </div>
               <div className="spacer" />
+              <UploadProgress />
               <div className="info">
                 <IconButton
                   icon="circle-info"
