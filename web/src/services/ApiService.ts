@@ -29,6 +29,8 @@ export function isApiError(e: unknown): e is ApiError {
   return 'status' in e && 'error' in e;
 }
 
+export type ProgressFn = (percent: number) => void;
+
 export class ApiService {
   public static readonly NAME = 'ApiService';
 
@@ -45,6 +47,16 @@ export class ApiService {
     }
 
     return responseBody;
+  }
+
+  private static handleXhrResponse<T>(req: XMLHttpRequest): T {
+    const response = req.response;
+
+    if (req.status >= 400) {
+      throw response;
+    }
+
+    return response;
   }
 
   private static getUrl(path: string, params?: Record<string, string>): string {
@@ -87,7 +99,7 @@ export class ApiService {
     return result;
   }
 
-  public formPost<T>(path: string, body: Record<string, string | Blob>): Promise<T> {
+  public formPost<T>(path: string, body: Record<string, string | Blob>, onProgress?: ProgressFn): Promise<T> {
     const formBody = new FormData();
     for (const key in body) {
       if (body.hasOwnProperty(key)) {
@@ -95,13 +107,32 @@ export class ApiService {
       }
     }
 
-    return ApiService.handleResponse(
-      fetch(`/api${path}`, {
-        method: 'POST',
-        headers: this.getHeaders(),
-        body: formBody,
-      })
-    );
+    const req = new XMLHttpRequest();
+    req.open('POST', `/api${path}`);
+    req.responseType = 'json';
+
+    Object.entries(this.getHeaders()).forEach(([k, v]) => req.setRequestHeader(k, v));
+
+    const progressHandler = (e: ProgressEvent<XMLHttpRequestEventTarget>) => {
+      if (onProgress && e.lengthComputable) {
+        const percent = Math.floor((e.loaded / e.total) * 100);
+        onProgress(percent);
+      }
+    };
+
+    req.upload.addEventListener('progress', progressHandler);
+    req.upload.addEventListener('loadend', progressHandler);
+
+    return new Promise((resolve) => {
+      req.addEventListener('readystatechange', () => {
+        if (req.readyState === XMLHttpRequest.DONE) {
+          resolve(ApiService.handleXhrResponse(req));
+        }
+      });
+
+      onProgress && onProgress(0);
+      req.send(formBody);
+    });
   }
 
   private jsonRequest<T>(

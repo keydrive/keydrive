@@ -114,11 +114,15 @@ export class LibrariesService {
   }
 
   public uploadFile(libraryId: number | string, parent: string, file: File): Promise<Entry> {
-    return this.api.formPost(`/libraries/${libraryId}/entries`, {
-      parent,
-      name: file.name,
-      data: file,
-    });
+    return this.api.formPost(
+      `/libraries/${libraryId}/entries`,
+      {
+        parent,
+        name: file.name,
+        data: file,
+      },
+      (p) => console.log(p)
+    );
   }
 
   public createFolder(libraryId: number | string, parent: string, name: string): Promise<Entry> {
