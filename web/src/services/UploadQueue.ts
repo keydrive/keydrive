@@ -2,6 +2,7 @@ import { Injector } from './Injector';
 import { LibrariesService } from './LibrariesService';
 import { getAllEntriesRecursive, getFsEntryFile, isDirectoryEntry, isFileEntry } from '../utils/fileSystemEntry';
 import { getParent, resolvePath } from '../utils/path';
+import { UploadProgressInfo } from './ApiService';
 
 type UploadItem = UploadFile | UploadFolder;
 
@@ -19,12 +20,8 @@ interface UploadFolder extends BaseUploadItem {
 }
 
 export class UploadStatusEvent extends Event {
-  public constructor(public readonly status: UploadStatus) {
+  public constructor(public readonly status?: UploadStatus) {
     super('status');
-  }
-
-  public isDone(): boolean {
-    return this.status.currentPercent === 100 && this.status.queue.length === 0;
   }
 }
 
@@ -41,9 +38,15 @@ export class UploadQueue extends EventTarget {
   private readonly queue: UploadItem[] = [];
   private uploading = false;
 
+  private status?: UploadStatus;
+
   public constructor(injector: Injector) {
     super();
     this.libraries = injector.resolve(LibrariesService);
+  }
+
+  public getStatus(): UploadStatus | undefined {
+    return this.status;
   }
 
   public async uploadFiles(libraryId: string | number, path: string, files: FileList | null): Promise<void> {
@@ -102,18 +105,24 @@ export class UploadQueue extends EventTarget {
     }
 
     if ('file' in next) {
-      await this.libraries.uploadFile(next.libraryId, next.parent, next.file, (p) => {
-        this.dispatchEvent(
-          new UploadStatusEvent({
-            currentPercent: p.percent,
-            queue: this.queue,
-          })
-        );
-      });
+      await this.libraries.uploadFile(next.libraryId, next.parent, next.file, (p) => this.handleStatusChange(p));
     } else {
       await this.libraries.createFolder(next.libraryId, next.parent, next.name);
     }
 
     this.uploadNext();
+  }
+
+  private handleStatusChange(p: UploadProgressInfo): void {
+    this.status = {
+      currentPercent: p.percent,
+      queue: this.queue,
+    };
+
+    if (this.status.currentPercent === 100 && this.queue.length === 0) {
+      this.status = undefined;
+    }
+
+    this.dispatchEvent(new UploadStatusEvent(this.status));
   }
 }

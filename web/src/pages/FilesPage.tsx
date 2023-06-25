@@ -257,7 +257,7 @@ export const FilesPage: React.FC = () => {
     (items: DataTransferItemList) => uploadQueue.uploadEntries(libraryId, path, items),
     [path, uploadQueue, libraryId]
   );
-  useUploadStatusHandler((e) => e.isDone() && refresh());
+  useUploadStatusHandler((e) => !e.status && refresh());
 
   const createFolder = useCallback(
     async (name: string) => {
