@@ -29,7 +29,11 @@ export function isApiError(e: unknown): e is ApiError {
   return 'status' in e && 'error' in e;
 }
 
-export type ProgressFn = (percent: number) => void;
+export interface UploadProgressInfo {
+  percent: number;
+}
+
+export type ProgressFn = (progress: UploadProgressInfo) => void;
 
 export class ApiService {
   public static readonly NAME = 'ApiService';
@@ -116,7 +120,9 @@ export class ApiService {
     const progressHandler = (e: ProgressEvent<XMLHttpRequestEventTarget>) => {
       if (onProgress && e.lengthComputable) {
         const percent = Math.floor((e.loaded / e.total) * 100);
-        onProgress(percent);
+        onProgress({
+          percent,
+        });
       }
     };
 
@@ -130,7 +136,10 @@ export class ApiService {
         }
       });
 
-      onProgress && onProgress(0);
+      onProgress &&
+        onProgress({
+          percent: 0,
+        });
       req.send(formBody);
     });
   }

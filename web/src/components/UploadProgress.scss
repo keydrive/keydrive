@@ -1,0 +1,29 @@
+.upload-progress {
+  margin-left: 24px;
+  width: 200px; // TODO
+  border: 2px solid var(--black);
+  height: 30px;
+  border-radius: 15px;
+  position: relative;
+
+  .done {
+    background-color: var(--primary-darkened);
+    position: absolute;
+    border-radius: 15px;
+    top: 0;
+    bottom: 0;
+    left: 0;
+
+    .text {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 200px; // TODO
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}

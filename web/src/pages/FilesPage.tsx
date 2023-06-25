@@ -26,6 +26,8 @@ import { getAllEntriesRecursive, getFsEntryFile, isDirectoryEntry, isFileEntry }
 import { icons } from '../utils/icons';
 import { MoveModal } from '../components/files/MoveModal';
 import { DropZone } from '../components/files/DropZone';
+import { UploadQueue } from '../services/UploadQueue';
+import { UploadProgress } from '../components/UploadProgress';
 
 const FileRow = ({
   entry,
@@ -246,6 +248,8 @@ export const FilesPage: React.FC = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [isDropping, setIsDropping] = useState(false);
   const [dropZoneTop, setDropZoneTop] = useState(0);
+
+  const uploadQueue = useService(UploadQueue);
   const uploadFiles = useCallback(
     async (files: FileList | null) => {
       if (!files || files.length === 0) {
@@ -254,8 +258,6 @@ export const FilesPage: React.FC = () => {
 
       // TODO: Check for already existing file names, modal with skip/overwrite/cancel.
 
-      let lastEntry: Entry | undefined = undefined;
-      setIsUploading(true);
       for (const file of Array.from(files)) {
         // Check if the file is actually a folder.
         // For some reason this messes up the upload.
@@ -270,43 +272,39 @@ export const FilesPage: React.FC = () => {
           }
         }
 
-        lastEntry = await libraries.uploadFile(libraryId, path, file);
+        uploadQueue.push({ libraryId, parent: path, file });
       }
-      const newList = await refresh();
-      setSelectedEntry(newList.find((entry) => entry.name === lastEntry?.name));
-      setIsUploading(false);
+
+      await refresh();
+      // TODO: Old functionality
+      // const newList = await refresh();
+      // setSelectedEntry(newList.find((entry) => entry.name === lastEntry?.name));
     },
-    [refresh, setSelectedEntry, libraries, libraryId, path]
+    [refresh, uploadQueue, libraryId, path]
   );
   const uploadEntries = useCallback(
     async (items: DataTransferItemList) => {
-      let lastEntry: Entry | undefined = undefined;
-      setIsUploading(true);
-
       const allEntries = await getAllEntriesRecursive(items);
       for (const entry of allEntries) {
         const entryParent = getParent(entry.fullPath);
         const parent = resolvePath(path, entryParent.substring(1));
-        let newLastEntry: Entry | undefined = undefined;
 
         if (isFileEntry(entry)) {
-          newLastEntry = await libraries.uploadFile(libraryId, parent, await getFsEntryFile(entry));
+          uploadQueue.push({ libraryId, parent: path, file: await getFsEntryFile(entry) });
         } else if (isDirectoryEntry(entry)) {
-          newLastEntry = await libraries.createFolder(libraryId, parent, entry.name);
+          // TODO: Move this to upload queue as well?
+          await libraries.createFolder(libraryId, parent, entry.name);
         } else {
           console.error('Unknown entry:', entry);
         }
-
-        if (entryParent === '/' && newLastEntry) {
-          lastEntry = newLastEntry;
-        }
       }
 
-      const newList = await refresh();
-      setSelectedEntry(newList.find((entry) => entry.name === lastEntry?.name));
-      setIsUploading(false);
+      await refresh();
+      // TODO: Old functionality
+      // const newList = await refresh();
+      // setSelectedEntry(newList.find((entry) => entry.name === lastEntry?.name));
     },
-    [refresh, setSelectedEntry, libraries, libraryId, path]
+    [refresh, path, uploadQueue, libraryId, libraries]
   );
 
   const createFolder = useCallback(
@@ -390,6 +388,7 @@ export const FilesPage: React.FC = () => {
                 <h1>
                   {library.name} {loading && <Icon icon="spinner" pulse />}
                 </h1>
+                <UploadProgress />
               </div>
               <div className="spacer" />
               <div className="info">
