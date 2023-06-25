@@ -388,9 +388,9 @@ export const FilesPage: React.FC = () => {
                 <h1>
                   {library.name} {loading && <Icon icon="spinner" pulse />}
                 </h1>
-                <UploadProgress />
               </div>
               <div className="spacer" />
+              <UploadProgress />
               <div className="info">
                 <IconButton
                   icon="circle-info"
