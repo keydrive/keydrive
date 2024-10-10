@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { ReactElement, useState } from 'react';
 import { Position } from '../utils/position';
 import { KeyCode, useKeyBind } from '../hooks/useKeyBind';
 import { useDocumentEvent } from '../hooks/useDocumentEvent';
 
 export interface Props {
+  children: ReactElement;
   position?: Position;
   onClose: () => void;
 }
@@ -20,7 +21,7 @@ export const ContextMenu: React.FC<Props> = ({ position, onClose, children }) =>
   if (position) {
     style = {
       left: position.x - offsetX,
-      top: position.y - offsetY,
+      top: position.y - offsetY
     };
   }
 

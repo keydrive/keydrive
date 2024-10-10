@@ -3,6 +3,7 @@ import { classNames } from '../utils/classNames';
 import { Icon } from './Icon';
 
 export interface Props {
+  children: string;
   onClick?: () => void;
   type?: 'button' | 'submit';
   loading?: boolean;

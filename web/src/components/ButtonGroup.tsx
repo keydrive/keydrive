@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { classNames } from '../utils/classNames';
 
 export interface Props {
+  children: ReactElement[];
   fullWidth?: boolean;
   vertical?: boolean;
 }
