@@ -12,12 +12,12 @@ on:
 jobs:
   test_react:
     name: Test Frontend
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version-file: 'web/.nvmrc'
       - uses: actions/cache@v2
         with:
           path: 'web/node_modules'
@@ -41,7 +41,7 @@ jobs:
             web/junit.xml
   test_go:
     name: Test Backend
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     services:
       postgres:
         image: postgres:13
@@ -55,8 +55,8 @@ jobs:
         ports:
           - 5432:5432
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
         with:
           go-version: '^1.20'
       - uses: actions/cache@v2
@@ -88,7 +88,7 @@ jobs:
 #      - test_react
 #    runs-on: ubuntu-latest
 #    steps:
-#      - uses: actions/checkout@v2
+#      - uses: actions/checkout@v4
 #        with:
 #          fetch-depth: 0
 #      - uses: actions/download-artifact@v2
@@ -105,12 +105,12 @@ jobs:
 #          SONAR_TOKEN: ${{ secrets.SONAR_LOGIN }}
   build_react:
     name: Build Frontend
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version-file: 'web/.nvmrc'
       - uses: actions/cache@v2
         with:
           path: 'web/node_modules'
@@ -127,7 +127,7 @@ jobs:
     needs:
       - build_react
     name: Build Backend
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
@@ -138,8 +138,8 @@ jobs:
     env:
       CGO_ENABLED: "0"
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
         with:
           go-version: '^1.20'
       - uses: actions/cache@v2
@@ -164,9 +164,9 @@ jobs:
     needs:
       - build_go
     name: Build Docker
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v2
         with:
           name: binary-linux-x64
