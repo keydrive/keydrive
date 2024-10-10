@@ -9,8 +9,10 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
+	"unicode"
 )
 
 type FileInfo struct {
@@ -64,18 +66,52 @@ func (fs *FileSystem) GetEntriesForLibrary(library model.Library, parentPath str
 	}
 
 	sort.Slice(output, func(i, j int) bool {
-		a := output[i]
-		b := output[j]
-		if a.Category == model.CategoryFolder && b.Category != model.CategoryFolder {
-			return true
-		}
-		if a.Category != model.CategoryFolder && b.Category == model.CategoryFolder {
-			return false
-		}
-		return strings.ToLower(a.Name) < strings.ToLower(b.Name)
+		return sortEntries(output[i], output[j])
 	})
 
 	return output, nil
+}
+
+func sortEntries(a, b FileInfo) bool {
+	// Sort folders before files.
+	if a.Category == model.CategoryFolder && b.Category != model.CategoryFolder {
+		return true
+	}
+	if a.Category != model.CategoryFolder && b.Category == model.CategoryFolder {
+		return false
+	}
+
+	// If both files start with a number, sort by that number.
+	aNumPrefix, aHasNumPrefix := getNumberPrefix(a.Name)
+	bNumPrefix, bHasNumPrefix := getNumberPrefix(b.Name)
+	if aHasNumPrefix && bHasNumPrefix {
+		return aNumPrefix < bNumPrefix
+	}
+
+	// Finally, sort by character index.
+	return strings.ToLower(a.Name) < strings.ToLower(b.Name)
+}
+
+func getNumberPrefix(val string) (int, bool) {
+	endIndex := 0
+	for i, c := range val {
+		if unicode.IsDigit(c) {
+			endIndex = i + 1
+		} else {
+			break
+		}
+	}
+
+	if endIndex == 0 {
+		return 0, false
+	}
+
+	n, err := strconv.Atoi(val[0:endIndex])
+	if err != nil {
+		return 0, false
+	}
+
+	return n, true
 }
 
 func (fs *FileSystem) GetEntryMetadata(library model.Library, path string) (FileInfo, error) {
