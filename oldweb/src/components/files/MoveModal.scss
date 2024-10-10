@@ -1,0 +1,22 @@
+.modal.move {
+  .current-dir {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+
+    .parent-dir {
+      margin: 0 12px;
+    }
+  }
+
+  .table-wrapper {
+    background-color: var(--panel-color);
+    border-radius: $border-radius;
+    height: 400px;
+    overflow: auto;
+
+    .no-entries {
+      font-style: italic;
+    }
+  }
+}

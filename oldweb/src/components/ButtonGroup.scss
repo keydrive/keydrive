@@ -1,0 +1,39 @@
+.button-group {
+  display: flex;
+
+  &.full-width {
+    .button {
+      flex: auto;
+    }
+  }
+
+  &.horizontal {
+    :not(:first-child) {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+
+    :not(:last-child) {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+
+  &.vertical {
+    flex-direction: column;
+
+    :not(:first-child) {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+
+    :not(:last-child) {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    .button {
+      justify-content: flex-start;
+    }
+  }
+}

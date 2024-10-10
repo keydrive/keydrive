@@ -1,17 +1,16 @@
 .login-page {
-  background-size: cover;
-  height: 100dvh;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
   @media screen and (prefers-color-scheme: dark) {
     background-image: url('../images/login_dark.jpg');
   }
   @media screen and (prefers-color-scheme: light) {
     background-image: url('../images/login_light.jpg');
   }
+  background-size: cover;
+  height: 100dvh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   .login-box {
     text-align: center;

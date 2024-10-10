@@ -1,0 +1,26 @@
+.field {
+  .select-field {
+    background-color: var(--field-background);
+    border: 1px solid var(--field-border);
+    border-radius: $border-radius;
+    width: 100%;
+    padding: 3px;
+    height: 150px;
+    overflow-y: auto;
+
+    .option {
+      width: 100%;
+      padding: 6px;
+      border-radius: $border-radius;
+
+      &:nth-child(even) {
+        background-color: var(--zebra-highlight);
+      }
+
+      &:hover {
+        background-color: var(--primary-highlight);
+        cursor: pointer;
+      }
+    }
+  }
+}
