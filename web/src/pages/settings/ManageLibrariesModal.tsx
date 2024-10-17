@@ -128,7 +128,7 @@ export const ManageLibrariesModal: React.FC<Props> = ({ onClose }) => {
         setLoading(false);
       });
     },
-    [librariesService]
+    [librariesService],
   );
 
   useEffect(() => refreshLibraries(), [refreshLibraries]);

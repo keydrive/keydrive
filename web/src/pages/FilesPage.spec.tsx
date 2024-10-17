@@ -55,7 +55,7 @@ describe('FilesPage', () => {
             size: 4096,
           },
         ],
-      }
+      },
     );
     window.HTMLElement.prototype.scrollIntoView = () => {
       // Just a mock
@@ -110,7 +110,7 @@ describe('FilesPage', () => {
             size: 3570049,
           },
         ],
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -131,7 +131,7 @@ describe('FilesPage', () => {
             size: 4096,
           },
         ],
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -144,7 +144,7 @@ describe('FilesPage', () => {
       {
         status: 200,
         body: [],
-      }
+      },
     );
 
     const { navigation } = await render(<FilesPage />, {
@@ -180,7 +180,7 @@ describe('FilesPage', () => {
             size: 3570049,
           },
         ],
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -201,7 +201,7 @@ describe('FilesPage', () => {
             size: 4096,
           },
         ],
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -229,7 +229,7 @@ describe('FilesPage', () => {
             size: 4096,
           },
         ],
-      }
+      },
     );
 
     const { navigation } = await render(<FilesPage />, {
@@ -275,7 +275,7 @@ describe('FilesPage', () => {
       {
         status: 201,
         body: fileOneEntry,
-      }
+      },
     );
     fetchMock.postOnce(
       {
@@ -290,7 +290,7 @@ describe('FilesPage', () => {
       {
         status: 201,
         body: fileTwoEntry,
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -303,7 +303,7 @@ describe('FilesPage', () => {
       {
         status: 200,
         body: [fileOneEntry, fileTwoEntry],
-      }
+      },
     );
 
     await render(<FilesPage />, {
@@ -337,7 +337,7 @@ describe('FilesPage', () => {
           category: 'Folder',
           size: 0,
         },
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -365,7 +365,7 @@ describe('FilesPage', () => {
             size: 0,
           },
         ],
-      }
+      },
     );
 
     await render(<FilesPage />, {
@@ -404,7 +404,7 @@ describe('FilesPage', () => {
           category: 'Folder',
           size: 0,
         },
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -432,7 +432,7 @@ describe('FilesPage', () => {
             size: 0,
           },
         ],
-      }
+      },
     );
 
     await render(<FilesPage />, {
@@ -499,7 +499,7 @@ describe('FilesPage', () => {
         body: {
           token: 'i_am_a_download_token',
         },
-      }
+      },
     );
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -533,7 +533,7 @@ describe('FilesPage', () => {
         body: {
           token: 'i_am_a_download_token',
         },
-      }
+      },
     );
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -565,7 +565,7 @@ describe('FilesPage', () => {
       },
       {
         status: 204,
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -586,7 +586,7 @@ describe('FilesPage', () => {
             size: 4096,
           },
         ],
-      }
+      },
     );
 
     await render(<FilesPage />, {
@@ -617,7 +617,7 @@ describe('FilesPage', () => {
         body: {
           token: 'i_am_a_download_token',
         },
-      }
+      },
     );
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -649,7 +649,7 @@ describe('FilesPage', () => {
       },
       {
         status: 204,
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -670,7 +670,7 @@ describe('FilesPage', () => {
             size: 2785246,
           },
         ],
-      }
+      },
     );
 
     await render(<FilesPage />, {
@@ -697,7 +697,7 @@ describe('FilesPage', () => {
       },
       {
         status: 204,
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -718,7 +718,7 @@ describe('FilesPage', () => {
             size: 4096,
           },
         ],
-      }
+      },
     );
 
     await render(<FilesPage />, {
@@ -769,7 +769,7 @@ describe('FilesPage', () => {
       {
         status: 201,
         body: fileOneEntry,
-      }
+      },
     );
     fetchMock.postOnce(
       {
@@ -784,7 +784,7 @@ describe('FilesPage', () => {
       {
         status: 201,
         body: fileTwoEntry,
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -797,7 +797,7 @@ describe('FilesPage', () => {
       {
         status: 200,
         body: [fileOneEntry, fileTwoEntry],
-      }
+      },
     );
 
     await render(<FilesPage />, {
@@ -825,7 +825,7 @@ describe('FilesPage', () => {
       },
       {
         status: 204,
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -846,7 +846,7 @@ describe('FilesPage', () => {
             size: 2785246,
           },
         ],
-      }
+      },
     );
 
     await render(<FilesPage />, {
@@ -875,7 +875,7 @@ describe('FilesPage', () => {
       },
       {
         status: 204,
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -896,7 +896,7 @@ describe('FilesPage', () => {
             size: 2785246,
           },
         ],
-      }
+      },
     );
 
     await render(<FilesPage />, {
@@ -926,7 +926,7 @@ describe('FilesPage', () => {
       },
       {
         status: 204,
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -947,7 +947,7 @@ describe('FilesPage', () => {
             size: 2785246,
           },
         ],
-      }
+      },
     );
 
     await render(<FilesPage />, {
@@ -1013,7 +1013,7 @@ describe('FilesPage', () => {
           status: 404,
           error: 'Not Found',
         },
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -1029,7 +1029,7 @@ describe('FilesPage', () => {
           status: 404,
           error: 'Not Found',
         },
-      }
+      },
     );
 
     const { navigation } = await render(<FilesPage />, {
@@ -1071,7 +1071,7 @@ describe('FilesPage', () => {
             size: 4096,
           },
         ],
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -1092,7 +1092,7 @@ describe('FilesPage', () => {
             size: 3570049,
           },
         ],
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -1113,7 +1113,7 @@ describe('FilesPage', () => {
             size: 4096,
           },
         ],
-      }
+      },
     );
     fetchMock.postOnce(
       {
@@ -1125,7 +1125,7 @@ describe('FilesPage', () => {
       },
       {
         status: 204,
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -1146,7 +1146,7 @@ describe('FilesPage', () => {
             size: 4096,
           },
         ],
-      }
+      },
     );
 
     await render(<FilesPage />, {

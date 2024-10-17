@@ -18,7 +18,7 @@ describe('ManageLibrariesModal', () => {
           totalElements: 0,
           elements: [],
         },
-        { overwriteRoutes: true }
+        { overwriteRoutes: true },
       );
       fetchMock.post(
         {
@@ -35,7 +35,7 @@ describe('ManageLibrariesModal', () => {
               path: '/',
             },
           ],
-        }
+        },
       );
 
       fetchMock.post(
@@ -60,7 +60,7 @@ describe('ManageLibrariesModal', () => {
               path: '/three',
             },
           ],
-        }
+        },
       );
       fetchMock.post(
         {
@@ -78,7 +78,7 @@ describe('ManageLibrariesModal', () => {
               path: '/two/four',
             },
           ],
-        }
+        },
       );
       await render(<ManageLibrariesModal onClose={onClose} />, {
         loggedIn: true,
@@ -111,7 +111,7 @@ describe('ManageLibrariesModal', () => {
           totalElements: 1,
           elements: [{ id: 3252, type: 'generic', name: 'Downloads', canWrite: true }],
         },
-        { overwriteRoutes: true }
+        { overwriteRoutes: true },
       );
       fetchMock.get('end:/api/libraries/3252', {
         id: 3252,

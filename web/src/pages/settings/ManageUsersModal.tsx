@@ -100,7 +100,7 @@ export const ManageUsersModal: React.FC<Props> = ({ onClose }) => {
         setSelectedUser(selectId || usersList[0].id);
       });
     },
-    [userService]
+    [userService],
   );
 
   useEffect(() => {

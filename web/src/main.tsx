@@ -1,5 +1,5 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
 import './style/index.scss';
 import { App } from './App';
 import { BrowserRouter } from 'react-router-dom';
@@ -16,14 +16,14 @@ const persistor = persistStore(store);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-      <BrowserRouter>
-          <InjectionProvider value={injector}>
-              <Provider store={store}>
-                  <PersistGate persistor={persistor}>
-                      <App />
-                  </PersistGate>
-              </Provider>
-          </InjectionProvider>
-      </BrowserRouter>
+    <BrowserRouter>
+      <InjectionProvider value={injector}>
+        <Provider store={store}>
+          <PersistGate persistor={persistor}>
+            <App />
+          </PersistGate>
+        </Provider>
+      </InjectionProvider>
+    </BrowserRouter>
   </StrictMode>,
-)
+);

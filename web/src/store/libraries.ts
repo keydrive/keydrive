@@ -15,7 +15,6 @@ interface ThunkApiConfig {
   rejectValue: ApiError;
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const librariesStore = (injector: Injector) => {
   const librariesService = injector.resolve(LibrariesService);
 
@@ -27,7 +26,7 @@ export const librariesStore = (injector: Injector) => {
       } catch (e) {
         return rejectWithValue(e as ApiError);
       }
-    }
+    },
   );
 
   const librariesSlice = createSlice({

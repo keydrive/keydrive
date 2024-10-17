@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom';
 
 export const useFileNavigator = (
   entries: Entry[] | undefined,
-  onActivateEntry: (entry: Entry) => void
+  onActivateEntry: (entry: Entry) => void,
 ): { selectedEntry: Entry | undefined; setSelectedEntry: (entry: Entry | undefined) => void } => {
   const location = useLocation();
   const hash = decodeURIComponent(location.hash ? location.hash.substring(1) : '');
@@ -45,7 +45,7 @@ export const useFileNavigator = (
         shiftSelectToLast();
       }
     },
-    [entries, selectedEntry, shiftSelectToFirst, shiftSelectToLast]
+    [entries, selectedEntry, shiftSelectToFirst, shiftSelectToLast],
   );
 
   useKeyBind(KeyCode.Enter, () => {

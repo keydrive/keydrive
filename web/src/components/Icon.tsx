@@ -15,7 +15,7 @@ export const Icon: React.FC<Props> = ({ icon, className, pulse, size, iconStyle 
       `icon fa${iconStyle?.substring(0, 1)} fa-${icon}`,
       pulse && 'fa-pulse',
       !!size && `fa-${size}x`,
-      className
+      className,
     )}
   />
 );

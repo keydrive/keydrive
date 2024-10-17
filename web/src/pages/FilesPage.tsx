@@ -139,7 +139,7 @@ export const FilesPage: React.FC = () => {
         libraries.download(libraryId, resolvePath(target));
       }
     },
-    [libraries, libraryId]
+    [libraries, libraryId],
   );
 
   // Context menu info.
@@ -157,7 +157,7 @@ export const FilesPage: React.FC = () => {
       setContextMenuEntry(entry);
       setSelectedEntry(entry);
     },
-    [setSelectedEntry]
+    [setSelectedEntry],
   );
 
   // File and folder operations.
@@ -216,7 +216,7 @@ export const FilesPage: React.FC = () => {
       const newEntries = await refresh();
       setSelectedEntry(newEntries.find((e) => e.name === newName));
     },
-    [libraries, libraryId, path, refresh, renamingEntry, setSelectedEntry]
+    [libraries, libraryId, path, refresh, renamingEntry, setSelectedEntry],
   );
 
   const [movingEntry, setMovingEntry] = useState<Entry>();
@@ -230,7 +230,7 @@ export const FilesPage: React.FC = () => {
       setMovingEntry(undefined);
       setHighlightedEntry(undefined);
     },
-    [libraries, libraryId, refresh, movingEntry]
+    [libraries, libraryId, refresh, movingEntry],
   );
 
   const deleteEntry = useCallback(
@@ -239,7 +239,7 @@ export const FilesPage: React.FC = () => {
       refresh();
       setHighlightedEntry(undefined);
     },
-    [libraries, libraryId, refresh]
+    [libraries, libraryId, refresh],
   );
   useKeyBind(KeyCode.Delete, () => selectedEntry && deleteEntry(selectedEntry));
 
@@ -278,7 +278,7 @@ export const FilesPage: React.FC = () => {
       setSelectedEntry(newList.find((entry) => entry.name === lastEntry?.name));
       setIsUploading(false);
     },
-    [refresh, setSelectedEntry, libraries, libraryId, path]
+    [refresh, setSelectedEntry, libraries, libraryId, path],
   );
   const uploadEntries = useCallback(
     async (items: DataTransferItemList) => {
@@ -308,7 +308,7 @@ export const FilesPage: React.FC = () => {
       setSelectedEntry(newList.find((entry) => entry.name === lastEntry?.name));
       setIsUploading(false);
     },
-    [refresh, setSelectedEntry, libraries, libraryId, path]
+    [refresh, setSelectedEntry, libraries, libraryId, path],
   );
 
   const createFolder = useCallback(
@@ -318,7 +318,7 @@ export const FilesPage: React.FC = () => {
       const newList = await refresh();
       setSelectedEntry(newList.find((e) => e.name === newEntry.name));
     },
-    [refresh, libraries, libraryId, path, setSelectedEntry]
+    [refresh, libraries, libraryId, path, setSelectedEntry],
   );
 
   // Current library info.

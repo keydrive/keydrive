@@ -42,7 +42,7 @@ describe('MoveModal', () => {
             size: 4096,
           },
         ],
-      }
+      },
     );
   });
 
@@ -75,7 +75,7 @@ describe('MoveModal', () => {
             size: 4096,
           },
         ],
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -96,7 +96,7 @@ describe('MoveModal', () => {
             size: 4096,
           },
         ],
-      }
+      },
     );
 
     await render(<MoveModal onClose={vi.fn()} libraryId="4" startPath="/subdir" onMove={vi.fn()} />, {
@@ -129,7 +129,7 @@ describe('MoveModal', () => {
             size: 4096,
           },
         ],
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -150,7 +150,7 @@ describe('MoveModal', () => {
             size: 4096,
           },
         ],
-      }
+      },
     );
 
     const onMove = vi.fn();

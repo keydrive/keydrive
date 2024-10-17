@@ -100,7 +100,7 @@ export class ApiService {
         method: 'POST',
         headers: this.getHeaders(),
         body: formBody,
-      })
+      }),
     );
   }
 
@@ -108,7 +108,7 @@ export class ApiService {
     method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
     path: string,
     body?: unknown,
-    params?: Record<string, string>
+    params?: Record<string, string>,
   ): Promise<T> {
     const headers = this.getHeaders();
     if (body) {
@@ -120,7 +120,7 @@ export class ApiService {
         method,
         headers,
         body: body ? JSON.stringify(body) : undefined,
-      })
+      }),
     );
   }
 

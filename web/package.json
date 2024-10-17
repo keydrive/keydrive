@@ -7,8 +7,12 @@
     "start": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "lint": "eslint .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "lint": "eslint src",
+    "lint:fix": "npm run lint -- --fix",
+    "format": "prettier -c \"src/**/*.{ts,tsx,scss}\"",
+    "format:fix": "prettier -w \"src/**/*.{ts,tsx,scss}\"",
+    "fix": "npm run format:fix && npm run lint:fix"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.4.0",
@@ -38,6 +42,7 @@
     "fetch-mock": "^11.1.5",
     "globals": "^15.9.0",
     "jsdom": "^25.0.1",
+    "prettier": "^3.3.3",
     "sass": "^1.79.4",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.7.0",

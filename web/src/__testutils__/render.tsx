@@ -38,7 +38,7 @@ export async function render(element: ReactElement, options: RenderOptions = {})
   injector.bindTo(initializeStore, store);
 
   const navigation = {
-    pathname: ''
+    pathname: '',
   };
 
   const FetchRoute: React.FC = () => {

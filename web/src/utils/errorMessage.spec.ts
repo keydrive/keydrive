@@ -6,7 +6,7 @@ describe('errorMessage', () => {
       errorMessage({
         description: 'me!',
         message: 'not me',
-      })
+      }),
     ).toBe('me!');
   });
 
@@ -14,7 +14,7 @@ describe('errorMessage', () => {
     expect(
       errorMessage({
         message: 'yes me',
-      })
+      }),
     ).toBe('yes me');
   });
 

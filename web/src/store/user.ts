@@ -27,7 +27,6 @@ const persistConfig: PersistConfig<State> = {
   whitelist: ['token'],
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const userStore = (injector: Injector) => {
   const authService = injector.resolve(AuthService);
   const userService = injector.resolve(UserService);
@@ -40,7 +39,7 @@ export const userStore = (injector: Injector) => {
       } catch (e) {
         return rejectWithValue(e as ApiError);
       }
-    }
+    },
   );
 
   const getCurrentUserAsync = createAsyncThunk<State['currentUser'], undefined, ThunkApiConfig>(
@@ -51,7 +50,7 @@ export const userStore = (injector: Injector) => {
       } catch (e) {
         return rejectWithValue(e as ApiError);
       }
-    }
+    },
   );
 
   const updateCurrentUserAsync = createAsyncThunk<State['currentUser'], UpdateUser, ThunkApiConfig>(
@@ -62,7 +61,7 @@ export const userStore = (injector: Injector) => {
       } catch (e) {
         return rejectWithValue(e as ApiError);
       }
-    }
+    },
   );
 
   function reset(state: Draft<State>) {

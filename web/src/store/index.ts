@@ -6,7 +6,7 @@ import { Injector } from '../services/Injector';
 import { useService } from '../hooks/useService';
 import { FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types,@typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const initializeStore = (injector: Injector, initialState?: any) =>
   configureStore({
     reducer: {

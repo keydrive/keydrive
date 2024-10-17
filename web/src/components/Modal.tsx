@@ -26,7 +26,7 @@ export const Modal: React.FC<Props> = ({ children, title, panelled, onClose, sho
         }
       },
       // NOTE: This time must match the css animation time
-      400
+      400,
     );
   }, [onClose, mounted]);
 
@@ -56,7 +56,7 @@ export const Modal: React.FC<Props> = ({ children, title, panelled, onClose, sho
           'modal',
           closing && 'closing',
           panelled && 'panelled',
-          title.toLowerCase().replaceAll(' ', '-')
+          title.toLowerCase().replaceAll(' ', '-'),
         )}
       >
         <h2>
@@ -80,15 +80,15 @@ export interface LeftPanelProps<T extends { id: number }> {
 }
 
 export const ModalLeftPanel = <T extends { id: number }>({
-                                                           items,
-                                                           children,
-                                                           onSelect,
-                                                           selected,
-                                                           onAddLabel,
-                                                           onAdd,
-                                                           onDeleteLabel,
-                                                           onDelete
-                                                         }: LeftPanelProps<T>): ReactElement => {
+  items,
+  children,
+  onSelect,
+  selected,
+  onAddLabel,
+  onAdd,
+  onDeleteLabel,
+  onDelete,
+}: LeftPanelProps<T>): ReactElement => {
   const [deleting, setDeleting] = useState(false);
   return (
     <div className="left panel">

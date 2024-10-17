@@ -40,7 +40,7 @@ export const EditProfileModal: React.FC<Props> = ({ onClose }) => {
             updateCurrentUserAsync({
               name: name.trim(),
               username: username.trim(),
-            })
+            }),
           );
           switch (action.type) {
             case updateCurrentUserAsync.fulfilled.type:
