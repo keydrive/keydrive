@@ -7,7 +7,7 @@
     "start": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "test": "vitest run src/pages/settings/ManageLibrariesModal.spec.tsx",
+    "test": "vitest run",
     "lint": "eslint src",
     "lint:fix": "npm run lint -- --fix",
     "format": "prettier -c \"src/**/*.{ts,tsx,scss}\"",
