@@ -147,18 +147,9 @@ export const FilesPage = () => {
     selectedEntry,
     setSelectedEntry,
     activateEntry,
+    downloadEntry,
   } = entryData;
   useFileNavigator(entryData);
-
-  // Download an entry. This only works for files.
-  const downloadEntry = useCallback(
-    (target: Entry) => {
-      if (target.category !== 'Folder') {
-        libraries.download(libraryId, resolvePath(target));
-      }
-    },
-    [libraries, libraryId],
-  );
 
   // Context menu info.
   const [contextMenuEntry, setContextMenuEntry] = useState<Entry>();
@@ -181,11 +172,6 @@ export const FilesPage = () => {
   // File and folder operations.
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [newFolderName, setNewFolderName] = useState<string>();
-
-  useEffect(
-    () => setSelectedEntry(undefined),
-    [setSelectedEntry, path, libraryId],
-  );
 
   useEffect(() => setHighlightedEntry(undefined), [libraryId]);
 

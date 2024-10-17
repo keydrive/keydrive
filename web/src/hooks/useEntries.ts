@@ -15,6 +15,7 @@ export interface EntryData {
 
   refresh: () => Promise<Entry[]>;
   activateEntry: (target: string | Entry) => void;
+  downloadEntry: (target: Entry) => void;
 }
 
 export function useEntries(): EntryData {
@@ -22,6 +23,7 @@ export function useEntries(): EntryData {
   const libraryId = useRequiredParam('library');
   const { path: encodedPath } = useParams<{ path: string }>();
   const path = decodeURIComponent(encodedPath ?? '');
+  const navigate = useNavigate();
 
   const [currentDir, setCurrentDir] = useState<Entry>();
   const [entries, setEntries] = useState<Entry[]>([]);
@@ -30,7 +32,11 @@ export function useEntries(): EntryData {
   // TODO: Allow multiple selected entries.
   const [selectedEntry, setSelectedEntry] = useState<Entry>();
 
-  const navigate = useNavigate();
+  // Whenever the path or library changes, clear the selected entry.
+  useEffect(
+    () => setSelectedEntry(undefined),
+    [setSelectedEntry, path, libraryId],
+  );
 
   const loadEntries = useCallback(async () => {
     setLoadingEntries(true);
@@ -67,6 +73,12 @@ export function useEntries(): EntryData {
     });
   }, [loadEntries, navigate]);
 
+  // Call refresh whenever it (or loadEntries) changes.
+  // This effectively causes the entries to be refreshed whenever the path or library changes.
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
   // Activate an entry. For directories (string or Folder entry) this navigates to it. For files this selects them.
   const activateEntry = useCallback(
     (target: string | Entry) => {
@@ -84,9 +96,15 @@ export function useEntries(): EntryData {
     [libraryId, navigate],
   );
 
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
+  // Download an entry. This only works for files.
+  const downloadEntry = useCallback(
+    (target: Entry) => {
+      if (target.category !== 'Folder') {
+        libraries.download(libraryId, resolvePath(target));
+      }
+    },
+    [libraries, libraryId],
+  );
 
   return {
     loadingEntries,
@@ -96,5 +114,6 @@ export function useEntries(): EntryData {
     setSelectedEntry,
     refresh,
     activateEntry,
+    downloadEntry,
   };
 }

@@ -4,10 +4,12 @@ import { KeyCode } from './useKeyBind';
 import { render } from '../__testutils__/render';
 import { fireEvent, screen } from '@testing-library/react';
 import { vi } from 'vitest';
+import { EntryData } from './useEntries.ts';
+import { useState } from 'react';
 
 describe('useFileNavigator', () => {
   it('can navigate using arrow keys', () => {
-    const onActivate = vi.fn();
+    const activateEntry = vi.fn();
     const entries: Entry[] = [
       {
         name: 'One',
@@ -32,7 +34,13 @@ describe('useFileNavigator', () => {
       },
     ];
     const TestComponent = () => {
-      const { selectedEntry } = useFileNavigator(entries, onActivate);
+      const [selectedEntry, setSelectedEntry] = useState<Entry>();
+      useFileNavigator({
+        entries,
+        activateEntry,
+        selectedEntry,
+        setSelectedEntry,
+      } as unknown as EntryData);
 
       return (
         <div>
@@ -84,46 +92,17 @@ describe('useFileNavigator', () => {
     fireEvent.keyDown(document, { key: KeyCode.Home });
     expect(nameElement.textContent).toBe('One');
 
-    expect(onActivate).not.toHaveBeenCalled();
+    expect(activateEntry).not.toHaveBeenCalled();
     fireEvent.keyDown(document, { key: KeyCode.ArrowDown });
     fireEvent.keyDown(document, { key: KeyCode.Enter });
-    expect(onActivate).toHaveBeenCalledWith(entries[1]);
+    expect(activateEntry).toHaveBeenCalledWith(entries[1]);
 
     // deselect
     fireEvent.keyDown(document, { key: KeyCode.Escape });
     expect(nameElement.textContent).toBe('');
     // enter does nothing
-    expect(onActivate).toHaveBeenCalledTimes(1);
+    expect(activateEntry).toHaveBeenCalledTimes(1);
     fireEvent.keyDown(document, { key: KeyCode.Enter });
-    expect(onActivate).toHaveBeenCalledTimes(1);
-  });
-
-  it('sets the selected entry from the hash', async () => {
-    const entries: Entry[] = [
-      {
-        name: 'One.txt',
-        parent: '/',
-        category: 'Document',
-        modified: '',
-        size: 0,
-      },
-      {
-        name: 'One (2).txt',
-        parent: '/',
-        category: 'Document',
-        modified: '',
-        size: 0,
-      },
-    ];
-
-    let selectedEntry: Entry | undefined;
-    const TestComponent = () => {
-      selectedEntry = useFileNavigator(entries, vi.fn()).selectedEntry;
-      return null;
-    };
-
-    await render(<TestComponent />, { path: '#One%20(2).txt' });
-
-    expect(selectedEntry).toStrictEqual(entries[1]);
+    expect(activateEntry).toHaveBeenCalledTimes(1);
   });
 });
