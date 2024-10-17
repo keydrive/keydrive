@@ -10,7 +10,7 @@ export interface Props {
   onClose: () => void;
 }
 
-export const ChangePasswordModal: React.FC<Props> = ({ onClose }) => {
+export const ChangePasswordModal = ({ onClose }: Props) => {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [done, setDone] = useState(false);

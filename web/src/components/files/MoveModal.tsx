@@ -15,7 +15,7 @@ export interface Props {
   onMove: (targetDir: string) => void;
 }
 
-export const MoveModal: React.FC<Props> = ({ onClose, libraryId, startPath, onMove }) => {
+export const MoveModal = ({ onClose, libraryId, startPath, onMove }: Props) => {
   const libraries = useService(LibrariesService);
   const [path, setPath] = useState(startPath);
   const [currentDir, setCurrentDir] = useState<Entry>();

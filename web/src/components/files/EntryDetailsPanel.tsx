@@ -21,15 +21,7 @@ export interface Props {
   onClose: () => void;
 }
 
-export const EntryDetailsPanel: React.FC<Props> = ({
-  entry,
-  onDownload,
-  onRename,
-  onMove,
-  onDelete,
-  active,
-  onClose,
-}) => {
+export const EntryDetailsPanel = ({ entry, onDownload, onRename, onMove, onDelete, active, onClose }: Props) => {
   const [showMenu, setShowMenu] = useState(false);
 
   return (

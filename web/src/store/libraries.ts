@@ -20,7 +20,7 @@ export const librariesStore = (injector: Injector) => {
 
   const getLibrariesAsync = createAsyncThunk<State['libraries'], undefined, ThunkApiConfig>(
     'libraries/getLibraries',
-    async (arg, { rejectWithValue }) => {
+    async (_arg, { rejectWithValue }) => {
       try {
         return await librariesService.listLibraries();
       } catch (e) {

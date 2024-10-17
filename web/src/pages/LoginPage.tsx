@@ -7,7 +7,7 @@ import { useService } from '../hooks/useService';
 import { PasswordInput } from '../components/input/PasswordInput';
 import logo from '../images/logo.svg';
 
-export const LoginPage: React.FC = () => {
+export const LoginPage = () => {
   const dispatch = useAppDispatch();
   const {
     actions: { loginAsync },

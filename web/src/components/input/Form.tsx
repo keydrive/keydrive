@@ -1,14 +1,15 @@
-import { ReactChild, useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { useMountedState } from '../../hooks/useMountedState';
 import { Button } from '../Button';
 
 export interface Props {
   onSubmit: () => void | Promise<void>;
-  submitLabel: ReactChild;
+  submitLabel: ReactNode;
   error?: string | false;
+  children: ReactNode;
 }
 
-export const Form: React.FC<Props> = ({ children, onSubmit, submitLabel, error }) => {
+export const Form = ({ children, onSubmit, submitLabel, error }: Props) => {
   const [loading, setLoading] = useState(false);
   const mounted = useMountedState();
 

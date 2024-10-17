@@ -10,10 +10,10 @@ export interface Props {
   title: string;
   shouldClose?: boolean;
   panelled?: boolean;
-  children: ReactNode;
+  children?: ReactNode;
 }
 
-export const Modal: React.FC<Props> = ({ children, title, panelled, onClose, shouldClose }) => {
+export const Modal = ({ children, title, panelled, onClose, shouldClose }: Props) => {
   const [closing, setClosing] = useState(false);
   const mounted = useMountedState();
 

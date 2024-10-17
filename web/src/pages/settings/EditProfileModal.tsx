@@ -11,7 +11,7 @@ export interface Props {
   onClose: () => void;
 }
 
-export const EditProfileModal: React.FC<Props> = ({ onClose }) => {
+export const EditProfileModal = ({ onClose }: Props) => {
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [done, setDone] = useState(false);

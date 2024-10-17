@@ -17,7 +17,7 @@ interface ModalProps {
   onClose: () => void;
 }
 
-export const SettingsPage: React.FC = () => {
+export const SettingsPage = () => {
   const {
     selectors: { currentUser },
     actions: { logout },

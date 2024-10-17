@@ -44,7 +44,7 @@ export const userStore = (injector: Injector) => {
 
   const getCurrentUserAsync = createAsyncThunk<State['currentUser'], undefined, ThunkApiConfig>(
     'user/getCurrentUser',
-    async (arg, { rejectWithValue }) => {
+    async (_arg, { rejectWithValue }) => {
       try {
         return await userService.getCurrentUser();
       } catch (e) {

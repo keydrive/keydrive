@@ -41,7 +41,7 @@ export async function render(element: ReactElement, options: RenderOptions = {})
     pathname: '',
   };
 
-  const FetchRoute: React.FC = () => {
+  const FetchRoute = () => {
     const location = useLocation();
     navigation.pathname = location.pathname;
     return null;
