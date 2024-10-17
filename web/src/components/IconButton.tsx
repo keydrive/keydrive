@@ -11,7 +11,7 @@ export interface Props
   className?: string;
 }
 
-export const IconButton: React.FC<Props> = ({ icon, className, ...props }) => (
+export const IconButton = ({ icon, className, ...props }: Props) => (
   <button {...props} className={classNames('icon-button', className)}>
     <Icon icon={icon} />
   </button>

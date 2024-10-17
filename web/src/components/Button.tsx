@@ -13,14 +13,14 @@ export interface Props {
   icon?: string;
 }
 
-export const Button: React.FC<Props> = ({
+export const Button = ({
   children,
   type = 'button',
   loading,
   primary,
   icon,
   ...props
-}) => (
+}: Props) => (
   <button
     {...props}
     className={classNames(

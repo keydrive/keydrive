@@ -1,5 +1,7 @@
-import React from 'react';
+export interface Props {
+  children: string;
+}
 
-export const Tag: React.FC<{ children: string }> = ({ children }) => (
+export const Tag = ({ children }: Props) => (
   <span className="tag">{children}</span>
 );

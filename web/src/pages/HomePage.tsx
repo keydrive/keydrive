@@ -1,10 +1,9 @@
-import React from 'react';
 import { useAppSelector } from '../store';
 import { useService } from '../hooks/useService';
 import { librariesStore } from '../store/libraries';
 import { Navigate } from 'react-router-dom';
 
-export const HomePage: React.FC = () => {
+export const HomePage = () => {
   const {
     selectors: { libraries },
   } = useService(librariesStore);

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Field, Props as FieldProps } from './Field';
 
 export interface Props extends FieldProps {
@@ -11,14 +10,14 @@ export interface Props extends FieldProps {
   label?: string;
 }
 
-export const SelectField: React.FC<Props> = ({
+export const SelectField = ({
   onSelect,
   options,
   error,
   className,
   label,
   ...props
-}) => (
+}: Props) => (
   <Field id={props.id} error={error} className={className}>
     {label && <label htmlFor={props.id}>{label}</label>}
     <div className="select-field">

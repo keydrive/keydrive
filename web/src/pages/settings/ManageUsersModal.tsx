@@ -106,7 +106,7 @@ const CreateOrEditUserForm: React.FC<{
   );
 };
 
-export const ManageUsersModal: React.FC<Props> = ({ onClose }) => {
+export const ManageUsersModal = ({ onClose }: Props) => {
   const userService = useService(UserService);
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<number>();
