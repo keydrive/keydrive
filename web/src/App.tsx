@@ -1,12 +1,11 @@
 import { useEffect } from 'react';
-import { RouterProvider } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useAppSelector } from './store';
 import { useService } from './hooks/useService';
 import { userStore } from './store/user';
 import { useDispatch } from 'react-redux';
 import { Icon } from './components/Icon';
 import { librariesStore } from './store/libraries';
-import { router, unauthenticatedRouter } from './router.tsx';
 
 export const App = () => {
   const {
@@ -39,7 +38,7 @@ export const App = () => {
   }, [dispatch, getCurrentUserAsync, token]);
 
   if (!token) {
-    return <RouterProvider router={unauthenticatedRouter} />;
+    return <Navigate to="/auth/login" />;
   }
 
   if (!currentUser || !libraries) {
@@ -50,5 +49,5 @@ export const App = () => {
     );
   }
 
-  return <RouterProvider router={router} />;
+  return <Outlet />;
 };

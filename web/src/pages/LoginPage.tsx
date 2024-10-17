@@ -6,12 +6,14 @@ import { useAppDispatch } from '../store';
 import { useService } from '../hooks/useService';
 import { PasswordInput } from '../components/input/PasswordInput';
 import logo from '../images/logo.svg';
+import { useNavigate } from 'react-router-dom';
 
 export const LoginPage = () => {
   const dispatch = useAppDispatch();
   const {
     actions: { loginAsync },
   } = useService(userStore);
+  const navigate = useNavigate();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -29,7 +31,9 @@ export const LoginPage = () => {
             const result = await dispatch(loginAsync({ username, password }));
             if (result.type !== loginAsync.fulfilled.type) {
               setError(true);
+              return;
             }
+            navigate('/');
           }}
           submitLabel="Log In"
           error={error && 'Invalid username or password.'}
