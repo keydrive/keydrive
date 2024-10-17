@@ -1,4 +1,4 @@
-import React, { ReactChild, useState } from 'react';
+import { ReactChild, useState } from 'react';
 import { useMountedState } from '../../hooks/useMountedState';
 import { Button } from '../Button';
 

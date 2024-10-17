@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useService } from '../../hooks/useService';
 import { User, UserService } from '../../services/UserService';
 import { Modal, ModalLeftPanel, ModalRightPanel } from '../../components/Modal';

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Props as TextInputProps, TextInput } from './TextInput';
 
 export type Props = Omit<TextInputProps, 'type' | 'iconButton' | 'onButtonClick'>;

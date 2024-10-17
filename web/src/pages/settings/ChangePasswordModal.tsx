@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useService } from '../../hooks/useService';
 import { UserService } from '../../services/UserService';
 import { Modal } from '../../components/Modal';

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Entry } from '../../services/LibrariesService';
 import { Panel } from '../Panel';
 import { EntryIcon } from '../EntryIcon';

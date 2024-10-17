@@ -1,7 +1,7 @@
-import React, { useContext } from 'react';
+import { createContext, useContext } from 'react';
 import { Injector, Provider } from '../services/Injector';
 
-const Context = React.createContext<Injector | undefined>(undefined);
+const Context = createContext<Injector | undefined>(undefined);
 
 export const InjectionProvider = Context.Provider;
 

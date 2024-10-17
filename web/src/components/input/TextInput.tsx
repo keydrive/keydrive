@@ -1,4 +1,4 @@
-import React, { ReactElement, DetailedHTMLProps, InputHTMLAttributes } from 'react';
+import { ReactElement, DetailedHTMLProps, InputHTMLAttributes } from 'react';
 import { Field, Props as FieldProps } from './Field';
 import { Icon } from '../Icon';
 import { Button } from '../Button';
@@ -19,7 +19,7 @@ export interface Props extends FieldProps, InputProps {
   onButtonClick?: () => void;
 }
 
-export const TextInput: React.FC<Props> = ({
+export const TextInput = ({
   onChange,
   error,
   className,
@@ -28,7 +28,7 @@ export const TextInput: React.FC<Props> = ({
   onButtonClick,
   onFieldBlur,
   ...props
-}) => (
+}: Props) => (
   <Field
     id={props.id}
     error={error}

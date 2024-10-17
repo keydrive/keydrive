@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Layout } from '../components/Layout';
 import { Panel } from '../components/Panel';
 import { Redirect, useHistory, useLocation, useParams } from 'react-router-dom';
@@ -101,7 +101,7 @@ const FileRow = ({
   );
 };
 
-export const FilesPage: React.FC = () => {
+export const FilesPage = () => {
   // The dataflow in this component is as follows:
   // 1. The route changes which triggers the "loading" state
   // 2. The current directory and its entities are fetched

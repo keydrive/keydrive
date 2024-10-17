@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Modal } from '../Modal';
 import { Entry, LibrariesService } from '../../services/LibrariesService';
 import { useService } from '../../hooks/useService';

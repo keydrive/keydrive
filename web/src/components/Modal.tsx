@@ -1,4 +1,4 @@
-import React, { ReactElement, ReactNode, useCallback, useEffect, useState } from 'react';
+import { ReactElement, ReactNode, useCallback, useEffect, useState } from 'react';
 import { classNames } from '../utils/classNames';
 import { Button } from './Button';
 import { Icon } from './Icon';

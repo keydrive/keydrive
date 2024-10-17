@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import { ReactElement, useState } from 'react';
 import { Position } from '../utils/position';
 import { KeyCode, useKeyBind } from '../hooks/useKeyBind';
 import { useDocumentEvent } from '../hooks/useDocumentEvent';

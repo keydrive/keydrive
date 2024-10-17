@@ -11,13 +11,13 @@ export default defineConfig({
     proxy: {
       '/api': backendUrl,
       '/oauth2': backendUrl,
-      '/docs': backendUrl
-    }
+      '/docs': backendUrl,
+    },
   },
   test: {
     globals: true,
     environment: 'jsdom',
     globalSetup: 'src/__testutils__/globalSetup.ts',
-    setupFiles: ['src/__testutils__/setup.ts']
-  }
+    setupFiles: ['src/__testutils__/setup.ts'],
+  },
 });

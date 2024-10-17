@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { LoginPage } from './pages/LoginPage';
 import { useAppSelector } from './store';
@@ -12,7 +12,7 @@ import { SettingsPage } from './pages/SettingsPage';
 import { HomePage } from './pages/HomePage';
 import { librariesStore } from './store/libraries';
 
-export const App: React.FC = () => {
+export const App = () => {
   const {
     selectors: { token: getToken, currentUser: getCurrentUser },
     actions: { getCurrentUserAsync },

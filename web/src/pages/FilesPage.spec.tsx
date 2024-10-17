@@ -316,7 +316,7 @@ describe('FilesPage', () => {
     await screen.findByText('Ballmers Peak Label.xcf');
     await userEvent.upload(screen.getByTestId('file-input'), [fileOne, fileTwo]);
     await screen.findByText('upload.txt', { selector: 'td' });
-    await screen.findByText('another.zip', { selector: 'td' });
+    expect(await screen.findByText('another.zip', { selector: 'td' })).toBeDefined();
   });
 
   it('creates a new folder on enter', async () => {
@@ -445,7 +445,6 @@ describe('FilesPage', () => {
     await screen.findByText('Documents');
     await userEvent.click(screen.getByText('New Folder'));
     await userEvent.keyboard('Create Me');
-    // eslint-disable-next-line testing-library/no-node-access
     await userEvent.click(screen.getByDisplayValue('Create Me').nextElementSibling as Element);
     await screen.findByText('Folder Details Pane', { selector: 'td' });
     await screen.findByText('I Am Of Exist');
@@ -811,7 +810,7 @@ describe('FilesPage', () => {
       dataTransfer: { files: [dirFile, fileOne, fileTwo] },
     });
     await screen.findByText('upload.txt', { selector: 'td' });
-    await screen.findByText('another.zip', { selector: 'td' });
+    expect(await screen.findByText('another.zip', { selector: 'td' })).toBeDefined();
   });
 
   it('renames a file on clicking the rename context menu item', async () => {
@@ -859,7 +858,6 @@ describe('FilesPage', () => {
     fireEvent.contextMenu(await screen.findByText('Ballmers Peak Label.xcf'));
     await userEvent.click(screen.getByText('Rename', { selector: '.context-menu *' }));
     await userEvent.keyboard('New name.xcf');
-    // eslint-disable-next-line testing-library/no-node-access
     await userEvent.click(screen.getByDisplayValue('New name.xcf').nextElementSibling as Element);
     expect(await screen.findByText('New name.xcf', { selector: '.details-panel *' })).toBeDefined();
   });
@@ -910,7 +908,6 @@ describe('FilesPage', () => {
     await userEvent.click(screen.getByLabelText('Actions'));
     await userEvent.click(screen.getByText('Rename'));
     await userEvent.keyboard('New name.xcf');
-    // eslint-disable-next-line testing-library/no-node-access
     await userEvent.click(screen.getByDisplayValue('New name.xcf').nextElementSibling as Element);
     expect(await screen.findByText('New name.xcf', { selector: '.details-panel *' })).toBeDefined();
   });

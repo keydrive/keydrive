@@ -90,7 +90,7 @@ export class ApiService {
   public formPost<T>(path: string, body: Record<string, string | Blob>): Promise<T> {
     const formBody = new FormData();
     for (const key in body) {
-      if (body.hasOwnProperty(key)) {
+      if (Object.hasOwn(body, key)) {
         formBody.set(key, body[key]);
       }
     }

@@ -7,7 +7,7 @@ export interface Props {
   className?: string;
   error?: boolean | ApiError;
   onFieldBlur?: () => void;
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 export const Field = ({ children, id, className, error, onFieldBlur }: Props) => (

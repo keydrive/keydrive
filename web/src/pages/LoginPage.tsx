@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { TextInput } from '../components/input/TextInput';
 import { Form } from '../components/input/Form';
 import { userStore } from '../store/user';
