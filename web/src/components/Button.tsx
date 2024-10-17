@@ -1,8 +1,9 @@
-import React from 'react';
+import { ReactNode } from 'react';
 import { classNames } from '../utils/classNames';
 import { Icon } from './Icon';
 
 export interface Props {
+  children: ReactNode;
   onClick?: () => void;
   type?: 'button' | 'submit';
   loading?: boolean;
@@ -12,10 +13,22 @@ export interface Props {
   icon?: string;
 }
 
-export const Button: React.FC<Props> = ({ children, type = 'button', loading, primary, icon, ...props }) => (
+export const Button: React.FC<Props> = ({
+  children,
+  type = 'button',
+  loading,
+  primary,
+  icon,
+  ...props
+}) => (
   <button
     {...props}
-    className={classNames('button', loading && 'loading', primary && 'primary', icon && 'has-icon')}
+    className={classNames(
+      'button',
+      loading && 'loading',
+      primary && 'primary',
+      icon && 'has-icon',
+    )}
     type={type}
   >
     <span className="content">

@@ -1,8 +1,12 @@
-export function isFileEntry(entry: FileSystemEntry): entry is FileSystemFileEntry {
+export function isFileEntry(
+  entry: FileSystemEntry,
+): entry is FileSystemFileEntry {
   return entry.isFile;
 }
 
-export function isDirectoryEntry(entry: FileSystemEntry): entry is FileSystemDirectoryEntry {
+export function isDirectoryEntry(
+  entry: FileSystemEntry,
+): entry is FileSystemDirectoryEntry {
   return entry.isDirectory;
 }
 
@@ -10,7 +14,9 @@ export function getFsEntryFile(entry: FileSystemFileEntry): Promise<File> {
   return new Promise((resolve, reject) => entry.file(resolve, reject));
 }
 
-export async function getAllEntriesRecursive(items: DataTransferItemList): Promise<FileSystemEntry[]> {
+export async function getAllEntriesRecursive(
+  items: DataTransferItemList,
+): Promise<FileSystemEntry[]> {
   const result: FileSystemEntry[] = [];
 
   for (const item of Array.from(items)) {
@@ -28,7 +34,9 @@ export async function getAllEntriesRecursive(items: DataTransferItemList): Promi
   return result;
 }
 
-async function readAllEntriesRecursive(dir: FileSystemDirectoryEntry): Promise<FileSystemEntry[]> {
+async function readAllEntriesRecursive(
+  dir: FileSystemDirectoryEntry,
+): Promise<FileSystemEntry[]> {
   const result = await readAllEntries(dir);
 
   for (const entry of result) {
@@ -40,7 +48,9 @@ async function readAllEntriesRecursive(dir: FileSystemDirectoryEntry): Promise<F
   return result;
 }
 
-async function readAllEntries(dir: FileSystemDirectoryEntry): Promise<FileSystemEntry[]> {
+async function readAllEntries(
+  dir: FileSystemDirectoryEntry,
+): Promise<FileSystemEntry[]> {
   const result: FileSystemEntry[] = [];
   const reader = dir.createReader();
 
@@ -53,6 +63,8 @@ async function readAllEntries(dir: FileSystemDirectoryEntry): Promise<FileSystem
   return result;
 }
 
-function readEntries(reader: FileSystemDirectoryReader): Promise<FileSystemEntry[]> {
+function readEntries(
+  reader: FileSystemDirectoryReader,
+): Promise<FileSystemEntry[]> {
   return new Promise((resolve, reject) => reader.readEntries(resolve, reject));
 }

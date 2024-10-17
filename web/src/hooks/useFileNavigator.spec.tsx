@@ -3,10 +3,11 @@ import { Entry } from '../services/LibrariesService';
 import { KeyCode } from './useKeyBind';
 import { render } from '../__testutils__/render';
 import { fireEvent, screen } from '@testing-library/react';
+import { vi } from 'vitest';
 
 describe('useFileNavigator', () => {
   it('can navigate using arrow keys', () => {
-    const onActivate = jest.fn();
+    const onActivate = vi.fn();
     const entries: Entry[] = [
       {
         name: 'One',
@@ -117,7 +118,7 @@ describe('useFileNavigator', () => {
 
     let selectedEntry: Entry | undefined;
     const TestComponent = () => {
-      selectedEntry = useFileNavigator(entries, jest.fn).selectedEntry;
+      selectedEntry = useFileNavigator(entries, vi.fn()).selectedEntry;
       return null;
     };
 

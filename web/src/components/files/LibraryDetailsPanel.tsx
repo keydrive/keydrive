@@ -11,7 +11,11 @@ export interface Props {
   onClose: () => void;
 }
 
-export const LibraryDetailsPanel: React.FC<Props> = ({ library, active, onClose }) => (
+export const LibraryDetailsPanel: React.FC<Props> = ({
+  library,
+  active,
+  onClose,
+}) => (
   <div className={classNames('details-panel', active && 'active')}>
     <Panel className="info full">
       <div className="close-panel">

@@ -17,7 +17,7 @@ interface ModalProps {
   onClose: () => void;
 }
 
-export const SettingsPage: React.FC = () => {
+export const SettingsPage = () => {
   const {
     selectors: { currentUser },
     actions: { logout },
@@ -48,7 +48,12 @@ export const SettingsPage: React.FC = () => {
         {({ activateSidebar }) => (
           <>
             <div className="top-bar">
-              <IconButton className="toggle-sidebar" onClick={activateSidebar} aria-label="Show sidebar" icon="bars" />
+              <IconButton
+                className="toggle-sidebar"
+                onClick={activateSidebar}
+                aria-label="Show sidebar"
+                icon="bars"
+              />
               <h1>Settings</h1>
             </div>
             <main>

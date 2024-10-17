@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Modal } from '../Modal';
 import { Entry, LibrariesService } from '../../services/LibrariesService';
 import { useService } from '../../hooks/useService';
@@ -15,7 +15,7 @@ export interface Props {
   onMove: (targetDir: string) => void;
 }
 
-export const MoveModal: React.FC<Props> = ({ onClose, libraryId, startPath, onMove }) => {
+export const MoveModal = ({ onClose, libraryId, startPath, onMove }: Props) => {
   const libraries = useService(LibrariesService);
   const [path, setPath] = useState(startPath);
   const [currentDir, setCurrentDir] = useState<Entry>();
@@ -28,10 +28,15 @@ export const MoveModal: React.FC<Props> = ({ onClose, libraryId, startPath, onMo
       // If the path is falsy or '/' we're at the library root, so no need for an extra call.
       const pathIsRoot = !path || path === '/';
       // noinspection ES6MissingAwait It is awaited later to run in parallel
-      const getCurrentEntity = pathIsRoot ? Promise.resolve(undefined) : libraries.getEntry(libraryId, path);
+      const getCurrentEntity = pathIsRoot
+        ? Promise.resolve(undefined)
+        : libraries.getEntry(libraryId, path);
       const getCurrentChildren = libraries.getEntries(libraryId, path);
 
-      const [newCurrentDir, newEntries] = await Promise.all([getCurrentEntity, getCurrentChildren]);
+      const [newCurrentDir, newEntries] = await Promise.all([
+        getCurrentEntity,
+        getCurrentChildren,
+      ]);
       setCurrentDir(newCurrentDir);
       setEntries(newEntries);
       return newEntries;
@@ -67,7 +72,8 @@ export const MoveModal: React.FC<Props> = ({ onClose, libraryId, startPath, onMo
           }}
         />
         <h3>
-          {currentDir ? resolvePath(currentDir) : '/'} {loadingEntries && <Icon icon="spinner" pulse />}
+          {currentDir ? resolvePath(currentDir) : '/'}{' '}
+          {loadingEntries && <Icon icon="spinner" pulse />}
         </h3>
       </div>
       <div className="table-wrapper">

@@ -1,4 +1,3 @@
-import React from 'react';
 import { ButtonGroup } from '../ButtonGroup';
 import { Button } from '../Button';
 import { ContextMenu, Props as ContextMenuProps } from '../ContextMenu';
@@ -15,7 +14,7 @@ export interface Props extends ContextMenuProps {
   onNewFolder: () => void;
 }
 
-export const FilesContextMenu: React.FC<Props> = ({
+export const FilesContextMenu = ({
   entry,
   onDownload,
   onRename,
@@ -24,7 +23,7 @@ export const FilesContextMenu: React.FC<Props> = ({
   onUpload,
   onNewFolder,
   ...props
-}) => (
+}: Props) => (
   <ContextMenu {...props}>
     <ButtonGroup vertical>
       {entry && entry.category !== 'Folder' && (

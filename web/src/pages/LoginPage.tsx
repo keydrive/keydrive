@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { TextInput } from '../components/input/TextInput';
 import { Form } from '../components/input/Form';
 import { userStore } from '../store/user';
@@ -7,7 +7,7 @@ import { useService } from '../hooks/useService';
 import { PasswordInput } from '../components/input/PasswordInput';
 import logo from '../images/logo.svg';
 
-export const LoginPage: React.FC = () => {
+export const LoginPage = () => {
   const dispatch = useAppDispatch();
   const {
     actions: { loginAsync },
@@ -34,8 +34,19 @@ export const LoginPage: React.FC = () => {
           submitLabel="Log In"
           error={error && 'Invalid username or password.'}
         >
-          <TextInput id="username" value={username} onChange={setUsername} placeholder="Username" autoFocus />
-          <PasswordInput id="password" value={password} onChange={setPassword} placeholder="Password" />
+          <TextInput
+            id="username"
+            value={username}
+            onChange={setUsername}
+            placeholder="Username"
+            autoFocus
+          />
+          <PasswordInput
+            id="password"
+            value={password}
+            onChange={setPassword}
+            placeholder="Password"
+          />
         </Form>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useService } from '../../hooks/useService';
 import { UserService } from '../../services/UserService';
 import { Modal } from '../../components/Modal';
@@ -10,7 +10,7 @@ export interface Props {
   onClose: () => void;
 }
 
-export const ChangePasswordModal: React.FC<Props> = ({ onClose }) => {
+export const ChangePasswordModal = ({ onClose }: Props) => {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [done, setDone] = useState(false);
@@ -38,8 +38,21 @@ export const ChangePasswordModal: React.FC<Props> = ({ onClose }) => {
         }}
         submitLabel="Change"
       >
-        <PasswordInput autoFocus required label="Password" value={password} onChange={setPassword} id="password" />
-        <PasswordInput required label="Confirm" value={confirm} onChange={setConfirm} id="confirm" />
+        <PasswordInput
+          autoFocus
+          required
+          label="Password"
+          value={password}
+          onChange={setPassword}
+          id="password"
+        />
+        <PasswordInput
+          required
+          label="Confirm"
+          value={confirm}
+          onChange={setConfirm}
+          id="confirm"
+        />
       </Form>
     </Modal>
   );

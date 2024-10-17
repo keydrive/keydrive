@@ -32,13 +32,19 @@ export function isApiError(e: unknown): e is ApiError {
 export class ApiService {
   public static readonly NAME = 'ApiService';
 
+  // This property should only be set during testing, to satisfy the URL parsing in the Node fetch implementation.
+  public static TEST_BASE_URL = '';
+
   private store?: Store;
 
   public constructor(private readonly injector: Injector) {}
 
-  private static async handleResponse<T>(resPromise: Promise<Response>): Promise<T> {
+  private static async handleResponse<T>(
+    resPromise: Promise<Response>,
+  ): Promise<T> {
     const response = await resPromise;
-    const responseBody = response.status === 204 ? undefined : await response.json();
+    const responseBody =
+      response.status === 204 ? undefined : await response.json();
 
     if (response.status >= 400) {
       throw responseBody;
@@ -49,7 +55,7 @@ export class ApiService {
 
   private static getUrl(path: string, params?: Record<string, string>): string {
     const paramString = params ? `?${new URLSearchParams(params)}` : '';
-    return `/api${path}${paramString}`;
+    return `${ApiService.TEST_BASE_URL}/api${path}${paramString}`;
   }
 
   public jsonGet<T>(path: string, params?: Record<string, string>): Promise<T> {
@@ -87,10 +93,13 @@ export class ApiService {
     return result;
   }
 
-  public formPost<T>(path: string, body: Record<string, string | Blob>): Promise<T> {
+  public formPost<T>(
+    path: string,
+    body: Record<string, string | Blob>,
+  ): Promise<T> {
     const formBody = new FormData();
     for (const key in body) {
-      if (body.hasOwnProperty(key)) {
+      if (Object.hasOwn(body, key)) {
         formBody.set(key, body[key]);
       }
     }
@@ -100,7 +109,7 @@ export class ApiService {
         method: 'POST',
         headers: this.getHeaders(),
         body: formBody,
-      })
+      }),
     );
   }
 
@@ -108,7 +117,7 @@ export class ApiService {
     method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
     path: string,
     body?: unknown,
-    params?: Record<string, string>
+    params?: Record<string, string>,
   ): Promise<T> {
     const headers = this.getHeaders();
     if (body) {
@@ -120,7 +129,7 @@ export class ApiService {
         method,
         headers,
         body: body ? JSON.stringify(body) : undefined,
-      })
+      }),
     );
   }
 

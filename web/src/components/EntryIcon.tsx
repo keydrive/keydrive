@@ -9,7 +9,10 @@ export interface Props {
 
 export const EntryIcon: React.FC<Props> = ({ entry }) => {
   const icon =
-    entry.category === 'Folder' ? 'folder' : extensionIcons[fileExtension(entry.name)] || categoryIcons[entry.category];
+    entry.category === 'Folder'
+      ? 'folder'
+      : extensionIcons[fileExtension(entry.name)] ||
+        categoryIcons[entry.category];
   return <Icon icon={icon} />;
 };
 

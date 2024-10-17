@@ -6,6 +6,7 @@ import { fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { RootState } from '../store';
 import { formDataMatcher } from '../__testutils__/formDataMatcher';
+import { vi } from 'vitest';
 
 const initialState: ReallyDeepPartial<RootState> = {
   libraries: {
@@ -54,7 +55,7 @@ describe('FilesPage', () => {
             size: 4096,
           },
         ],
-      }
+      },
     );
     window.HTMLElement.prototype.scrollIntoView = () => {
       // Just a mock
@@ -69,7 +70,9 @@ describe('FilesPage', () => {
       initialState,
     });
 
-    expect(await screen.findByText('Mock Library', { selector: 'h1' })).toBeDefined();
+    expect(
+      await screen.findByText('Mock Library', { selector: 'h1' }),
+    ).toBeDefined();
     expect(await screen.findByText('Ballmers Peak Label.xcf')).toBeDefined();
     expect(await screen.findByText('2.7 MB')).toBeDefined();
   });
@@ -84,9 +87,17 @@ describe('FilesPage', () => {
 
     await screen.findByText('Mock Library', { selector: '.details-panel *' });
     await screen.findByText('Ballmers Peak Label.xcf');
-    expect(screen.queryByText('Ballmers Peak Label.xcf', { selector: '.details-panel *' })).toBeNull();
-    userEvent.click(screen.getByText('Ballmers Peak Label.xcf'));
-    expect(screen.getByText('Ballmers Peak Label.xcf', { selector: '.details-panel *' })).toBeDefined();
+    expect(
+      screen.queryByText('Ballmers Peak Label.xcf', {
+        selector: '.details-panel *',
+      }),
+    ).toBeNull();
+    await userEvent.click(screen.getByText('Ballmers Peak Label.xcf'));
+    expect(
+      screen.getByText('Ballmers Peak Label.xcf', {
+        selector: '.details-panel *',
+      }),
+    ).toBeDefined();
   });
 
   it('enters a directory on double click and shows the folder details', async () => {
@@ -109,7 +120,7 @@ describe('FilesPage', () => {
             size: 3570049,
           },
         ],
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -130,7 +141,7 @@ describe('FilesPage', () => {
             size: 4096,
           },
         ],
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -143,7 +154,7 @@ describe('FilesPage', () => {
       {
         status: 200,
         body: [],
-      }
+      },
     );
 
     const { navigation } = await render(<FilesPage />, {
@@ -153,10 +164,12 @@ describe('FilesPage', () => {
       initialState,
     });
 
-    userEvent.dblClick(await screen.findByText('Documents'));
+    await userEvent.dblClick(await screen.findByText('Documents'));
     expect(await screen.findByText('KeyDrive Settings.pdf')).toBeDefined();
     expect(navigation.pathname).toBe('/files/4/%2FDocuments');
-    expect(screen.getByText('Documents', { selector: '.details-panel *' })).toBeDefined();
+    expect(
+      screen.getByText('Documents', { selector: '.details-panel *' }),
+    ).toBeDefined();
   });
 
   it('enters the parent directory when going up', async () => {
@@ -179,7 +192,7 @@ describe('FilesPage', () => {
             size: 3570049,
           },
         ],
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -200,7 +213,7 @@ describe('FilesPage', () => {
             size: 4096,
           },
         ],
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -228,7 +241,7 @@ describe('FilesPage', () => {
             size: 4096,
           },
         ],
-      }
+      },
     );
 
     const { navigation } = await render(<FilesPage />, {
@@ -239,7 +252,7 @@ describe('FilesPage', () => {
     });
 
     expect(await screen.findByText('KeyDrive Settings.pdf')).toBeDefined();
-    userEvent.click(screen.getByLabelText('Parent directory'));
+    await userEvent.click(screen.getByLabelText('Parent directory'));
     expect(await screen.findByText('Documents')).toBeDefined();
     expect(navigation.pathname).toBe('/files/4/%2F');
   });
@@ -274,7 +287,7 @@ describe('FilesPage', () => {
       {
         status: 201,
         body: fileOneEntry,
-      }
+      },
     );
     fetchMock.postOnce(
       {
@@ -289,7 +302,7 @@ describe('FilesPage', () => {
       {
         status: 201,
         body: fileTwoEntry,
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -302,7 +315,7 @@ describe('FilesPage', () => {
       {
         status: 200,
         body: [fileOneEntry, fileTwoEntry],
-      }
+      },
     );
 
     await render(<FilesPage />, {
@@ -313,9 +326,14 @@ describe('FilesPage', () => {
     });
     // wait for the page to load
     await screen.findByText('Ballmers Peak Label.xcf');
-    userEvent.upload(screen.getByTestId('file-input'), [fileOne, fileTwo]);
+    await userEvent.upload(screen.getByTestId('file-input'), [
+      fileOne,
+      fileTwo,
+    ]);
     await screen.findByText('upload.txt', { selector: 'td' });
-    await screen.findByText('another.zip', { selector: 'td' });
+    expect(
+      await screen.findByText('another.zip', { selector: 'td' }),
+    ).toBeDefined();
   });
 
   it('creates a new folder on enter', async () => {
@@ -336,7 +354,7 @@ describe('FilesPage', () => {
           category: 'Folder',
           size: 0,
         },
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -364,7 +382,7 @@ describe('FilesPage', () => {
             size: 0,
           },
         ],
-      }
+      },
     );
 
     await render(<FilesPage />, {
@@ -375,8 +393,8 @@ describe('FilesPage', () => {
     });
 
     await screen.findByText('Documents');
-    userEvent.click(screen.getByText('New Folder'));
-    userEvent.keyboard('Create Me');
+    await userEvent.click(screen.getByText('New Folder'));
+    await userEvent.keyboard('Create Me');
     fireEvent.keyDown(screen.getByDisplayValue('Create Me'), {
       key: 'Enter',
     });
@@ -403,7 +421,7 @@ describe('FilesPage', () => {
           category: 'Folder',
           size: 0,
         },
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -431,7 +449,7 @@ describe('FilesPage', () => {
             size: 0,
           },
         ],
-      }
+      },
     );
 
     await render(<FilesPage />, {
@@ -442,13 +460,14 @@ describe('FilesPage', () => {
     });
 
     await screen.findByText('Documents');
-    userEvent.click(screen.getByText('New Folder'));
-    userEvent.keyboard('Create Me');
-    // eslint-disable-next-line testing-library/no-node-access
-    userEvent.click(screen.getByDisplayValue('Create Me').nextElementSibling as Element);
-    await screen.findByText('Folder Details Pane');
+    await userEvent.click(screen.getByText('New Folder'));
+    await userEvent.keyboard('Create Me');
+    await userEvent.click(
+      screen.getByDisplayValue('Create Me').nextElementSibling as Element,
+    );
+    await screen.findByText('Folder Details Pane', { selector: 'td' });
     await screen.findByText('I Am Of Exist');
-    await expect(screen.queryByDisplayValue('Create Me')).toBeNull();
+    expect(screen.queryByDisplayValue('Create Me')).toBeNull();
   });
 
   it('cancels creating the folder when blurring the input', async () => {
@@ -460,8 +479,8 @@ describe('FilesPage', () => {
     });
 
     await screen.findByText('Documents');
-    userEvent.click(screen.getByText('New Folder'));
-    userEvent.keyboard('Hold On');
+    await userEvent.click(screen.getByText('New Folder'));
+    await userEvent.keyboard('Hold On');
     fireEvent.blur(screen.getByDisplayValue('Hold On'));
     expect(screen.queryByDisplayValue('Hold On')).toBeNull();
     expect(screen.queryByText('Hold On')).toBeNull();
@@ -476,8 +495,8 @@ describe('FilesPage', () => {
     });
 
     await screen.findByText('Documents');
-    userEvent.click(screen.getByText('New Folder'));
-    userEvent.keyboard('Hold On');
+    await userEvent.click(screen.getByText('New Folder'));
+    await userEvent.keyboard('Hold On');
     fireEvent.keyDown(screen.getByDisplayValue('Hold On'), {
       key: 'Escape',
     });
@@ -498,13 +517,13 @@ describe('FilesPage', () => {
         body: {
           token: 'i_am_a_download_token',
         },
-      }
+      },
     );
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     delete window.open;
-    window.open = jest.fn();
+    window.open = vi.fn();
 
     await render(<FilesPage />, {
       path: '/files/4',
@@ -513,9 +532,14 @@ describe('FilesPage', () => {
       initialState,
     });
 
-    userEvent.dblClick(await screen.findByText('Ballmers Peak Label.xcf'));
+    await userEvent.dblClick(
+      await screen.findByText('Ballmers Peak Label.xcf'),
+    );
     await waitFor(() => {
-      expect(window.open).toBeCalledWith('/api/download?token=i_am_a_download_token', '_self');
+      expect(window.open).toBeCalledWith(
+        '/api/download?token=i_am_a_download_token',
+        '_self',
+      );
     });
   });
 
@@ -532,13 +556,13 @@ describe('FilesPage', () => {
         body: {
           token: 'i_am_a_download_token',
         },
-      }
+      },
     );
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     delete window.open;
-    window.open = jest.fn();
+    window.open = vi.fn();
 
     await render(<FilesPage />, {
       path: '/files/4',
@@ -547,10 +571,13 @@ describe('FilesPage', () => {
       initialState,
     });
 
-    userEvent.click(await screen.findByText('Ballmers Peak Label.xcf'));
-    userEvent.click(screen.getByLabelText('Download'));
+    await userEvent.click(await screen.findByText('Ballmers Peak Label.xcf'));
+    await userEvent.click(screen.getByLabelText('Download'));
     await waitFor(() => {
-      expect(window.open).toBeCalledWith('/api/download?token=i_am_a_download_token', '_self');
+      expect(window.open).toBeCalledWith(
+        '/api/download?token=i_am_a_download_token',
+        '_self',
+      );
     });
   });
 
@@ -564,7 +591,7 @@ describe('FilesPage', () => {
       },
       {
         status: 204,
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -585,7 +612,7 @@ describe('FilesPage', () => {
             size: 4096,
           },
         ],
-      }
+      },
     );
 
     await render(<FilesPage />, {
@@ -595,9 +622,9 @@ describe('FilesPage', () => {
       initialState,
     });
 
-    userEvent.click(await screen.findByText('Ballmers Peak Label.xcf'));
-    userEvent.click(screen.getByLabelText('Actions'));
-    userEvent.click(screen.getByText('Delete'));
+    await userEvent.click(await screen.findByText('Ballmers Peak Label.xcf'));
+    await userEvent.click(screen.getByLabelText('Actions'));
+    await userEvent.click(screen.getByText('Delete'));
     await waitFor(() => {
       expect(screen.queryByText('Ballmers Peak Label.xcf')).toBeNull();
     });
@@ -616,13 +643,13 @@ describe('FilesPage', () => {
         body: {
           token: 'i_am_a_download_token',
         },
-      }
+      },
     );
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     delete window.open;
-    window.open = jest.fn();
+    window.open = vi.fn();
 
     await render(<FilesPage />, {
       path: '/files/4',
@@ -632,9 +659,14 @@ describe('FilesPage', () => {
     });
 
     fireEvent.contextMenu(await screen.findByText('Ballmers Peak Label.xcf'));
-    userEvent.click(screen.getByText('Download', { selector: '.context-menu *' }));
+    await userEvent.click(
+      screen.getByText('Download', { selector: '.context-menu *' }),
+    );
     await waitFor(() => {
-      expect(window.open).toBeCalledWith('/api/download?token=i_am_a_download_token', '_self');
+      expect(window.open).toBeCalledWith(
+        '/api/download?token=i_am_a_download_token',
+        '_self',
+      );
     });
   });
 
@@ -648,7 +680,7 @@ describe('FilesPage', () => {
       },
       {
         status: 204,
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -669,7 +701,7 @@ describe('FilesPage', () => {
             size: 2785246,
           },
         ],
-      }
+      },
     );
 
     await render(<FilesPage />, {
@@ -680,7 +712,9 @@ describe('FilesPage', () => {
     });
 
     fireEvent.contextMenu(await screen.findByText('Documents'));
-    userEvent.click(screen.getByText('Delete', { selector: '.context-menu *' }));
+    await userEvent.click(
+      screen.getByText('Delete', { selector: '.context-menu *' }),
+    );
     await waitFor(() => {
       expect(screen.queryByText('Documents')).toBeNull();
     });
@@ -696,7 +730,7 @@ describe('FilesPage', () => {
       },
       {
         status: 204,
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -717,7 +751,7 @@ describe('FilesPage', () => {
             size: 4096,
           },
         ],
-      }
+      },
     );
 
     await render(<FilesPage />, {
@@ -768,7 +802,7 @@ describe('FilesPage', () => {
       {
         status: 201,
         body: fileOneEntry,
-      }
+      },
     );
     fetchMock.postOnce(
       {
@@ -783,7 +817,7 @@ describe('FilesPage', () => {
       {
         status: 201,
         body: fileTwoEntry,
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -796,7 +830,7 @@ describe('FilesPage', () => {
       {
         status: 200,
         body: [fileOneEntry, fileTwoEntry],
-      }
+      },
     );
 
     await render(<FilesPage />, {
@@ -810,7 +844,9 @@ describe('FilesPage', () => {
       dataTransfer: { files: [dirFile, fileOne, fileTwo] },
     });
     await screen.findByText('upload.txt', { selector: 'td' });
-    await screen.findByText('another.zip', { selector: 'td' });
+    expect(
+      await screen.findByText('another.zip', { selector: 'td' }),
+    ).toBeDefined();
   });
 
   it('renames a file on clicking the rename context menu item', async () => {
@@ -824,7 +860,7 @@ describe('FilesPage', () => {
       },
       {
         status: 204,
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -845,7 +881,7 @@ describe('FilesPage', () => {
             size: 2785246,
           },
         ],
-      }
+      },
     );
 
     await render(<FilesPage />, {
@@ -856,11 +892,16 @@ describe('FilesPage', () => {
     });
 
     fireEvent.contextMenu(await screen.findByText('Ballmers Peak Label.xcf'));
-    userEvent.click(screen.getByText('Rename', { selector: '.context-menu *' }));
-    userEvent.keyboard('New name.xcf');
-    // eslint-disable-next-line testing-library/no-node-access
-    userEvent.click(screen.getByDisplayValue('New name.xcf').nextElementSibling as Element);
-    expect(await screen.findByText('New name.xcf', { selector: '.details-panel *' })).toBeDefined();
+    await userEvent.click(
+      screen.getByText('Rename', { selector: '.context-menu *' }),
+    );
+    await userEvent.keyboard('New name.xcf');
+    await userEvent.click(
+      screen.getByDisplayValue('New name.xcf').nextElementSibling as Element,
+    );
+    expect(
+      await screen.findByText('New name.xcf', { selector: '.details-panel *' }),
+    ).toBeDefined();
   });
 
   it('renames a file on clicking the rename button', async () => {
@@ -874,7 +915,7 @@ describe('FilesPage', () => {
       },
       {
         status: 204,
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -895,7 +936,7 @@ describe('FilesPage', () => {
             size: 2785246,
           },
         ],
-      }
+      },
     );
 
     await render(<FilesPage />, {
@@ -905,13 +946,16 @@ describe('FilesPage', () => {
       initialState,
     });
 
-    userEvent.click(await screen.findByText('Ballmers Peak Label.xcf'));
-    userEvent.click(screen.getByLabelText('Actions'));
-    userEvent.click(screen.getByText('Rename'));
-    userEvent.keyboard('New name.xcf');
-    // eslint-disable-next-line testing-library/no-node-access
-    userEvent.click(screen.getByDisplayValue('New name.xcf').nextElementSibling as Element);
-    expect(await screen.findByText('New name.xcf', { selector: '.details-panel *' })).toBeDefined();
+    await userEvent.click(await screen.findByText('Ballmers Peak Label.xcf'));
+    await userEvent.click(screen.getByLabelText('Actions'));
+    await userEvent.click(screen.getByText('Rename'));
+    await userEvent.keyboard('New name.xcf');
+    await userEvent.click(
+      screen.getByDisplayValue('New name.xcf').nextElementSibling as Element,
+    );
+    expect(
+      await screen.findByText('New name.xcf', { selector: '.details-panel *' }),
+    ).toBeDefined();
   });
 
   it('renames a file on pressing F2 and enter', async () => {
@@ -925,7 +969,7 @@ describe('FilesPage', () => {
       },
       {
         status: 204,
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -946,7 +990,7 @@ describe('FilesPage', () => {
             size: 2785246,
           },
         ],
-      }
+      },
     );
 
     await render(<FilesPage />, {
@@ -956,11 +1000,15 @@ describe('FilesPage', () => {
       initialState,
     });
 
-    userEvent.click(await screen.findByText('Ballmers Peak Label.xcf'));
+    await userEvent.click(await screen.findByText('Ballmers Peak Label.xcf'));
     fireEvent.keyDown(document, { key: 'F2' });
-    userEvent.keyboard('New name.xcf');
-    fireEvent.keyDown(screen.getByDisplayValue('New name.xcf'), { key: 'Enter' });
-    expect(await screen.findByText('New name.xcf', { selector: '.details-panel *' })).toBeDefined();
+    await userEvent.keyboard('New name.xcf');
+    fireEvent.keyDown(screen.getByDisplayValue('New name.xcf'), {
+      key: 'Enter',
+    });
+    expect(
+      await screen.findByText('New name.xcf', { selector: '.details-panel *' }),
+    ).toBeDefined();
   });
 
   it('cancels renaming the entry when blurring the input', async () => {
@@ -972,8 +1020,10 @@ describe('FilesPage', () => {
     });
 
     fireEvent.contextMenu(await screen.findByText('Documents'));
-    userEvent.click(screen.getByText('Rename', { selector: '.context-menu *' }));
-    userEvent.keyboard('Hold On');
+    await userEvent.click(
+      screen.getByText('Rename', { selector: '.context-menu *' }),
+    );
+    await userEvent.keyboard('Hold On');
     fireEvent.blur(screen.getByDisplayValue('Hold On'));
     expect(screen.queryByDisplayValue('Hold On')).toBeNull();
     expect(screen.queryByText('Hold On')).toBeNull();
@@ -988,8 +1038,10 @@ describe('FilesPage', () => {
     });
 
     fireEvent.contextMenu(await screen.findByText('Documents'));
-    userEvent.click(screen.getByText('Rename', { selector: '.context-menu *' }));
-    userEvent.keyboard('Hold On');
+    await userEvent.click(
+      screen.getByText('Rename', { selector: '.context-menu *' }),
+    );
+    await userEvent.keyboard('Hold On');
     fireEvent.keyDown(screen.getByDisplayValue('Hold On'), {
       key: 'Escape',
     });
@@ -1012,7 +1064,7 @@ describe('FilesPage', () => {
           status: 404,
           error: 'Not Found',
         },
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -1028,7 +1080,7 @@ describe('FilesPage', () => {
           status: 404,
           error: 'Not Found',
         },
-      }
+      },
     );
 
     const { navigation } = await render(<FilesPage />, {
@@ -1070,7 +1122,7 @@ describe('FilesPage', () => {
             size: 4096,
           },
         ],
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -1091,7 +1143,7 @@ describe('FilesPage', () => {
             size: 3570049,
           },
         ],
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -1112,7 +1164,7 @@ describe('FilesPage', () => {
             size: 4096,
           },
         ],
-      }
+      },
     );
     fetchMock.postOnce(
       {
@@ -1124,7 +1176,7 @@ describe('FilesPage', () => {
       },
       {
         status: 204,
-      }
+      },
     );
     fetchMock.getOnce(
       {
@@ -1145,7 +1197,7 @@ describe('FilesPage', () => {
             size: 4096,
           },
         ],
-      }
+      },
     );
 
     await render(<FilesPage />, {
@@ -1156,10 +1208,14 @@ describe('FilesPage', () => {
     });
 
     fireEvent.contextMenu(await screen.findByText('Ballmers Peak Label.xcf'));
-    userEvent.click(screen.getByText('Move', { selector: '.context-menu *' }));
-    userEvent.click(await screen.findByText('Documents', { selector: '.modal.move *' }));
+    await userEvent.click(
+      screen.getByText('Move', { selector: '.context-menu *' }),
+    );
+    await userEvent.click(
+      await screen.findByText('Documents', { selector: '.modal.move *' }),
+    );
     expect(await screen.findByText('KeyDrive Settings.pdf')).toBeDefined();
-    userEvent.click(screen.getByText('Move', { selector: 'button *' }));
+    await userEvent.click(screen.getByText('Move', { selector: 'button *' }));
     expect(await screen.findByText('Move complete')).toBeDefined();
   });
 });

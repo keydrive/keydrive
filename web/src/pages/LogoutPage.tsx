@@ -1,6 +1,6 @@
 import { Redirect } from 'react-router-dom';
 import { useAppDispatch } from '../store';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useService } from '../hooks/useService';
 import { userStore } from '../store/user';
 

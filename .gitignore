@@ -1,18 +1,24 @@
-## IDE ##
+# Editors
 .idea/
+.vscode/
 
-## BUILD ARTIFACTS ##
-web/build/*
-!web/build/static.go
+# Build artifacts
+web/dist/*
+!web/dist/static.go
 node_modules/
-coverage/
 junit.xml
 coverage.out
 keydrive
-
-## MISC ##
-*.log
 *.css
+*.tsbuildinfo
+
+# Test artifacts
+coverage/
+eslint-report.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# Misc
 .DS_Store
-testdata/
-web/eslint-report.json

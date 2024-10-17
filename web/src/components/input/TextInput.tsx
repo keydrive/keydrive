@@ -1,10 +1,13 @@
-import React, { ReactElement, DetailedHTMLProps, InputHTMLAttributes } from 'react';
+import { ReactElement, DetailedHTMLProps, InputHTMLAttributes } from 'react';
 import { Field, Props as FieldProps } from './Field';
 import { Icon } from '../Icon';
 import { Button } from '../Button';
 import { classNames } from '../../utils/classNames';
 
-type InputProps = Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, 'id' | 'onChange'>;
+type InputProps = Omit<
+  DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>,
+  'id' | 'onChange'
+>;
 
 export interface Props extends FieldProps, InputProps {
   value: string;
@@ -19,7 +22,7 @@ export interface Props extends FieldProps, InputProps {
   onButtonClick?: () => void;
 }
 
-export const TextInput: React.FC<Props> = ({
+export const TextInput = ({
   onChange,
   error,
   className,
@@ -28,7 +31,7 @@ export const TextInput: React.FC<Props> = ({
   onButtonClick,
   onFieldBlur,
   ...props
-}) => (
+}: Props) => (
   <Field
     id={props.id}
     error={error}

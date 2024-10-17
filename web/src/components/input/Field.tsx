@@ -1,4 +1,4 @@
-import React from 'react';
+import { ReactNode } from 'react';
 import { ApiError } from '../../services/ApiService';
 import { classNames } from '../../utils/classNames';
 
@@ -7,14 +7,30 @@ export interface Props {
   className?: string;
   error?: boolean | ApiError;
   onFieldBlur?: () => void;
+  children?: ReactNode;
 }
 
-export const Field: React.FC<Props> = ({ children, id, className, error, onFieldBlur }) => (
+export const Field = ({
+  children,
+  id,
+  className,
+  error,
+  onFieldBlur,
+}: Props) => (
   <div
-    className={classNames('field', className, hasError(id, error) && 'field-error')}
+    className={classNames(
+      'field',
+      className,
+      hasError(id, error) && 'field-error',
+    )}
     onBlur={(e) => {
-      if (!(e.relatedTarget instanceof Node) || !e.currentTarget.contains(e.relatedTarget)) {
-        onFieldBlur && onFieldBlur();
+      if (
+        !(e.relatedTarget instanceof Node) ||
+        !e.currentTarget.contains(e.relatedTarget)
+      ) {
+        if (onFieldBlur) {
+          onFieldBlur();
+        }
       }
     }}
   >

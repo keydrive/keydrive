@@ -40,7 +40,9 @@ export class Injector {
       return this.cache[key] as T;
     }
 
-    const instance = isService(target) ? this.resolveService(target) : this.resolveFunction(target);
+    const instance = isService(target)
+      ? this.resolveService(target)
+      : this.resolveFunction(target);
     if (!instance) {
       throw new Error(`Failed to provide [${target.name}]`);
     }

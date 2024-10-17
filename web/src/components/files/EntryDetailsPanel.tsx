@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Entry } from '../../services/LibrariesService';
 import { Panel } from '../Panel';
 import { EntryIcon } from '../EntryIcon';
@@ -21,7 +21,7 @@ export interface Props {
   onClose: () => void;
 }
 
-export const EntryDetailsPanel: React.FC<Props> = ({
+export const EntryDetailsPanel = ({
   entry,
   onDownload,
   onRename,
@@ -29,7 +29,7 @@ export const EntryDetailsPanel: React.FC<Props> = ({
   onDelete,
   active,
   onClose,
-}) => {
+}: Props) => {
   const [showMenu, setShowMenu] = useState(false);
 
   return (
@@ -48,11 +48,22 @@ export const EntryDetailsPanel: React.FC<Props> = ({
           </div>
           <div className="actions">
             {entry.category !== 'Folder' && (
-              <IconButton onClick={onDownload} icon={icons.download} aria-label="Download">
+              <IconButton
+                onClick={onDownload}
+                icon={icons.download}
+                aria-label="Download"
+              >
                 Download
               </IconButton>
             )}
-            <IconButton icon="ellipsis-h" onClick={() => setShowMenu((prevState) => !prevState)} aria-label="Actions" />
+            <IconButton
+              icon="ellipsis-h"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowMenu((prevState) => !prevState);
+              }}
+              aria-label="Actions"
+            />
           </div>
         </div>
         {showMenu && (

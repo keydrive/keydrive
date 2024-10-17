@@ -1,4 +1,10 @@
-import React, { ReactElement, useCallback, useEffect, useState } from 'react';
+import {
+  ReactElement,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import { classNames } from '../utils/classNames';
 import { Button } from './Button';
 import { Icon } from './Icon';
@@ -10,9 +16,16 @@ export interface Props {
   title: string;
   shouldClose?: boolean;
   panelled?: boolean;
+  children?: ReactNode;
 }
 
-export const Modal: React.FC<Props> = ({ children, title, panelled, onClose, shouldClose }) => {
+export const Modal = ({
+  children,
+  title,
+  panelled,
+  onClose,
+  shouldClose,
+}: Props) => {
   const [closing, setClosing] = useState(false);
   const mounted = useMountedState();
 
@@ -25,7 +38,7 @@ export const Modal: React.FC<Props> = ({ children, title, panelled, onClose, sho
         }
       },
       // NOTE: This time must match the css animation time
-      400
+      400,
     );
   }, [onClose, mounted]);
 
@@ -49,13 +62,17 @@ export const Modal: React.FC<Props> = ({ children, title, panelled, onClose, sho
 
   return (
     <>
-      <div aria-label="Close" className={classNames('modal-overlay', closing && 'closing')} onClick={close} />
+      <div
+        aria-label="Close"
+        className={classNames('modal-overlay', closing && 'closing')}
+        onClick={close}
+      />
       <div
         className={classNames(
           'modal',
           closing && 'closing',
           panelled && 'panelled',
-          title.toLowerCase().replaceAll(' ', '-')
+          title.toLowerCase().replaceAll(' ', '-'),
         )}
       >
         <h2>
@@ -131,6 +148,6 @@ export const ModalLeftPanel = <T extends { id: number }>({
   );
 };
 
-export const ModalRightPanel: React.FC = ({ children }) => {
+export const ModalRightPanel = ({ children }: { children: ReactNode }) => {
   return <div className="right panel">{children}</div>;
 };

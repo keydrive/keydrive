@@ -1,5 +1,5 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
 import './style/index.scss';
 import { App } from './App';
 import { BrowserRouter } from 'react-router-dom';
@@ -14,8 +14,8 @@ const injector = new Injector();
 const store = injector.resolve(initializeStore);
 const persistor = persistStore(store);
 
-ReactDOM.render(
-  <React.StrictMode>
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
     <BrowserRouter>
       <InjectionProvider value={injector}>
         <Provider store={store}>
@@ -25,6 +25,5 @@ ReactDOM.render(
         </Provider>
       </InjectionProvider>
     </BrowserRouter>
-  </React.StrictMode>,
-  document.getElementById('root')
+  </StrictMode>,
 );

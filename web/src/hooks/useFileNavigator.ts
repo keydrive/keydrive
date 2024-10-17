@@ -5,10 +5,15 @@ import { useLocation } from 'react-router-dom';
 
 export const useFileNavigator = (
   entries: Entry[] | undefined,
-  onActivateEntry: (entry: Entry) => void
-): { selectedEntry: Entry | undefined; setSelectedEntry: (entry: Entry | undefined) => void } => {
+  onActivateEntry: (entry: Entry) => void,
+): {
+  selectedEntry: Entry | undefined;
+  setSelectedEntry: (entry: Entry | undefined) => void;
+} => {
   const location = useLocation();
-  const hash = decodeURIComponent(location.hash ? location.hash.substring(1) : '');
+  const hash = decodeURIComponent(
+    location.hash ? location.hash.substring(1) : '',
+  );
 
   const [selectedEntry, setSelectedEntry] = useState<Entry>();
 
@@ -34,8 +39,13 @@ export const useFileNavigator = (
         return;
       }
       if (selectedEntry) {
-        const currentIndex = entries.findIndex((e) => e.name === selectedEntry.name);
-        const desiredIndex = Math.min(Math.max(currentIndex + delta, 0), entries.length - 1);
+        const currentIndex = entries.findIndex(
+          (e) => e.name === selectedEntry.name,
+        );
+        const desiredIndex = Math.min(
+          Math.max(currentIndex + delta, 0),
+          entries.length - 1,
+        );
         setSelectedEntry(entries[desiredIndex]);
       } else if (delta === 1) {
         // we have no selection so we select the top item to be able to scroll down
@@ -45,7 +55,7 @@ export const useFileNavigator = (
         shiftSelectToLast();
       }
     },
-    [entries, selectedEntry, shiftSelectToFirst, shiftSelectToLast]
+    [entries, selectedEntry, shiftSelectToFirst, shiftSelectToLast],
   );
 
   useKeyBind(KeyCode.Enter, () => {

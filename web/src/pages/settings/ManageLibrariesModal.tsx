@@ -1,5 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { BrowseResponse, LibrariesService, LibraryDetails } from '../../services/LibrariesService';
+import { useCallback, useEffect, useState } from 'react';
+import {
+  BrowseResponse,
+  LibrariesService,
+  LibraryDetails,
+} from '../../services/LibrariesService';
 import { useService } from '../../hooks/useService';
 import { Form } from '../../components/input/Form';
 import { TextInput } from '../../components/input/TextInput';
@@ -10,7 +14,9 @@ import { librariesStore } from '../../store/libraries';
 import { Modal, ModalLeftPanel, ModalRightPanel } from '../../components/Modal';
 import { errorMessage } from '../../utils/errorMessage';
 
-const CreateLibraryForm: React.FC<{ onDone: (id: number) => void }> = ({ onDone }) => {
+const CreateLibraryForm: React.FC<{ onDone: (id: number) => void }> = ({
+  onDone,
+}) => {
   const [name, setName] = useState('');
   const [folder, setFolder] = useState('');
   const [browseSet, setBrowseSet] = useState<BrowseResponse>();
@@ -41,7 +47,14 @@ const CreateLibraryForm: React.FC<{ onDone: (id: number) => void }> = ({ onDone 
         }}
         submitLabel="Create"
       >
-        <TextInput autoFocus required label="Name:" value={name} onChange={setName} id="name" />
+        <TextInput
+          autoFocus
+          required
+          label="Name:"
+          value={name}
+          onChange={setName}
+          id="name"
+        />
         <TextInput
           required
           label={
@@ -49,7 +62,11 @@ const CreateLibraryForm: React.FC<{ onDone: (id: number) => void }> = ({ onDone 
               <IconButton
                 className="parent-dir"
                 type="button"
-                disabled={!browseSet || !browseSet.path || browseSet.parent === browseSet.path}
+                disabled={
+                  !browseSet ||
+                  !browseSet.path ||
+                  browseSet.parent === browseSet.path
+                }
                 onClick={() => {
                   if (browseSet) {
                     setFolder(browseSet.parent);
@@ -65,13 +82,20 @@ const CreateLibraryForm: React.FC<{ onDone: (id: number) => void }> = ({ onDone 
           onChange={setFolder}
           id="folder"
         />
-        <SelectField options={browseSet?.folders?.map((f) => f.path) || []} onSelect={setFolder} id="subfolders" />
+        <SelectField
+          options={browseSet?.folders?.map((f) => f.path) || []}
+          onSelect={setFolder}
+          id="subfolders"
+        />
       </Form>
     </>
   );
 };
 
-const EditLibraryForm: React.FC<{ library: LibraryDetails; onDone: () => void }> = ({ library, onDone }) => {
+const EditLibraryForm: React.FC<{
+  library: LibraryDetails;
+  onDone: () => void;
+}> = ({ library, onDone }) => {
   const [name, setName] = useState('');
   const librariesService = useService(LibrariesService);
   const [error, setError] = useState<string>();
@@ -97,8 +121,19 @@ const EditLibraryForm: React.FC<{ library: LibraryDetails; onDone: () => void }>
         }}
         submitLabel="Save"
       >
-        <TextInput required label="Name:" value={name} onChange={setName} id="name" />
-        <TextInput required label="Folder:" value={library.rootFolder} id="folder" />
+        <TextInput
+          required
+          label="Name:"
+          value={name}
+          onChange={setName}
+          id="name"
+        />
+        <TextInput
+          required
+          label="Folder:"
+          value={library.rootFolder}
+          id="folder"
+        />
       </Form>
     </>
   );
@@ -128,7 +163,7 @@ export const ManageLibrariesModal: React.FC<Props> = ({ onClose }) => {
         setLoading(false);
       });
     },
-    [librariesService]
+    [librariesService],
   );
 
   useEffect(() => refreshLibraries(), [refreshLibraries]);

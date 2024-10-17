@@ -1,7 +1,9 @@
-import { MockMatcher } from 'fetch-mock';
+import fetchMock from 'fetch-mock';
 
-export function formDataMatcher(values: Record<string, FormDataEntryValue>): MockMatcher {
-  return (url, req) => {
+export function formDataMatcher(
+  values: Record<string, FormDataEntryValue>,
+): fetchMock.MockMatcher {
+  return (_url: string, req: fetchMock.MockRequest) => {
     // Check if the request body is a form data object.
     if (!(req.body instanceof FormData)) {
       return false;
@@ -12,7 +14,7 @@ export function formDataMatcher(values: Record<string, FormDataEntryValue>): Moc
     }
     // Check if all values match the values in the body.
     for (const key in values) {
-      if (values.hasOwnProperty(key) && req.body.get(key) !== values[key]) {
+      if (Object.hasOwn(values, key) && req.body.get(key) !== values[key]) {
         return false;
       }
     }

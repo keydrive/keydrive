@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import { ReactElement, ReactNode } from 'react';
 import { MemoryRouter, Route, useLocation } from 'react-router-dom';
 import { InjectionProvider } from '../hooks/useService';
 import { Injector } from '../services/Injector';
@@ -7,8 +7,9 @@ import { initializeStore, RootState, Store } from '../store';
 import { render as rtlRender } from '@testing-library/react';
 
 export type ReallyDeepPartial<T> = {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  [K in keyof T]?: T[K] extends object | undefined ? ReallyDeepPartial<T[K]> : T[K];
+  [K in keyof T]?: T[K] extends object | undefined
+    ? ReallyDeepPartial<T[K]>
+    : T[K];
 };
 
 export interface RenderOptions {
@@ -25,7 +26,10 @@ export interface TestAPI {
   store: Store;
 }
 
-export async function render(element: ReactElement, options: RenderOptions = {}): Promise<TestAPI> {
+export async function render(
+  element: ReactElement,
+  options: RenderOptions = {},
+): Promise<TestAPI> {
   const combinedInitialState = options.initialState || {};
   if (options.loggedIn) {
     if (!combinedInitialState.user) {
@@ -42,13 +46,13 @@ export async function render(element: ReactElement, options: RenderOptions = {})
     pathname: '',
   };
 
-  const FetchRoute: React.FC = () => {
+  const FetchRoute = () => {
     const location = useLocation();
     navigation.pathname = location.pathname;
     return null;
   };
 
-  const Wrapper: React.FC = ({ children }) => (
+  const Wrapper = ({ children }: { children: ReactNode }) => (
     <MemoryRouter initialEntries={[options.path || '']}>
       <InjectionProvider value={injector}>
         <Provider store={store}>

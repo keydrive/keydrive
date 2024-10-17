@@ -8,10 +8,10 @@ describe('App', () => {
   afterEach(checkPendingMocks);
 
   it('loads userdata and libraries on boot', async () => {
-    fetchMock.getOnce('/api/user/', {
+    fetchMock.getOnce('end:/api/user/', {
       name: 'Test',
     });
-    fetchMock.get('/api/libraries/?limit=100', {
+    fetchMock.get('end:/api/libraries/?limit=100', {
       totalElements: 0,
       elements: [
         {
@@ -29,13 +29,17 @@ describe('App', () => {
       ],
     });
     // the root lib will be fetched
-    fetchMock.get('/api/libraries/4/entries?parent=', []);
+    fetchMock.get('end:/api/libraries/4/entries?parent=', []);
     const { store } = await render(<App />, {
       loggedIn: true,
       path: '/',
     });
 
-    await waitFor(() => expect(store.getState().libraries.libraries).toHaveLength(2));
-    await waitFor(() => expect(store.getState().user.currentUser?.name).toBe('Test'));
+    await waitFor(() =>
+      expect(store.getState().libraries.libraries).toHaveLength(2),
+    );
+    await waitFor(() =>
+      expect(store.getState().user.currentUser?.name).toBe('Test'),
+    );
   });
 });

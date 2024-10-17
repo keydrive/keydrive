@@ -1,7 +1,6 @@
 import { classNames } from '../../utils/classNames';
 import { Icon } from '../Icon';
 import { icons } from '../../utils/icons';
-import React from 'react';
 
 export interface Props {
   onDropEntries: (items: DataTransferItemList) => void;
@@ -10,7 +9,12 @@ export interface Props {
   top?: number;
 }
 
-export const DropZone = ({ onDropEntries, onDropFiles, top, ...props }: Props) => {
+export const DropZone = ({
+  onDropEntries,
+  onDropFiles,
+  top,
+  ...props
+}: Props) => {
   return (
     <div
       {...props}

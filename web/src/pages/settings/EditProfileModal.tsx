@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useService } from '../../hooks/useService';
 import { userStore } from '../../store/user';
 import { useAppDispatch, useAppSelector } from '../../store';
@@ -11,7 +11,7 @@ export interface Props {
   onClose: () => void;
 }
 
-export const EditProfileModal: React.FC<Props> = ({ onClose }) => {
+export const EditProfileModal = ({ onClose }: Props) => {
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [done, setDone] = useState(false);
@@ -40,7 +40,7 @@ export const EditProfileModal: React.FC<Props> = ({ onClose }) => {
             updateCurrentUserAsync({
               name: name.trim(),
               username: username.trim(),
-            })
+            }),
           );
           switch (action.type) {
             case updateCurrentUserAsync.fulfilled.type:
@@ -53,7 +53,12 @@ export const EditProfileModal: React.FC<Props> = ({ onClose }) => {
         }}
         submitLabel="Save"
       >
-        <TextInput label="Username:" value={username} onChange={setUsername} id="username" />
+        <TextInput
+          label="Username:"
+          value={username}
+          onChange={setUsername}
+          id="username"
+        />
         <TextInput label="Name:" value={name} onChange={setName} id="name" />
       </Form>
     </Modal>

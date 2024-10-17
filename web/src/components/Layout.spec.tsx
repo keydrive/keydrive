@@ -27,7 +27,7 @@ describe('Layout', () => {
     });
 
     expect(screen.getByText('Documents')).toBeDefined();
-    userEvent.click(screen.getByText('Movies'));
+    await userEvent.click(screen.getByText('Movies'));
     expect(navigation.pathname).toBe('/files/2');
   });
 });

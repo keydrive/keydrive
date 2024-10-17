@@ -27,43 +27,45 @@ const persistConfig: PersistConfig<State> = {
   whitelist: ['token'],
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const userStore = (injector: Injector) => {
   const authService = injector.resolve(AuthService);
   const userService = injector.resolve(UserService);
 
-  const loginAsync = createAsyncThunk<State['token'], { username: string; password: string }, ThunkApiConfig>(
-    'user/login',
-    async ({ username, password }, { rejectWithValue }) => {
-      try {
-        return (await authService.login(username, password)).accessToken;
-      } catch (e) {
-        return rejectWithValue(e as ApiError);
-      }
+  const loginAsync = createAsyncThunk<
+    State['token'],
+    { username: string; password: string },
+    ThunkApiConfig
+  >('user/login', async ({ username, password }, { rejectWithValue }) => {
+    try {
+      return (await authService.login(username, password)).accessToken;
+    } catch (e) {
+      return rejectWithValue(e as ApiError);
     }
-  );
+  });
 
-  const getCurrentUserAsync = createAsyncThunk<State['currentUser'], undefined, ThunkApiConfig>(
-    'user/getCurrentUser',
-    async (arg, { rejectWithValue }) => {
-      try {
-        return await userService.getCurrentUser();
-      } catch (e) {
-        return rejectWithValue(e as ApiError);
-      }
+  const getCurrentUserAsync = createAsyncThunk<
+    State['currentUser'],
+    undefined,
+    ThunkApiConfig
+  >('user/getCurrentUser', async (_arg, { rejectWithValue }) => {
+    try {
+      return await userService.getCurrentUser();
+    } catch (e) {
+      return rejectWithValue(e as ApiError);
     }
-  );
+  });
 
-  const updateCurrentUserAsync = createAsyncThunk<State['currentUser'], UpdateUser, ThunkApiConfig>(
-    'user/updateCurrentUser',
-    async (updates, { rejectWithValue }) => {
-      try {
-        return await userService.updateCurrentUser(updates);
-      } catch (e) {
-        return rejectWithValue(e as ApiError);
-      }
+  const updateCurrentUserAsync = createAsyncThunk<
+    State['currentUser'],
+    UpdateUser,
+    ThunkApiConfig
+  >('user/updateCurrentUser', async (updates, { rejectWithValue }) => {
+    try {
+      return await userService.updateCurrentUser(updates);
+    } catch (e) {
+      return rejectWithValue(e as ApiError);
     }
-  );
+  });
 
   function reset(state: Draft<State>) {
     state.token = undefined;
