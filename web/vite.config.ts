@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
@@ -12,5 +13,11 @@ export default defineConfig({
       '/oauth2': backendUrl,
       '/docs': backendUrl
     }
+  },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    globalSetup: 'src/__testutils__/globalSetup.ts',
+    setupFiles: ['src/__testutils__/setup.ts']
   }
 });

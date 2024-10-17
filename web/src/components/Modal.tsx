@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useEffect, useState } from 'react';
+import React, { ReactElement, ReactNode, useCallback, useEffect, useState } from 'react';
 import { classNames } from '../utils/classNames';
 import { Button } from './Button';
 import { Icon } from './Icon';
@@ -10,6 +10,7 @@ export interface Props {
   title: string;
   shouldClose?: boolean;
   panelled?: boolean;
+  children: ReactNode;
 }
 
 export const Modal: React.FC<Props> = ({ children, title, panelled, onClose, shouldClose }) => {
@@ -79,15 +80,15 @@ export interface LeftPanelProps<T extends { id: number }> {
 }
 
 export const ModalLeftPanel = <T extends { id: number }>({
-  items,
-  children,
-  onSelect,
-  selected,
-  onAddLabel,
-  onAdd,
-  onDeleteLabel,
-  onDelete,
-}: LeftPanelProps<T>): ReactElement => {
+                                                           items,
+                                                           children,
+                                                           onSelect,
+                                                           selected,
+                                                           onAddLabel,
+                                                           onAdd,
+                                                           onDeleteLabel,
+                                                           onDelete
+                                                         }: LeftPanelProps<T>): ReactElement => {
   const [deleting, setDeleting] = useState(false);
   return (
     <div className="left panel">
@@ -131,6 +132,6 @@ export const ModalLeftPanel = <T extends { id: number }>({
   );
 };
 
-export const ModalRightPanel: React.FC = ({ children }) => {
+export const ModalRightPanel = ({ children }: { children: ReactNode }) => {
   return <div className="right panel">{children}</div>;
 };

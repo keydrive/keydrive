@@ -49,7 +49,7 @@ export class ApiService {
 
   private static getUrl(path: string, params?: Record<string, string>): string {
     const paramString = params ? `?${new URLSearchParams(params)}` : '';
-    return `/api${path}${paramString}`;
+    return `${process.env.BASE_URL ?? ''}/api${path}${paramString}`;
   }
 
   public jsonGet<T>(path: string, params?: Record<string, string>): Promise<T> {

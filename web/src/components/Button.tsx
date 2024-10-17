@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { classNames } from '../utils/classNames';
 import { Icon } from './Icon';
 
 export interface Props {
-  children: string;
+  children: ReactNode;
   onClick?: () => void;
   type?: 'button' | 'submit';
   loading?: boolean;

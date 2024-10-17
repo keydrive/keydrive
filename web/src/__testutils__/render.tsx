@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 import { MemoryRouter, Route, useLocation } from 'react-router-dom';
 import { InjectionProvider } from '../hooks/useService';
 import { Injector } from '../services/Injector';
@@ -39,7 +39,7 @@ export async function render(element: ReactElement, options: RenderOptions = {})
   injector.bindTo(initializeStore, store);
 
   const navigation = {
-    pathname: '',
+    pathname: ''
   };
 
   const FetchRoute: React.FC = () => {
@@ -48,7 +48,7 @@ export async function render(element: ReactElement, options: RenderOptions = {})
     return null;
   };
 
-  const Wrapper: React.FC = ({ children }) => (
+  const Wrapper = ({ children }: { children: ReactNode }) => (
     <MemoryRouter initialEntries={[options.path || '']}>
       <InjectionProvider value={injector}>
         <Provider store={store}>

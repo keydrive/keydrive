@@ -4,15 +4,16 @@ import fetchMock from 'fetch-mock';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { checkPendingMocks } from '../../__testutils__/checkPendingMocks';
 import userEvent from '@testing-library/user-event';
+import { vi } from 'vitest';
 
 describe('ManageLibrariesModal', () => {
   afterEach(checkPendingMocks);
 
   describe('Create mode', () => {
     it('can browse through folders', async () => {
-      const onClose = jest.fn();
+      const onClose = vi.fn();
       fetchMock.get(
-        '/api/libraries/?limit=100',
+        'end:/api/libraries/?limit=100',
         {
           totalElements: 0,
           elements: [],
@@ -21,7 +22,7 @@ describe('ManageLibrariesModal', () => {
       );
       fetchMock.post(
         {
-          url: '/api/system/browse',
+          url: 'end:/api/system/browse',
           body: {
             path: '',
           },
@@ -39,7 +40,7 @@ describe('ManageLibrariesModal', () => {
 
       fetchMock.post(
         {
-          url: '/api/system/browse',
+          url: 'end:/api/system/browse',
           body: {
             path: '/',
           },
@@ -63,7 +64,7 @@ describe('ManageLibrariesModal', () => {
       );
       fetchMock.post(
         {
-          url: '/api/system/browse',
+          url: 'end:/api/system/browse',
           body: {
             path: '/two',
           },
@@ -103,16 +104,16 @@ describe('ManageLibrariesModal', () => {
 
   describe('Edit mode', () => {
     it('displays the root folder', async () => {
-      const onClose = jest.fn();
+      const onClose = vi.fn();
       fetchMock.get(
-        '/api/libraries/?limit=100',
+        'end:/api/libraries/?limit=100',
         {
           totalElements: 1,
           elements: [{ id: 3252, type: 'generic', name: 'Downloads', canWrite: true }],
         },
         { overwriteRoutes: true }
       );
-      fetchMock.get('/api/libraries/3252', {
+      fetchMock.get('end:/api/libraries/3252', {
         id: 3252,
         name: 'Downloads',
         rootFolder: '/Users/chappio/Downloads',
@@ -128,12 +129,12 @@ describe('ManageLibrariesModal', () => {
       });
 
       // the first call was loading the libs in the modal
-      expect(fetchMock.calls('/api/libraries/?limit=100')).toHaveLength(1);
+      expect(fetchMock.calls('end:/api/libraries/?limit=100')).toHaveLength(1);
 
       // now we close the modal which should cause a reload
       fireEvent.click(screen.getByLabelText('Close'));
       await waitFor(() => {
-        expect(fetchMock.calls('/api/libraries/?limit=100')).toHaveLength(2);
+        expect(fetchMock.calls('end:/api/libraries/?limit=100')).toHaveLength(2);
       });
     });
   });

@@ -5,6 +5,7 @@ import fetchMock from 'fetch-mock';
 import { screen } from '@testing-library/react';
 import { MoveModal } from './MoveModal';
 import userEvent from '@testing-library/user-event';
+import { vi } from 'vitest';
 
 const initialState: ReallyDeepPartial<RootState> = {
   libraries: {
@@ -46,7 +47,7 @@ describe('MoveModal', () => {
   });
 
   it('shows the entries', async () => {
-    await render(<MoveModal onClose={jest.fn()} libraryId="4" startPath="/" onMove={jest.fn()} />, {
+    await render(<MoveModal onClose={vi.fn()} libraryId="4" startPath="/" onMove={vi.fn()} />, {
       initialState,
       loggedIn: true,
     });
@@ -98,13 +99,13 @@ describe('MoveModal', () => {
       }
     );
 
-    await render(<MoveModal onClose={jest.fn()} libraryId="4" startPath="/subdir" onMove={jest.fn()} />, {
+    await render(<MoveModal onClose={vi.fn()} libraryId="4" startPath="/subdir" onMove={vi.fn()} />, {
       initialState,
       loggedIn: true,
     });
 
     expect(await screen.findByText('another')).toBeDefined();
-    userEvent.click(screen.getByLabelText('Parent directory'));
+    await userEvent.click(screen.getByLabelText('Parent directory'));
     expect(await screen.findByText('subdir')).toBeDefined();
   });
 
@@ -152,15 +153,15 @@ describe('MoveModal', () => {
       }
     );
 
-    const onMove = jest.fn();
-    await render(<MoveModal onClose={jest.fn()} libraryId="4" startPath="/" onMove={onMove} />, {
+    const onMove = vi.fn();
+    await render(<MoveModal onClose={vi.fn()} libraryId="4" startPath="/" onMove={onMove} />, {
       initialState,
       loggedIn: true,
     });
 
-    userEvent.click(await screen.findByText('subdir'));
+    await userEvent.click(await screen.findByText('subdir'));
     expect(await screen.findByText('another')).toBeDefined();
-    userEvent.click(screen.getByText('Move', { selector: 'button span' }));
+    await userEvent.click(screen.getByText('Move', { selector: 'button span' }));
     expect(onMove).toBeCalledWith('/subdir');
   });
 });

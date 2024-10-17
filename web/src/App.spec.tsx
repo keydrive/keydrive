@@ -8,31 +8,31 @@ describe('App', () => {
   afterEach(checkPendingMocks);
 
   it('loads userdata and libraries on boot', async () => {
-    fetchMock.getOnce('/api/user/', {
-      name: 'Test',
+    fetchMock.getOnce('end:/api/user/', {
+      name: 'Test'
     });
-    fetchMock.get('/api/libraries/?limit=100', {
+    fetchMock.get('end:/api/libraries/?limit=100', {
       totalElements: 0,
       elements: [
         {
           id: 4,
           name: 'One',
           canWrite: false,
-          type: 'generic',
+          type: 'generic'
         },
         {
           id: 56,
           name: 'Two',
           canWrite: false,
-          type: 'generic',
-        },
-      ],
+          type: 'generic'
+        }
+      ]
     });
     // the root lib will be fetched
-    fetchMock.get('/api/libraries/4/entries?parent=', []);
+    fetchMock.get('end:/api/libraries/4/entries?parent=', []);
     const { store } = await render(<App />, {
       loggedIn: true,
-      path: '/',
+      path: '/'
     });
 
     await waitFor(() => expect(store.getState().libraries.libraries).toHaveLength(2));
