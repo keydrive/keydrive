@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom';
+import { ApiService } from '../services/ApiService.ts';
 
-process.env.BASE_URL = 'http://test.local';
+ApiService.TEST_BASE_URL = 'http://test.local';
 
 if (!process.env.DEBUG) {
   console.debug = () => undefined;

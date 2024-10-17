@@ -32,12 +32,21 @@ export function isApiError(e: unknown): e is ApiError {
 export class ApiService {
   public static readonly NAME = 'ApiService';
 
+  // This property should only be set during testing, to satisfy the URL parsing in the Node fetch implementation.
+  public static TEST_BASE_URL = '';
+
   private store?: Store;
 
   public constructor(private readonly injector: Injector) {}
 
-  private static async handleResponse<T>(resPromise: Promise<Response>): Promise<T> {
-    const response = await resPromise;
+  private static async handleResponse<T>(resPromise: Promise<Response>, path: string): Promise<T> {
+    let response: Response;
+    try {
+      response = await resPromise;
+    } catch (e) {
+      throw new Error(`Unexpected error while handling response for ${path}\n${e}`);
+    }
+
     const responseBody = response.status === 204 ? undefined : await response.json();
 
     if (response.status >= 400) {
@@ -49,7 +58,7 @@ export class ApiService {
 
   private static getUrl(path: string, params?: Record<string, string>): string {
     const paramString = params ? `?${new URLSearchParams(params)}` : '';
-    return `${process.env.BASE_URL ?? ''}/api${path}${paramString}`;
+    return `${ApiService.TEST_BASE_URL}/api${path}${paramString}`;
   }
 
   public jsonGet<T>(path: string, params?: Record<string, string>): Promise<T> {
@@ -101,6 +110,7 @@ export class ApiService {
         headers: this.getHeaders(),
         body: formBody,
       }),
+      path,
     );
   }
 
@@ -121,6 +131,7 @@ export class ApiService {
         headers,
         body: body ? JSON.stringify(body) : undefined,
       }),
+      path,
     );
   }
 
