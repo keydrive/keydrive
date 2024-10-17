@@ -37,6 +37,7 @@ import { icons } from '../utils/icons';
 import { MoveModal } from '../components/files/MoveModal';
 import { DropZone } from '../components/files/DropZone';
 import { useRequiredParam } from '../hooks/useRequiredParam.ts';
+import { useEntries } from '../hooks/useEntries.ts';
 
 const FileRow = ({
   entry,
@@ -137,9 +138,7 @@ export const FilesPage = () => {
     location.hash ? location.hash.substring(1) : '',
   );
 
-  const [currentDir, setCurrentDir] = useState<Entry>();
-  const [entries, setEntries] = useState<Entry[]>([]);
-  const [loadingEntries, setLoadingEntries] = useState(false);
+  const { loadingEntries, currentDir, entries, refresh } = useEntries();
 
   const { selectedEntry, setSelectedEntry } = useFileNavigator(
     entries,
@@ -196,47 +195,6 @@ export const FilesPage = () => {
     () => setSelectedEntry(undefined),
     [setSelectedEntry, path, libraryId],
   );
-
-  // This effect triggers when the path changes. This means we should enter a loading state.
-  // This function should not be called directly. Instead, call `refresh`.
-  const loadEntries = useCallback(async () => {
-    setLoadingEntries(true);
-    setSelectedEntry(undefined);
-    try {
-      // If the path is falsy or '/' we're at the library root, so no need for an extra call.
-      const pathIsRoot = !path || path === '/';
-      // noinspection ES6MissingAwait It is awaited later to run in parallel
-      const getCurrentEntity = pathIsRoot
-        ? Promise.resolve(undefined)
-        : libraries.getEntry(libraryId, path);
-      const getCurrentChildren = libraries.getEntries(libraryId, path);
-
-      const [newCurrentDir, newEntries] = await Promise.all([
-        getCurrentEntity,
-        getCurrentChildren,
-      ]);
-      setCurrentDir(newCurrentDir);
-      setEntries(newEntries);
-      return newEntries;
-    } finally {
-      setLoadingEntries(false);
-    }
-  }, [setSelectedEntry, libraryId, path, libraries]);
-
-  const refresh = useCallback(() => {
-    return loadEntries().catch((e) => {
-      console.error('Error while loading entries:', e);
-      if (e.status === 404) {
-        navigate('/files');
-      }
-      return [];
-    });
-  }, [loadEntries, navigate]);
-
-  useEffect(() => {
-    // noinspection JSIgnoredPromiseFromCall
-    refresh();
-  }, [refresh, libraries, path]);
 
   useEffect(() => setHighlightedEntry(undefined), [libraryId]);
 
