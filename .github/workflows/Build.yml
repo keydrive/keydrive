@@ -10,7 +10,8 @@ on:
       - created
 
 jobs:
-  test_react:
+
+  test_frontend:
     name: Test Frontend
     runs-on: ubuntu-latest
     steps:
@@ -21,13 +22,16 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: 'web/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('web/yarn.lock') }}
-      - name: Install Yarn Dependencies
-        run: yarn --cwd web install --frozen-lockfile
+          key: ${{ runner.os }}-modules-${{ hashFiles('web/package-lock.json') }}
+      - name: Install NPM Dependencies
+        working-directory: web
+        run: npm ci
       - name: Run Frontend Linting
-        run: yarn --cwd web lint -f json -o eslint-report.json || true
+        working-directory: web
+        run: npm run lint -- -f json -o eslint-report.json || true
       - name: Run React Tests
-        run: yarn --cwd web test --ci --coverage --reporters=default --reporters=jest-junit
+        working-directory: web
+        run: npm test -- --coverage --reporter=default --reporter=jest-junit
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v2
         with:
@@ -39,7 +43,8 @@ jobs:
             web/coverage/lcov.info
             web/eslint-report.json
             web/junit.xml
-  test_go:
+
+  test_backend:
     name: Test Backend
     runs-on: ubuntu-latest
     services:
@@ -81,7 +86,8 @@ jobs:
           path: |
             coverage.out
             junit.xml
-  build_react:
+
+  build_frontend:
     name: Build Frontend
     runs-on: ubuntu-latest
     steps:
@@ -92,18 +98,21 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: 'web/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('web/yarn.lock') }}
-      - name: Install Yarn Dependencies
-        run: yarn --cwd web install --frozen-lockfile
+          key: ${{ runner.os }}-modules-${{ hashFiles('web/package-lock.json') }}
+      - name: Install NPM Dependencies
+        working-directory: web
+        run: npm ci
       - name: Build Frontend
-        run: yarn --cwd web build
+        working-directory: web
+        run: npm run build
       - uses: actions/upload-artifact@v4
         with:
           name: frontend-build
           path: web/build
-  build_go:
+
+  build_backend:
     needs:
-      - build_react
+      - build_frontend
     name: Build Backend
     runs-on: ubuntu-latest
     strategy:
@@ -138,9 +147,10 @@ jobs:
         with:
           name: binary-${{ matrix.name }}
           path: ./keydrive
+
   build_docker:
     needs:
-      - build_go
+      - build_backend
     name: Build Docker
     runs-on: ubuntu-latest
     steps:
