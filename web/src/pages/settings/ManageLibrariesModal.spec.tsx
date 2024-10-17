@@ -84,20 +84,20 @@ describe('ManageLibrariesModal', () => {
         loggedIn: true,
       });
       // go into add mode
-      userEvent.click(await screen.findByLabelText('Add Library'));
+      await userEvent.click(await screen.findByLabelText('Add Library'));
       // navigate to the root folder
       await waitFor(() => {
         screen.getByText('/');
       });
-      userEvent.click(await screen.findByText('/'));
+      await userEvent.click(await screen.findByText('/'));
       await waitFor(() => {
         screen.getByText('/two');
       });
-      userEvent.click(await screen.findByText('/two'));
+      await userEvent.click(await screen.findByText('/two'));
       // there should be a four now
       await screen.findByText('/two/four');
       // navigate up
-      userEvent.click(screen.getByLabelText('Parent directory'));
+      await userEvent.click(screen.getByLabelText('Parent directory'));
       await waitFor(() => expect(screen.getByLabelText('Folder:', { selector: 'input' })).toHaveValue('/'));
     });
   });
