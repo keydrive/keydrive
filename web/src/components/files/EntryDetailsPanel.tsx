@@ -58,7 +58,10 @@ export const EntryDetailsPanel = ({
             )}
             <IconButton
               icon="ellipsis-h"
-              onClick={() => setShowMenu((prevState) => !prevState)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowMenu((prevState) => !prevState);
+              }}
               aria-label="Actions"
             />
           </div>

@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react';
+import { CSSProperties, ReactElement, useState } from 'react';
 import { Position } from '../utils/position';
 import { KeyCode, useKeyBind } from '../hooks/useKeyBind';
 import { useDocumentEvent } from '../hooks/useDocumentEvent';
@@ -9,11 +9,7 @@ export interface Props {
   onClose: () => void;
 }
 
-export const ContextMenu: React.FC<Props> = ({
-  position,
-  onClose,
-  children,
-}) => {
+export const ContextMenu = ({ position, onClose, children }: Props) => {
   useKeyBind(KeyCode.Escape, onClose);
   useDocumentEvent('click', onClose);
   useDocumentEvent('contextmenu', onClose);
@@ -21,7 +17,7 @@ export const ContextMenu: React.FC<Props> = ({
   const [offsetY, setOffsetY] = useState(0);
   const [offsetX, setOffsetX] = useState(0);
 
-  let style: React.CSSProperties | undefined;
+  let style: CSSProperties | undefined;
   if (position) {
     style = {
       left: position.x - offsetX,
