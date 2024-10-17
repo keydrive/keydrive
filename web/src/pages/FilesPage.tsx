@@ -1,7 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Layout } from '../components/Layout';
 import { Panel } from '../components/Panel';
-import { Redirect, useHistory, useLocation, useParams } from 'react-router-dom';
+import {
+  Navigate,
+  useLocation,
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
 import { useService } from '../hooks/useService';
 import { Entry, LibrariesService } from '../services/LibrariesService';
 import { Icon } from '../components/Icon';
@@ -31,6 +36,7 @@ import {
 import { icons } from '../utils/icons';
 import { MoveModal } from '../components/files/MoveModal';
 import { DropZone } from '../components/files/DropZone';
+import { useRequiredParam } from '../hooks/useRequiredParam.ts';
 
 const FileRow = ({
   entry,
@@ -120,12 +126,12 @@ export const FilesPage = () => {
   // 3. If everything is okay, the "loading" state is removed
   // to navigate to another entity, ONLY change the path through the history object
   const libraries = useService(LibrariesService);
-  const { library: libraryId, path: encodedPath } = useParams<{
-    library: string;
+  const { path: encodedPath } = useParams<{
     path?: string;
   }>();
+  const libraryId = useRequiredParam('library');
   const path = decodeURIComponent(encodedPath || '');
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const hash = decodeURIComponent(
     location.hash ? location.hash.substring(1) : '',
@@ -143,13 +149,13 @@ export const FilesPage = () => {
   // Activate an entry. For directories (string or Folder entry) this navigates to it. For files this selects them.
   async function activateEntry(target: string | Entry) {
     if (typeof target === 'string') {
-      history.push(`/files/${libraryId}/${encodeURIComponent(target)}`);
+      navigate(`/files/${libraryId}/${encodeURIComponent(target)}`);
     } else if (target.category === 'Folder') {
-      history.push(
+      navigate(
         `/files/${libraryId}/${encodeURIComponent(resolvePath(target))}`,
       );
     } else {
-      history.push(`#${encodeURIComponent(target.name)}`);
+      navigate(`#${encodeURIComponent(target.name)}`);
       setSelectedEntry(target);
     }
   }
@@ -221,11 +227,11 @@ export const FilesPage = () => {
     return loadEntries().catch((e) => {
       console.error('Error while loading entries:', e);
       if (e.status === 404) {
-        history.push('/files');
+        navigate('/files');
       }
       return [];
     });
-  }, [loadEntries, history]);
+  }, [loadEntries, navigate]);
 
   useEffect(() => {
     // noinspection JSIgnoredPromiseFromCall
@@ -399,7 +405,7 @@ export const FilesPage = () => {
 
   if (!library) {
     // this library does not exist!
-    return <Redirect to="/" />;
+    return <Navigate to="/" />;
   }
 
   return (
@@ -456,7 +462,7 @@ export const FilesPage = () => {
               <div>
                 <IconButton
                   className="parent-dir"
-                  onClick={() => activateEntry(currentDir?.parent || '')}
+                  onClick={() => activateEntry(currentDir?.parent ?? '')}
                   aria-label="Parent directory"
                   icon="level-up-alt"
                   disabled={!currentDir}
@@ -470,7 +476,7 @@ export const FilesPage = () => {
                 <IconButton
                   icon="circle-info"
                   onClick={() => {
-                    history.push(`#.`);
+                    navigate(`#.`);
                     setSelectedEntry(undefined);
                   }}
                 />
@@ -601,13 +607,13 @@ export const FilesPage = () => {
                   onMove={() => setMovingEntry(highlightedEntry)}
                   onDelete={() => deleteEntry(highlightedEntry)}
                   active={hash.length > 0}
-                  onClose={() => history.push('#')}
+                  onClose={() => navigate('#')}
                 />
               ) : (
                 <LibraryDetailsPanel
                   library={library}
                   active={hash === '.'}
-                  onClose={() => history.push('#')}
+                  onClose={() => navigate('#')}
                 />
               )}
             </main>

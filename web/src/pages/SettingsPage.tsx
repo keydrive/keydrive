@@ -9,7 +9,7 @@ import { SettingButton } from '../components/SettingButton';
 import { ChangePasswordModal } from './settings/ChangePasswordModal';
 import { EditProfileModal } from './settings/EditProfileModal';
 import { ManageLibrariesModal } from './settings/ManageLibrariesModal';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import userPlaceholder from '../images/user_placeholder.png';
 import { IconButton } from '../components/IconButton';
 
@@ -25,7 +25,7 @@ export const SettingsPage = () => {
   const user = useAppSelector(currentUser);
   const dispatch = useAppDispatch();
   const { setting: activeSetting } = useParams<{ setting?: string }>();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   let Modal: React.FC<ModalProps> | undefined = undefined;
   switch (activeSetting) {
@@ -43,7 +43,7 @@ export const SettingsPage = () => {
   }
   return (
     <>
-      {Modal && <Modal onClose={() => history.push('/settings')} />}
+      {Modal && <Modal onClose={() => navigate('/settings')} />}
       <Layout className="settings-page">
         {({ activateSidebar }) => (
           <>
@@ -80,19 +80,19 @@ export const SettingsPage = () => {
                 <SettingButton
                   icon="user-edit"
                   label="Edit Profile"
-                  onClick={() => history.push('/settings/profile')}
+                  onClick={() => navigate('/settings/profile')}
                 />
                 <SettingButton
                   icon="user-lock"
                   label="Change Password"
-                  onClick={() => history.push('/settings/password')}
+                  onClick={() => navigate('/settings/password')}
                 />
                 {user?.isAdmin && (
                   <>
                     <SettingButton
                       icon="folder"
                       label="Manage Libraries"
-                      onClick={() => history.push('/settings/libraries')}
+                      onClick={() => navigate('/settings/libraries')}
                     />
                   </>
                 )}

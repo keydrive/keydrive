@@ -1,5 +1,9 @@
 import { ReactElement, ReactNode } from 'react';
-import { MemoryRouter, Route, useLocation } from 'react-router-dom';
+import {
+  createMemoryRouter,
+  RouterProvider,
+  useLocation,
+} from 'react-router-dom';
 import { InjectionProvider } from '../hooks/useService';
 import { Injector } from '../services/Injector';
 import { Provider } from 'react-redux';
@@ -53,14 +57,28 @@ export async function render(
   };
 
   const Wrapper = ({ children }: { children: ReactNode }) => (
-    <MemoryRouter initialEntries={[options.path || '']}>
-      <InjectionProvider value={injector}>
-        <Provider store={store}>
-          <FetchRoute />
-          <Route path={options.route}>{children}</Route>
-        </Provider>
-      </InjectionProvider>
-    </MemoryRouter>
+    <InjectionProvider value={injector}>
+      <Provider store={store}>
+        <RouterProvider
+          router={createMemoryRouter(
+            [
+              {
+                path: options.route ?? '*',
+                element: (
+                  <>
+                    <FetchRoute />
+                    {children}
+                  </>
+                ),
+              },
+            ],
+            {
+              initialEntries: [options.path ?? ''],
+            },
+          )}
+        />
+      </Provider>
+    </InjectionProvider>
   );
 
   rtlRender(element, { wrapper: Wrapper });
