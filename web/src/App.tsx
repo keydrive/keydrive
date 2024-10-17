@@ -1,16 +1,12 @@
 import { useEffect } from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
-import { LoginPage } from './pages/LoginPage';
+import { RouterProvider } from 'react-router-dom';
 import { useAppSelector } from './store';
 import { useService } from './hooks/useService';
 import { userStore } from './store/user';
-import { FilesPage } from './pages/FilesPage';
 import { useDispatch } from 'react-redux';
 import { Icon } from './components/Icon';
-import { LogoutPage } from './pages/LogoutPage';
-import { SettingsPage } from './pages/SettingsPage';
-import { HomePage } from './pages/HomePage';
 import { librariesStore } from './store/libraries';
+import { router, unauthenticatedRouter } from './router.tsx';
 
 export const App = () => {
   const {
@@ -43,12 +39,7 @@ export const App = () => {
   }, [dispatch, getCurrentUserAsync, token]);
 
   if (!token) {
-    return (
-      <Switch>
-        <Route exact path="/auth/login" component={LoginPage} />
-        <Redirect to="/auth/login" />
-      </Switch>
-    );
+    return <RouterProvider router={unauthenticatedRouter} />;
   }
 
   if (!currentUser || !libraries) {
@@ -59,14 +50,5 @@ export const App = () => {
     );
   }
 
-  return (
-    <Switch>
-      <Route exact path="/" component={HomePage} />
-      <Route exact path="/files/:library/:path?" component={FilesPage} />
-      <Route exact path="/logout" component={LogoutPage} />
-      <Route exact path="/settings" component={SettingsPage} />
-      <Route exact path="/settings/:setting" component={SettingsPage} />
-      <Redirect to="/" />
-    </Switch>
-  );
+  return <RouterProvider router={router} />;
 };
