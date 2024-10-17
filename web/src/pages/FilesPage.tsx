@@ -264,6 +264,8 @@ export const FilesPage: React.FC = () => {
         if (file.size === 0 && file.type === '') {
           try {
             await file.arrayBuffer();
+            // We don't need to use the error, just catch it.
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
           } catch (e) {
             console.warn("Can't upload folders with the File API, skipping:", file.name);
             continue;

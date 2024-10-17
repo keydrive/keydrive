@@ -1,9 +1,11 @@
 import React from 'react';
 import { classNames } from '../utils/classNames';
 
-export type Props = React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
+export interface Props extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+  className?: string;
+}
 
-export const Panel: React.FC<Props> = ({ children, className, ...props }) => (
+export const Panel = ({ children, className, ...props }: Props) => (
   <div {...props} className={classNames('panel', className)}>
     {children}
   </div>

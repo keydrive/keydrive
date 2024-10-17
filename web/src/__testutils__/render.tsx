@@ -7,7 +7,6 @@ import { initializeStore, RootState, Store } from '../store';
 import { render as rtlRender } from '@testing-library/react';
 
 export type ReallyDeepPartial<T> = {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   [K in keyof T]?: T[K] extends object | undefined ? ReallyDeepPartial<T[K]> : T[K];
 };
 

@@ -4,7 +4,7 @@ import { KeyCode, useKeyBind } from '../hooks/useKeyBind';
 import { useDocumentEvent } from '../hooks/useDocumentEvent';
 
 export interface Props {
-  children: ReactElement;
+  children?: ReactElement;
   position?: Position;
   onClose: () => void;
 }
