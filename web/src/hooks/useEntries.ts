@@ -3,18 +3,21 @@ import { useCallback, useEffect, useState } from 'react';
 import { useRequiredParam } from './useRequiredParam.ts';
 import { useService } from './useService.ts';
 import { useNavigate, useParams } from 'react-router-dom';
+import { resolvePath } from '../utils/path.ts';
 
-export interface Entries {
-  // Data.
+export interface EntryData {
   loadingEntries: boolean;
   currentDir: Entry | undefined;
   entries: Entry[];
 
-  // Operations.
+  selectedEntry: Entry | undefined;
+  setSelectedEntry: (entry: Entry | undefined) => void;
+
   refresh: () => Promise<Entry[]>;
+  activateEntry: (target: string | Entry) => void;
 }
 
-export function useEntries(): Entries {
+export function useEntries(): EntryData {
   const libraries = useService(LibrariesService);
   const libraryId = useRequiredParam('library');
   const { path: encodedPath } = useParams<{ path: string }>();
@@ -24,13 +27,14 @@ export function useEntries(): Entries {
   const [entries, setEntries] = useState<Entry[]>([]);
   const [loadingEntries, setLoadingEntries] = useState(false);
 
+  // TODO: Allow multiple selected entries.
+  const [selectedEntry, setSelectedEntry] = useState<Entry>();
+
   const navigate = useNavigate();
 
   const loadEntries = useCallback(async () => {
     setLoadingEntries(true);
-
-    // TODO
-    // setSelectedEntry(undefined);
+    setSelectedEntry(undefined);
 
     try {
       // If the path is falsy or '/' we're at the library root.
@@ -63,6 +67,23 @@ export function useEntries(): Entries {
     });
   }, [loadEntries, navigate]);
 
+  // Activate an entry. For directories (string or Folder entry) this navigates to it. For files this selects them.
+  const activateEntry = useCallback(
+    (target: string | Entry) => {
+      if (typeof target === 'string') {
+        navigate(`/files/${libraryId}/${encodeURIComponent(target)}`);
+      } else if (target.category === 'Folder') {
+        navigate(
+          `/files/${libraryId}/${encodeURIComponent(resolvePath(target))}`,
+        );
+      } else {
+        navigate(`#${encodeURIComponent(target.name)}`);
+        setSelectedEntry(target);
+      }
+    },
+    [libraryId, navigate],
+  );
+
   useEffect(() => {
     refresh();
   }, [refresh]);
@@ -71,6 +92,9 @@ export function useEntries(): Entries {
     loadingEntries,
     currentDir,
     entries,
+    selectedEntry,
+    setSelectedEntry,
     refresh,
+    activateEntry,
   };
 }

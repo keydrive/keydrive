@@ -1,37 +1,31 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { KeyCode, useKeyBind } from './useKeyBind';
-import { Entry } from '../services/LibrariesService';
 import { useLocation } from 'react-router-dom';
+import { EntryData } from './useEntries.ts';
 
-export const useFileNavigator = (
-  entries: Entry[] | undefined,
-  onActivateEntry: (entry: Entry) => void,
-): {
-  selectedEntry: Entry | undefined;
-  setSelectedEntry: (entry: Entry | undefined) => void;
-} => {
+export function useFileNavigator(entryData: EntryData) {
   const location = useLocation();
   const hash = decodeURIComponent(
     location.hash ? location.hash.substring(1) : '',
   );
 
-  const [selectedEntry, setSelectedEntry] = useState<Entry>();
+  const { entries, setSelectedEntry, selectedEntry, activateEntry } = entryData;
 
   useEffect(() => {
     setSelectedEntry(entries?.find((e) => e.name === hash));
-  }, [entries, hash]);
+  }, [entries, hash, setSelectedEntry]);
 
   const shiftSelectToFirst = useCallback(() => {
     if (entries && entries.length > 0) {
       setSelectedEntry(entries[0]);
     }
-  }, [entries]);
+  }, [entries, setSelectedEntry]);
 
   const shiftSelectToLast = useCallback(() => {
     if (entries && entries.length > 0) {
       setSelectedEntry(entries[entries.length - 1]);
     }
-  }, [entries]);
+  }, [entries, setSelectedEntry]);
 
   const shiftSelect = useCallback(
     (delta: -1 | 1) => {
@@ -55,12 +49,18 @@ export const useFileNavigator = (
         shiftSelectToLast();
       }
     },
-    [entries, selectedEntry, shiftSelectToFirst, shiftSelectToLast],
+    [
+      entries,
+      selectedEntry,
+      setSelectedEntry,
+      shiftSelectToFirst,
+      shiftSelectToLast,
+    ],
   );
 
   useKeyBind(KeyCode.Enter, () => {
     if (selectedEntry) {
-      onActivateEntry(selectedEntry);
+      activateEntry(selectedEntry);
     }
   });
   useKeyBind(KeyCode.Escape, () => {
@@ -78,6 +78,4 @@ export const useFileNavigator = (
   useKeyBind(KeyCode.End, () => {
     shiftSelectToLast();
   });
-
-  return { selectedEntry, setSelectedEntry };
-};
+}

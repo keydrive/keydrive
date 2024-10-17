@@ -138,26 +138,17 @@ export const FilesPage = () => {
     location.hash ? location.hash.substring(1) : '',
   );
 
-  const { loadingEntries, currentDir, entries, refresh } = useEntries();
-
-  const { selectedEntry, setSelectedEntry } = useFileNavigator(
+  const entryData = useEntries();
+  const {
+    loadingEntries,
+    currentDir,
     entries,
+    refresh,
+    selectedEntry,
+    setSelectedEntry,
     activateEntry,
-  );
-
-  // Activate an entry. For directories (string or Folder entry) this navigates to it. For files this selects them.
-  async function activateEntry(target: string | Entry) {
-    if (typeof target === 'string') {
-      navigate(`/files/${libraryId}/${encodeURIComponent(target)}`);
-    } else if (target.category === 'Folder') {
-      navigate(
-        `/files/${libraryId}/${encodeURIComponent(resolvePath(target))}`,
-      );
-    } else {
-      navigate(`#${encodeURIComponent(target.name)}`);
-      setSelectedEntry(target);
-    }
-  }
+  } = entryData;
+  useFileNavigator(entryData);
 
   // Download an entry. This only works for files.
   const downloadEntry = useCallback(
