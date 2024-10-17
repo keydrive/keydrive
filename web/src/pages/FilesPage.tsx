@@ -39,16 +39,7 @@ import { DropZone } from '../components/files/DropZone';
 import { useRequiredParam } from '../hooks/useRequiredParam.ts';
 import { useEntries } from '../hooks/useEntries.ts';
 
-const FileRow = ({
-  entry,
-  onActivate,
-  onDoubleClick,
-  selected,
-  onContextMenu,
-  renaming,
-  onRename,
-  cancelRename,
-}: {
+interface FileRowProps {
   entry: Entry;
   selected: boolean;
   onActivate: (entry: Entry) => void;
@@ -60,7 +51,18 @@ const FileRow = ({
   renaming: boolean;
   onRename: (newName: string) => void;
   cancelRename: () => void;
-}) => {
+}
+
+const FileRow = ({
+  entry,
+  onActivate,
+  onDoubleClick,
+  selected,
+  onContextMenu,
+  renaming,
+  onRename,
+  cancelRename,
+}: FileRowProps) => {
   const ref = useRef<HTMLTableRowElement | null>(null);
   useEffect(() => {
     if (selected && ref.current) {

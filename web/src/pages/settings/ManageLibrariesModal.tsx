@@ -143,7 +143,7 @@ export interface Props {
   onClose: () => void;
 }
 
-export const ManageLibrariesModal: React.FC<Props> = ({ onClose }) => {
+export const ManageLibrariesModal = ({ onClose }: Props) => {
   const [libraries, setLibraries] = useState<LibraryDetails[]>([]);
   const librariesService = useService(LibrariesService);
   const [selectedLibrary, setSelectedLibrary] = useState<number>();

@@ -6,7 +6,7 @@ export type Props = Omit<
   'type' | 'iconButton' | 'onButtonClick'
 >;
 
-export const PasswordInput: React.FC<Props> = (props) => {
+export const PasswordInput = (props: Props) => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (

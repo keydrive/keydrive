@@ -1,4 +1,3 @@
-import React from 'react';
 import { Icon } from './Icon';
 import { fileExtension } from '../utils/fileExtension';
 import { Category, Entry } from '../services/LibrariesService';
@@ -7,7 +6,7 @@ export interface Props {
   entry: Entry;
 }
 
-export const EntryIcon: React.FC<Props> = ({ entry }) => {
+export const EntryIcon = ({ entry }: Props) => {
   const icon =
     entry.category === 'Folder'
       ? 'folder'

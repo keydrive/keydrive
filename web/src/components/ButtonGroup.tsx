@@ -7,11 +7,7 @@ export interface Props {
   vertical?: boolean;
 }
 
-export const ButtonGroup: React.FC<Props> = ({
-  children,
-  fullWidth,
-  vertical,
-}) => (
+export const ButtonGroup = ({ children, fullWidth, vertical }: Props) => (
   <div
     className={classNames(
       'button-group',

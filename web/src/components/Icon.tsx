@@ -1,4 +1,3 @@
-import React from 'react';
 import { classNames } from '../utils/classNames';
 
 export interface Props {
@@ -9,13 +8,13 @@ export interface Props {
   iconStyle?: 'solid' | 'regular' | 'brands';
 }
 
-export const Icon: React.FC<Props> = ({
+export const Icon = ({
   icon,
   className,
   pulse,
   size,
-  iconStyle = 's',
-}) => (
+  iconStyle = 'solid',
+}: Props) => (
   <i
     className={classNames(
       `icon fa${iconStyle?.substring(0, 1)} fa-${icon}`,

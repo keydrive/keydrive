@@ -25,7 +25,7 @@ const libraryIcons: Record<LibraryType, string> = {
   shows: 'tv',
 };
 
-export const Layout: React.FC<Props> = ({ children, className }) => {
+export const Layout = ({ children, className }: Props) => {
   const { selectors } = useService(librariesStore);
   const libraries = useAppSelector(selectors.libraries);
   const [sidebarActive, setSidebarActive] = useState(false);
