@@ -21,7 +21,15 @@ export interface Props {
   onClose: () => void;
 }
 
-export const EntryDetailsPanel = ({ entry, onDownload, onRename, onMove, onDelete, active, onClose }: Props) => {
+export const EntryDetailsPanel = ({
+  entry,
+  onDownload,
+  onRename,
+  onMove,
+  onDelete,
+  active,
+  onClose,
+}: Props) => {
   const [showMenu, setShowMenu] = useState(false);
 
   return (
@@ -40,11 +48,19 @@ export const EntryDetailsPanel = ({ entry, onDownload, onRename, onMove, onDelet
           </div>
           <div className="actions">
             {entry.category !== 'Folder' && (
-              <IconButton onClick={onDownload} icon={icons.download} aria-label="Download">
+              <IconButton
+                onClick={onDownload}
+                icon={icons.download}
+                aria-label="Download"
+              >
                 Download
               </IconButton>
             )}
-            <IconButton icon="ellipsis-h" onClick={() => setShowMenu((prevState) => !prevState)} aria-label="Actions" />
+            <IconButton
+              icon="ellipsis-h"
+              onClick={() => setShowMenu((prevState) => !prevState)}
+              aria-label="Actions"
+            />
           </div>
         </div>
         {showMenu && (

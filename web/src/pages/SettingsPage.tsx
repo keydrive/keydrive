@@ -48,7 +48,12 @@ export const SettingsPage = () => {
         {({ activateSidebar }) => (
           <>
             <div className="top-bar">
-              <IconButton className="toggle-sidebar" onClick={activateSidebar} aria-label="Show sidebar" icon="bars" />
+              <IconButton
+                className="toggle-sidebar"
+                onClick={activateSidebar}
+                aria-label="Show sidebar"
+                icon="bars"
+              />
               <h1>Settings</h1>
             </div>
             <main>

@@ -39,9 +39,12 @@ export class ApiService {
 
   public constructor(private readonly injector: Injector) {}
 
-  private static async handleResponse<T>(resPromise: Promise<Response>): Promise<T> {
+  private static async handleResponse<T>(
+    resPromise: Promise<Response>,
+  ): Promise<T> {
     const response = await resPromise;
-    const responseBody = response.status === 204 ? undefined : await response.json();
+    const responseBody =
+      response.status === 204 ? undefined : await response.json();
 
     if (response.status >= 400) {
       throw responseBody;
@@ -90,7 +93,10 @@ export class ApiService {
     return result;
   }
 
-  public formPost<T>(path: string, body: Record<string, string | Blob>): Promise<T> {
+  public formPost<T>(
+    path: string,
+    body: Record<string, string | Blob>,
+  ): Promise<T> {
     const formBody = new FormData();
     for (const key in body) {
       if (Object.hasOwn(body, key)) {

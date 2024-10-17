@@ -70,7 +70,9 @@ describe('FilesPage', () => {
       initialState,
     });
 
-    expect(await screen.findByText('Mock Library', { selector: 'h1' })).toBeDefined();
+    expect(
+      await screen.findByText('Mock Library', { selector: 'h1' }),
+    ).toBeDefined();
     expect(await screen.findByText('Ballmers Peak Label.xcf')).toBeDefined();
     expect(await screen.findByText('2.7 MB')).toBeDefined();
   });
@@ -85,9 +87,17 @@ describe('FilesPage', () => {
 
     await screen.findByText('Mock Library', { selector: '.details-panel *' });
     await screen.findByText('Ballmers Peak Label.xcf');
-    expect(screen.queryByText('Ballmers Peak Label.xcf', { selector: '.details-panel *' })).toBeNull();
+    expect(
+      screen.queryByText('Ballmers Peak Label.xcf', {
+        selector: '.details-panel *',
+      }),
+    ).toBeNull();
     await userEvent.click(screen.getByText('Ballmers Peak Label.xcf'));
-    expect(screen.getByText('Ballmers Peak Label.xcf', { selector: '.details-panel *' })).toBeDefined();
+    expect(
+      screen.getByText('Ballmers Peak Label.xcf', {
+        selector: '.details-panel *',
+      }),
+    ).toBeDefined();
   });
 
   it('enters a directory on double click and shows the folder details', async () => {
@@ -157,7 +167,9 @@ describe('FilesPage', () => {
     await userEvent.dblClick(await screen.findByText('Documents'));
     expect(await screen.findByText('KeyDrive Settings.pdf')).toBeDefined();
     expect(navigation.pathname).toBe('/files/4/%2FDocuments');
-    expect(screen.getByText('Documents', { selector: '.details-panel *' })).toBeDefined();
+    expect(
+      screen.getByText('Documents', { selector: '.details-panel *' }),
+    ).toBeDefined();
   });
 
   it('enters the parent directory when going up', async () => {
@@ -314,9 +326,14 @@ describe('FilesPage', () => {
     });
     // wait for the page to load
     await screen.findByText('Ballmers Peak Label.xcf');
-    await userEvent.upload(screen.getByTestId('file-input'), [fileOne, fileTwo]);
+    await userEvent.upload(screen.getByTestId('file-input'), [
+      fileOne,
+      fileTwo,
+    ]);
     await screen.findByText('upload.txt', { selector: 'td' });
-    expect(await screen.findByText('another.zip', { selector: 'td' })).toBeDefined();
+    expect(
+      await screen.findByText('another.zip', { selector: 'td' }),
+    ).toBeDefined();
   });
 
   it('creates a new folder on enter', async () => {
@@ -445,7 +462,9 @@ describe('FilesPage', () => {
     await screen.findByText('Documents');
     await userEvent.click(screen.getByText('New Folder'));
     await userEvent.keyboard('Create Me');
-    await userEvent.click(screen.getByDisplayValue('Create Me').nextElementSibling as Element);
+    await userEvent.click(
+      screen.getByDisplayValue('Create Me').nextElementSibling as Element,
+    );
     await screen.findByText('Folder Details Pane', { selector: 'td' });
     await screen.findByText('I Am Of Exist');
     expect(screen.queryByDisplayValue('Create Me')).toBeNull();
@@ -513,9 +532,14 @@ describe('FilesPage', () => {
       initialState,
     });
 
-    await userEvent.dblClick(await screen.findByText('Ballmers Peak Label.xcf'));
+    await userEvent.dblClick(
+      await screen.findByText('Ballmers Peak Label.xcf'),
+    );
     await waitFor(() => {
-      expect(window.open).toBeCalledWith('/api/download?token=i_am_a_download_token', '_self');
+      expect(window.open).toBeCalledWith(
+        '/api/download?token=i_am_a_download_token',
+        '_self',
+      );
     });
   });
 
@@ -550,7 +574,10 @@ describe('FilesPage', () => {
     await userEvent.click(await screen.findByText('Ballmers Peak Label.xcf'));
     await userEvent.click(screen.getByLabelText('Download'));
     await waitFor(() => {
-      expect(window.open).toBeCalledWith('/api/download?token=i_am_a_download_token', '_self');
+      expect(window.open).toBeCalledWith(
+        '/api/download?token=i_am_a_download_token',
+        '_self',
+      );
     });
   });
 
@@ -632,9 +659,14 @@ describe('FilesPage', () => {
     });
 
     fireEvent.contextMenu(await screen.findByText('Ballmers Peak Label.xcf'));
-    await userEvent.click(screen.getByText('Download', { selector: '.context-menu *' }));
+    await userEvent.click(
+      screen.getByText('Download', { selector: '.context-menu *' }),
+    );
     await waitFor(() => {
-      expect(window.open).toBeCalledWith('/api/download?token=i_am_a_download_token', '_self');
+      expect(window.open).toBeCalledWith(
+        '/api/download?token=i_am_a_download_token',
+        '_self',
+      );
     });
   });
 
@@ -680,7 +712,9 @@ describe('FilesPage', () => {
     });
 
     fireEvent.contextMenu(await screen.findByText('Documents'));
-    await userEvent.click(screen.getByText('Delete', { selector: '.context-menu *' }));
+    await userEvent.click(
+      screen.getByText('Delete', { selector: '.context-menu *' }),
+    );
     await waitFor(() => {
       expect(screen.queryByText('Documents')).toBeNull();
     });
@@ -810,7 +844,9 @@ describe('FilesPage', () => {
       dataTransfer: { files: [dirFile, fileOne, fileTwo] },
     });
     await screen.findByText('upload.txt', { selector: 'td' });
-    expect(await screen.findByText('another.zip', { selector: 'td' })).toBeDefined();
+    expect(
+      await screen.findByText('another.zip', { selector: 'td' }),
+    ).toBeDefined();
   });
 
   it('renames a file on clicking the rename context menu item', async () => {
@@ -856,10 +892,16 @@ describe('FilesPage', () => {
     });
 
     fireEvent.contextMenu(await screen.findByText('Ballmers Peak Label.xcf'));
-    await userEvent.click(screen.getByText('Rename', { selector: '.context-menu *' }));
+    await userEvent.click(
+      screen.getByText('Rename', { selector: '.context-menu *' }),
+    );
     await userEvent.keyboard('New name.xcf');
-    await userEvent.click(screen.getByDisplayValue('New name.xcf').nextElementSibling as Element);
-    expect(await screen.findByText('New name.xcf', { selector: '.details-panel *' })).toBeDefined();
+    await userEvent.click(
+      screen.getByDisplayValue('New name.xcf').nextElementSibling as Element,
+    );
+    expect(
+      await screen.findByText('New name.xcf', { selector: '.details-panel *' }),
+    ).toBeDefined();
   });
 
   it('renames a file on clicking the rename button', async () => {
@@ -908,8 +950,12 @@ describe('FilesPage', () => {
     await userEvent.click(screen.getByLabelText('Actions'));
     await userEvent.click(screen.getByText('Rename'));
     await userEvent.keyboard('New name.xcf');
-    await userEvent.click(screen.getByDisplayValue('New name.xcf').nextElementSibling as Element);
-    expect(await screen.findByText('New name.xcf', { selector: '.details-panel *' })).toBeDefined();
+    await userEvent.click(
+      screen.getByDisplayValue('New name.xcf').nextElementSibling as Element,
+    );
+    expect(
+      await screen.findByText('New name.xcf', { selector: '.details-panel *' }),
+    ).toBeDefined();
   });
 
   it('renames a file on pressing F2 and enter', async () => {
@@ -957,8 +1003,12 @@ describe('FilesPage', () => {
     await userEvent.click(await screen.findByText('Ballmers Peak Label.xcf'));
     fireEvent.keyDown(document, { key: 'F2' });
     await userEvent.keyboard('New name.xcf');
-    fireEvent.keyDown(screen.getByDisplayValue('New name.xcf'), { key: 'Enter' });
-    expect(await screen.findByText('New name.xcf', { selector: '.details-panel *' })).toBeDefined();
+    fireEvent.keyDown(screen.getByDisplayValue('New name.xcf'), {
+      key: 'Enter',
+    });
+    expect(
+      await screen.findByText('New name.xcf', { selector: '.details-panel *' }),
+    ).toBeDefined();
   });
 
   it('cancels renaming the entry when blurring the input', async () => {
@@ -970,7 +1020,9 @@ describe('FilesPage', () => {
     });
 
     fireEvent.contextMenu(await screen.findByText('Documents'));
-    await userEvent.click(screen.getByText('Rename', { selector: '.context-menu *' }));
+    await userEvent.click(
+      screen.getByText('Rename', { selector: '.context-menu *' }),
+    );
     await userEvent.keyboard('Hold On');
     fireEvent.blur(screen.getByDisplayValue('Hold On'));
     expect(screen.queryByDisplayValue('Hold On')).toBeNull();
@@ -986,7 +1038,9 @@ describe('FilesPage', () => {
     });
 
     fireEvent.contextMenu(await screen.findByText('Documents'));
-    await userEvent.click(screen.getByText('Rename', { selector: '.context-menu *' }));
+    await userEvent.click(
+      screen.getByText('Rename', { selector: '.context-menu *' }),
+    );
     await userEvent.keyboard('Hold On');
     fireEvent.keyDown(screen.getByDisplayValue('Hold On'), {
       key: 'Escape',
@@ -1154,8 +1208,12 @@ describe('FilesPage', () => {
     });
 
     fireEvent.contextMenu(await screen.findByText('Ballmers Peak Label.xcf'));
-    await userEvent.click(screen.getByText('Move', { selector: '.context-menu *' }));
-    await userEvent.click(await screen.findByText('Documents', { selector: '.modal.move *' }));
+    await userEvent.click(
+      screen.getByText('Move', { selector: '.context-menu *' }),
+    );
+    await userEvent.click(
+      await screen.findByText('Documents', { selector: '.modal.move *' }),
+    );
     expect(await screen.findByText('KeyDrive Settings.pdf')).toBeDefined();
     await userEvent.click(screen.getByText('Move', { selector: 'button *' }));
     expect(await screen.findByText('Move complete')).toBeDefined();

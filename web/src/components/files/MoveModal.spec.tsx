@@ -47,10 +47,18 @@ describe('MoveModal', () => {
   });
 
   it('shows the entries', async () => {
-    await render(<MoveModal onClose={vi.fn()} libraryId="4" startPath="/" onMove={vi.fn()} />, {
-      initialState,
-      loggedIn: true,
-    });
+    await render(
+      <MoveModal
+        onClose={vi.fn()}
+        libraryId="4"
+        startPath="/"
+        onMove={vi.fn()}
+      />,
+      {
+        initialState,
+        loggedIn: true,
+      },
+    );
 
     expect(await screen.findByText('subdir')).toBeDefined();
   });
@@ -99,10 +107,18 @@ describe('MoveModal', () => {
       },
     );
 
-    await render(<MoveModal onClose={vi.fn()} libraryId="4" startPath="/subdir" onMove={vi.fn()} />, {
-      initialState,
-      loggedIn: true,
-    });
+    await render(
+      <MoveModal
+        onClose={vi.fn()}
+        libraryId="4"
+        startPath="/subdir"
+        onMove={vi.fn()}
+      />,
+      {
+        initialState,
+        loggedIn: true,
+      },
+    );
 
     expect(await screen.findByText('another')).toBeDefined();
     await userEvent.click(screen.getByLabelText('Parent directory'));
@@ -154,14 +170,24 @@ describe('MoveModal', () => {
     );
 
     const onMove = vi.fn();
-    await render(<MoveModal onClose={vi.fn()} libraryId="4" startPath="/" onMove={onMove} />, {
-      initialState,
-      loggedIn: true,
-    });
+    await render(
+      <MoveModal
+        onClose={vi.fn()}
+        libraryId="4"
+        startPath="/"
+        onMove={onMove}
+      />,
+      {
+        initialState,
+        loggedIn: true,
+      },
+    );
 
     await userEvent.click(await screen.findByText('subdir'));
     expect(await screen.findByText('another')).toBeDefined();
-    await userEvent.click(screen.getByText('Move', { selector: 'button span' }));
+    await userEvent.click(
+      screen.getByText('Move', { selector: 'button span' }),
+    );
     expect(onMove).toBeCalledWith('/subdir');
   });
 });

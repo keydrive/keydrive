@@ -34,8 +34,19 @@ export const LoginPage = () => {
           submitLabel="Log In"
           error={error && 'Invalid username or password.'}
         >
-          <TextInput id="username" value={username} onChange={setUsername} placeholder="Username" autoFocus />
-          <PasswordInput id="password" value={password} onChange={setPassword} placeholder="Password" />
+          <TextInput
+            id="username"
+            value={username}
+            onChange={setUsername}
+            placeholder="Username"
+            autoFocus
+          />
+          <PasswordInput
+            id="password"
+            value={password}
+            onChange={setPassword}
+            placeholder="Password"
+          />
         </Form>
       </div>
     </div>

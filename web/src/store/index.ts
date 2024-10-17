@@ -4,7 +4,14 @@ import { userStore, State as UserState } from './user';
 import { librariesStore, State as LibrariesState } from './libraries';
 import { Injector } from '../services/Injector';
 import { useService } from '../hooks/useService';
-import { FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
+import {
+  FLUSH,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+  REHYDRATE,
+} from 'redux-persist';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const initializeStore = (injector: Injector, initialState?: any) =>
@@ -28,5 +35,6 @@ export interface RootState {
   libraries: LibrariesState;
 }
 
-export const useAppDispatch = (): AppDispatch => useService(initializeStore).dispatch;
+export const useAppDispatch = (): AppDispatch =>
+  useService(initializeStore).dispatch;
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;

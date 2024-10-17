@@ -35,7 +35,11 @@ describe('App', () => {
       path: '/',
     });
 
-    await waitFor(() => expect(store.getState().libraries.libraries).toHaveLength(2));
-    await waitFor(() => expect(store.getState().user.currentUser?.name).toBe('Test'));
+    await waitFor(() =>
+      expect(store.getState().libraries.libraries).toHaveLength(2),
+    );
+    await waitFor(() =>
+      expect(store.getState().user.currentUser?.name).toBe('Test'),
+    );
   });
 });

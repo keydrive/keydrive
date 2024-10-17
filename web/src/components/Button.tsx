@@ -13,10 +13,22 @@ export interface Props {
   icon?: string;
 }
 
-export const Button: React.FC<Props> = ({ children, type = 'button', loading, primary, icon, ...props }) => (
+export const Button: React.FC<Props> = ({
+  children,
+  type = 'button',
+  loading,
+  primary,
+  icon,
+  ...props
+}) => (
   <button
     {...props}
-    className={classNames('button', loading && 'loading', primary && 'primary', icon && 'has-icon')}
+    className={classNames(
+      'button',
+      loading && 'loading',
+      primary && 'primary',
+      icon && 'has-icon',
+    )}
     type={type}
   >
     <span className="content">

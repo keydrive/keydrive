@@ -7,7 +7,9 @@ import { initializeStore, RootState, Store } from '../store';
 import { render as rtlRender } from '@testing-library/react';
 
 export type ReallyDeepPartial<T> = {
-  [K in keyof T]?: T[K] extends object | undefined ? ReallyDeepPartial<T[K]> : T[K];
+  [K in keyof T]?: T[K] extends object | undefined
+    ? ReallyDeepPartial<T[K]>
+    : T[K];
 };
 
 export interface RenderOptions {
@@ -24,7 +26,10 @@ export interface TestAPI {
   store: Store;
 }
 
-export async function render(element: ReactElement, options: RenderOptions = {}): Promise<TestAPI> {
+export async function render(
+  element: ReactElement,
+  options: RenderOptions = {},
+): Promise<TestAPI> {
   const combinedInitialState = options.initialState || {};
   if (options.loggedIn) {
     if (!combinedInitialState.user) {

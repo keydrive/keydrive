@@ -9,7 +9,11 @@ export interface Props {
   onClose: () => void;
 }
 
-export const ContextMenu: React.FC<Props> = ({ position, onClose, children }) => {
+export const ContextMenu: React.FC<Props> = ({
+  position,
+  onClose,
+  children,
+}) => {
   useKeyBind(KeyCode.Escape, onClose);
   useDocumentEvent('click', onClose);
   useDocumentEvent('contextmenu', onClose);

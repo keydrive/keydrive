@@ -10,11 +10,24 @@ export interface Props {
   children?: ReactNode;
 }
 
-export const Field = ({ children, id, className, error, onFieldBlur }: Props) => (
+export const Field = ({
+  children,
+  id,
+  className,
+  error,
+  onFieldBlur,
+}: Props) => (
   <div
-    className={classNames('field', className, hasError(id, error) && 'field-error')}
+    className={classNames(
+      'field',
+      className,
+      hasError(id, error) && 'field-error',
+    )}
     onBlur={(e) => {
-      if (!(e.relatedTarget instanceof Node) || !e.currentTarget.contains(e.relatedTarget)) {
+      if (
+        !(e.relatedTarget instanceof Node) ||
+        !e.currentTarget.contains(e.relatedTarget)
+      ) {
         if (onFieldBlur) {
           onFieldBlur();
         }

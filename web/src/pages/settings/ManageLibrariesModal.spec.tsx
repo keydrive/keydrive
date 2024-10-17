@@ -98,7 +98,11 @@ describe('ManageLibrariesModal', () => {
       await screen.findByText('/two/four');
       // navigate up
       await userEvent.click(screen.getByLabelText('Parent directory'));
-      await waitFor(() => expect(screen.getByLabelText('Folder:', { selector: 'input' })).toHaveValue('/'));
+      await waitFor(() =>
+        expect(
+          screen.getByLabelText('Folder:', { selector: 'input' }),
+        ).toHaveValue('/'),
+      );
     });
   });
 
@@ -109,7 +113,9 @@ describe('ManageLibrariesModal', () => {
         'end:/api/libraries/?limit=100',
         {
           totalElements: 1,
-          elements: [{ id: 3252, type: 'generic', name: 'Downloads', canWrite: true }],
+          elements: [
+            { id: 3252, type: 'generic', name: 'Downloads', canWrite: true },
+          ],
         },
         { overwriteRoutes: true },
       );
@@ -134,7 +140,9 @@ describe('ManageLibrariesModal', () => {
       // now we close the modal which should cause a reload
       fireEvent.click(screen.getByLabelText('Close'));
       await waitFor(() => {
-        expect(fetchMock.calls('end:/api/libraries/?limit=100')).toHaveLength(2);
+        expect(fetchMock.calls('end:/api/libraries/?limit=100')).toHaveLength(
+          2,
+        );
       });
     });
   });

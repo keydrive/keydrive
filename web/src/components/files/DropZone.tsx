@@ -9,7 +9,12 @@ export interface Props {
   top?: number;
 }
 
-export const DropZone = ({ onDropEntries, onDropFiles, top, ...props }: Props) => {
+export const DropZone = ({
+  onDropEntries,
+  onDropFiles,
+  top,
+  ...props
+}: Props) => {
   return (
     <div
       {...props}

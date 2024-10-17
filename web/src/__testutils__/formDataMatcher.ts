@@ -1,6 +1,8 @@
 import fetchMock from 'fetch-mock';
 
-export function formDataMatcher(values: Record<string, FormDataEntryValue>): fetchMock.MockMatcher {
+export function formDataMatcher(
+  values: Record<string, FormDataEntryValue>,
+): fetchMock.MockMatcher {
   return (_url: string, req: fetchMock.MockRequest) => {
     // Check if the request body is a form data object.
     if (!(req.body instanceof FormData)) {

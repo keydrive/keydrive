@@ -38,8 +38,21 @@ export const ChangePasswordModal = ({ onClose }: Props) => {
         }}
         submitLabel="Change"
       >
-        <PasswordInput autoFocus required label="Password" value={password} onChange={setPassword} id="password" />
-        <PasswordInput required label="Confirm" value={confirm} onChange={setConfirm} id="confirm" />
+        <PasswordInput
+          autoFocus
+          required
+          label="Password"
+          value={password}
+          onChange={setPassword}
+          id="password"
+        />
+        <PasswordInput
+          required
+          label="Confirm"
+          value={confirm}
+          onChange={setConfirm}
+          id="confirm"
+        />
       </Form>
     </Modal>
   );

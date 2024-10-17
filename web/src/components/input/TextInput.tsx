@@ -4,7 +4,10 @@ import { Icon } from '../Icon';
 import { Button } from '../Button';
 import { classNames } from '../../utils/classNames';
 
-type InputProps = Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, 'id' | 'onChange'>;
+type InputProps = Omit<
+  DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>,
+  'id' | 'onChange'
+>;
 
 export interface Props extends FieldProps, InputProps {
   value: string;

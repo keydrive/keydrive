@@ -2,7 +2,11 @@ import { ButtonHTMLAttributes, DetailedHTMLProps } from 'react';
 import { classNames } from '../utils/classNames';
 import { Icon } from './Icon';
 
-export interface Props extends DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> {
+export interface Props
+  extends DetailedHTMLProps<
+    ButtonHTMLAttributes<HTMLButtonElement>,
+    HTMLButtonElement
+  > {
   icon: string;
   className?: string;
 }

@@ -4,7 +4,15 @@ import { User } from './UserService';
 
 export type LibraryType = 'generic' | 'books' | 'movies' | 'shows' | 'music';
 
-export type Category = 'Archive' | 'Audio' | 'Binary' | 'Document' | 'Folder' | 'Image' | 'Video' | 'Source Code';
+export type Category =
+  | 'Archive'
+  | 'Audio'
+  | 'Binary'
+  | 'Document'
+  | 'Folder'
+  | 'Image'
+  | 'Video'
+  | 'Source Code';
 
 export interface Library {
   id: number;
@@ -60,7 +68,9 @@ export class LibrariesService {
   }
 
   public listLibraries(): Promise<Library[]> {
-    return this.api.getAllPages<Library>('/libraries/').then((l) => l.toSorted((a, b) => a.name.localeCompare(b.name)));
+    return this.api
+      .getAllPages<Library>('/libraries/')
+      .then((l) => l.toSorted((a, b) => a.name.localeCompare(b.name)));
   }
 
   public createLibrary(library: CreateLibrary): Promise<Library> {
@@ -85,14 +95,22 @@ export class LibrariesService {
   }
 
   public async getSubFolders(path: string): Promise<BrowseResponse> {
-    return this.api.jsonPost<{ path: string }, BrowseResponse>(`/system/browse`, {
-      path,
-    });
+    return this.api.jsonPost<{ path: string }, BrowseResponse>(
+      `/system/browse`,
+      {
+        path,
+      },
+    );
   }
 
-  public async getEntries(libraryId: number | string, parent: string): Promise<Entry[]> {
+  public async getEntries(
+    libraryId: number | string,
+    parent: string,
+  ): Promise<Entry[]> {
     try {
-      return await this.api.jsonGet(`/libraries/${libraryId}/entries`, { parent });
+      return await this.api.jsonGet(`/libraries/${libraryId}/entries`, {
+        parent,
+      });
     } catch (e) {
       if (isApiError(e) && e.status === 404) {
         // TODO: Improve error handling.
@@ -103,15 +121,29 @@ export class LibrariesService {
     }
   }
 
-  public async getEntry(libraryId: number | string, path: string): Promise<Entry | undefined> {
-    return (await this.api.jsonGet<Entry[]>(`/libraries/${libraryId}/entries`, { path }))[0];
+  public async getEntry(
+    libraryId: number | string,
+    path: string,
+  ): Promise<Entry | undefined> {
+    return (
+      await this.api.jsonGet<Entry[]>(`/libraries/${libraryId}/entries`, {
+        path,
+      })
+    )[0];
   }
 
-  public async deleteEntry(libraryId: number | string, path: string): Promise<void> {
+  public async deleteEntry(
+    libraryId: number | string,
+    path: string,
+  ): Promise<void> {
     return this.api.delete(`/libraries/${libraryId}/entries`, { path });
   }
 
-  public uploadFile(libraryId: number | string, parent: string, file: File): Promise<Entry> {
+  public uploadFile(
+    libraryId: number | string,
+    parent: string,
+    file: File,
+  ): Promise<Entry> {
     return this.api.formPost(`/libraries/${libraryId}/entries`, {
       parent,
       name: file.name,
@@ -119,7 +151,11 @@ export class LibrariesService {
     });
   }
 
-  public createFolder(libraryId: number | string, parent: string, name: string): Promise<Entry> {
+  public createFolder(
+    libraryId: number | string,
+    parent: string,
+    name: string,
+  ): Promise<Entry> {
     return this.api.formPost(`/libraries/${libraryId}/entries`, {
       parent,
       name,
@@ -127,13 +163,20 @@ export class LibrariesService {
   }
 
   public async download(libraryId: string, path: string): Promise<void> {
-    const response: DownloadTokenResponse = await this.api.jsonPost(`/libraries/${libraryId}/entries/download`, {
-      path,
-    });
+    const response: DownloadTokenResponse = await this.api.jsonPost(
+      `/libraries/${libraryId}/entries/download`,
+      {
+        path,
+      },
+    );
     window.open(`/api/download?token=${response.token}`, '_self');
   }
 
-  public moveEntry(libraryId: string, source: string, target: string): Promise<void> {
+  public moveEntry(
+    libraryId: string,
+    source: string,
+    target: string,
+  ): Promise<void> {
     return this.api.jsonPost(`/libraries/${libraryId}/entries/move`, {
       source,
       target,

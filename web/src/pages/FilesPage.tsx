@@ -22,7 +22,12 @@ import { FilesContextMenu } from '../components/files/FilesContextMenu';
 import { KeyCode, useKeyBind } from '../hooks/useKeyBind';
 import { LibraryDetailsPanel } from '../components/files/LibraryDetailsPanel';
 import { EntryDetailsPanel } from '../components/files/EntryDetailsPanel';
-import { getAllEntriesRecursive, getFsEntryFile, isDirectoryEntry, isFileEntry } from '../utils/fileSystemEntry';
+import {
+  getAllEntriesRecursive,
+  getFsEntryFile,
+  isDirectoryEntry,
+  isFileEntry,
+} from '../utils/fileSystemEntry';
 import { icons } from '../utils/icons';
 import { MoveModal } from '../components/files/MoveModal';
 import { DropZone } from '../components/files/DropZone';
@@ -41,7 +46,10 @@ const FileRow = ({
   selected: boolean;
   onActivate: (entry: Entry) => void;
   onDoubleClick: (entry: Entry) => void;
-  onContextMenu: (e: React.MouseEvent<unknown, MouseEvent>, entry?: Entry) => void;
+  onContextMenu: (
+    e: React.MouseEvent<unknown, MouseEvent>,
+    entry?: Entry,
+  ) => void;
   renaming: boolean;
   onRename: (newName: string) => void;
   cancelRename: () => void;
@@ -75,7 +83,9 @@ const FileRow = ({
             autoFocus
             id="new-entry-name"
             value={newName}
-            onChange={(n) => setNewName(n.replaceAll('/', '').replaceAll('\\', ''))}
+            onChange={(n) =>
+              setNewName(n.replaceAll('/', '').replaceAll('\\', ''))
+            }
             iconButton="check"
             onButtonClick={() => onRename(newName)}
             onKeyDown={(e) => {
@@ -95,7 +105,9 @@ const FileRow = ({
         )}
       </td>
       <td className="modified">{humanReadableDateTime(entry.modified)}</td>
-      <td className="size">{entry.category === 'Folder' ? '--' : humanReadableSize(entry.size)}</td>
+      <td className="size">
+        {entry.category === 'Folder' ? '--' : humanReadableSize(entry.size)}
+      </td>
       <td className="category">{entry.category}</td>
     </tr>
   );
@@ -108,24 +120,34 @@ export const FilesPage = () => {
   // 3. If everything is okay, the "loading" state is removed
   // to navigate to another entity, ONLY change the path through the history object
   const libraries = useService(LibrariesService);
-  const { library: libraryId, path: encodedPath } = useParams<{ library: string; path?: string }>();
+  const { library: libraryId, path: encodedPath } = useParams<{
+    library: string;
+    path?: string;
+  }>();
   const path = decodeURIComponent(encodedPath || '');
   const history = useHistory();
   const location = useLocation();
-  const hash = decodeURIComponent(location.hash ? location.hash.substring(1) : '');
+  const hash = decodeURIComponent(
+    location.hash ? location.hash.substring(1) : '',
+  );
 
   const [currentDir, setCurrentDir] = useState<Entry>();
   const [entries, setEntries] = useState<Entry[]>([]);
   const [loadingEntries, setLoadingEntries] = useState(false);
 
-  const { selectedEntry, setSelectedEntry } = useFileNavigator(entries, activateEntry);
+  const { selectedEntry, setSelectedEntry } = useFileNavigator(
+    entries,
+    activateEntry,
+  );
 
   // Activate an entry. For directories (string or Folder entry) this navigates to it. For files this selects them.
   async function activateEntry(target: string | Entry) {
     if (typeof target === 'string') {
       history.push(`/files/${libraryId}/${encodeURIComponent(target)}`);
     } else if (target.category === 'Folder') {
-      history.push(`/files/${libraryId}/${encodeURIComponent(resolvePath(target))}`);
+      history.push(
+        `/files/${libraryId}/${encodeURIComponent(resolvePath(target))}`,
+      );
     } else {
       history.push(`#${encodeURIComponent(target.name)}`);
       setSelectedEntry(target);
@@ -164,7 +186,10 @@ export const FilesPage = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [newFolderName, setNewFolderName] = useState<string>();
 
-  useEffect(() => setSelectedEntry(undefined), [setSelectedEntry, path, libraryId]);
+  useEffect(
+    () => setSelectedEntry(undefined),
+    [setSelectedEntry, path, libraryId],
+  );
 
   // This effect triggers when the path changes. This means we should enter a loading state.
   // This function should not be called directly. Instead, call `refresh`.
@@ -175,10 +200,15 @@ export const FilesPage = () => {
       // If the path is falsy or '/' we're at the library root, so no need for an extra call.
       const pathIsRoot = !path || path === '/';
       // noinspection ES6MissingAwait It is awaited later to run in parallel
-      const getCurrentEntity = pathIsRoot ? Promise.resolve(undefined) : libraries.getEntry(libraryId, path);
+      const getCurrentEntity = pathIsRoot
+        ? Promise.resolve(undefined)
+        : libraries.getEntry(libraryId, path);
       const getCurrentChildren = libraries.getEntries(libraryId, path);
 
-      const [newCurrentDir, newEntries] = await Promise.all([getCurrentEntity, getCurrentChildren]);
+      const [newCurrentDir, newEntries] = await Promise.all([
+        getCurrentEntity,
+        getCurrentChildren,
+      ]);
       setCurrentDir(newCurrentDir);
       setEntries(newEntries);
       return newEntries;
@@ -205,13 +235,20 @@ export const FilesPage = () => {
   useEffect(() => setHighlightedEntry(undefined), [libraryId]);
 
   const [renamingEntry, setRenamingEntry] = useState<Entry>();
-  useKeyBind(KeyCode.F2, () => selectedEntry && setRenamingEntry(selectedEntry));
+  useKeyBind(
+    KeyCode.F2,
+    () => selectedEntry && setRenamingEntry(selectedEntry),
+  );
   const renameEntry = useCallback(
     async (newName: string) => {
       if (!renamingEntry) {
         return;
       }
-      await libraries.moveEntry(libraryId, resolvePath(renamingEntry), resolvePath(path, newName));
+      await libraries.moveEntry(
+        libraryId,
+        resolvePath(renamingEntry),
+        resolvePath(path, newName),
+      );
       setRenamingEntry(undefined);
       const newEntries = await refresh();
       setSelectedEntry(newEntries.find((e) => e.name === newName));
@@ -225,7 +262,11 @@ export const FilesPage = () => {
       if (!movingEntry) {
         return;
       }
-      await libraries.moveEntry(libraryId, resolvePath(movingEntry), resolvePath(targetDir, movingEntry.name));
+      await libraries.moveEntry(
+        libraryId,
+        resolvePath(movingEntry),
+        resolvePath(targetDir, movingEntry.name),
+      );
       refresh();
       setMovingEntry(undefined);
       setHighlightedEntry(undefined);
@@ -267,7 +308,10 @@ export const FilesPage = () => {
             // We don't need to use the error, just catch it.
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
           } catch (e) {
-            console.warn("Can't upload folders with the File API, skipping:", file.name);
+            console.warn(
+              "Can't upload folders with the File API, skipping:",
+              file.name,
+            );
             continue;
           }
         }
@@ -292,9 +336,17 @@ export const FilesPage = () => {
         let newLastEntry: Entry | undefined = undefined;
 
         if (isFileEntry(entry)) {
-          newLastEntry = await libraries.uploadFile(libraryId, parent, await getFsEntryFile(entry));
+          newLastEntry = await libraries.uploadFile(
+            libraryId,
+            parent,
+            await getFsEntryFile(entry),
+          );
         } else if (isDirectoryEntry(entry)) {
-          newLastEntry = await libraries.createFolder(libraryId, parent, entry.name);
+          newLastEntry = await libraries.createFolder(
+            libraryId,
+            parent,
+            entry.name,
+          );
         } else {
           console.error('Unknown entry:', entry);
         }
@@ -368,10 +420,25 @@ export const FilesPage = () => {
             setContextMenuPos(undefined);
             setContextMenuEntry(undefined);
           }}
-          onDownload={contextMenuEntry ? () => libraries.download(libraryId, resolvePath(contextMenuEntry)) : undefined}
-          onRename={contextMenuEntry ? () => setRenamingEntry(contextMenuEntry) : undefined}
-          onMove={contextMenuEntry ? () => setMovingEntry(contextMenuEntry) : undefined}
-          onDelete={contextMenuEntry ? () => deleteEntry(contextMenuEntry) : undefined}
+          onDownload={
+            contextMenuEntry
+              ? () =>
+                  libraries.download(libraryId, resolvePath(contextMenuEntry))
+              : undefined
+          }
+          onRename={
+            contextMenuEntry
+              ? () => setRenamingEntry(contextMenuEntry)
+              : undefined
+          }
+          onMove={
+            contextMenuEntry
+              ? () => setMovingEntry(contextMenuEntry)
+              : undefined
+          }
+          onDelete={
+            contextMenuEntry ? () => deleteEntry(contextMenuEntry) : undefined
+          }
           onUpload={() => fileInputRef.current?.click()}
           onNewFolder={() => setNewFolderName('New Folder')}
         />
@@ -380,7 +447,12 @@ export const FilesPage = () => {
         {({ activateSidebar }) => (
           <>
             <div className="top-bar">
-              <IconButton className="toggle-sidebar" onClick={activateSidebar} aria-label="Show sidebar" icon="bars" />
+              <IconButton
+                className="toggle-sidebar"
+                onClick={activateSidebar}
+                aria-label="Show sidebar"
+                icon="bars"
+              />
               <div>
                 <IconButton
                   className="parent-dir"
@@ -413,10 +485,16 @@ export const FilesPage = () => {
                   data-testid="file-input"
                 />
                 <ButtonGroup>
-                  <Button onClick={() => fileInputRef.current?.click()} icon={icons.upload}>
+                  <Button
+                    onClick={() => fileInputRef.current?.click()}
+                    icon={icons.upload}
+                  >
                     Upload
                   </Button>
-                  <Button onClick={() => setNewFolderName('New Folder')} icon={icons.newFolder}>
+                  <Button
+                    onClick={() => setNewFolderName('New Folder')}
+                    icon={icons.newFolder}
+                  >
                     New Folder
                   </Button>
                 </ButtonGroup>
@@ -503,7 +581,9 @@ export const FilesPage = () => {
                         onActivate={activateEntry}
                         onDoubleClick={downloadEntry}
                         onContextMenu={showContextMenu}
-                        renaming={!!renamingEntry && renamingEntry.name === entry.name}
+                        renaming={
+                          !!renamingEntry && renamingEntry.name === entry.name
+                        }
                         onRename={(newName) => renameEntry(newName)}
                         cancelRename={() => setRenamingEntry(undefined)}
                       />
@@ -514,7 +594,9 @@ export const FilesPage = () => {
               {highlightedEntry ? (
                 <EntryDetailsPanel
                   entry={highlightedEntry}
-                  onDownload={() => libraries.download(libraryId, resolvePath(highlightedEntry))}
+                  onDownload={() =>
+                    libraries.download(libraryId, resolvePath(highlightedEntry))
+                  }
                   onRename={() => setRenamingEntry(highlightedEntry)}
                   onMove={() => setMovingEntry(highlightedEntry)}
                   onDelete={() => deleteEntry(highlightedEntry)}
@@ -522,7 +604,11 @@ export const FilesPage = () => {
                   onClose={() => history.push('#')}
                 />
               ) : (
-                <LibraryDetailsPanel library={library} active={hash === '.'} onClose={() => history.push('#')} />
+                <LibraryDetailsPanel
+                  library={library}
+                  active={hash === '.'}
+                  onClose={() => history.push('#')}
+                />
               )}
             </main>
           </>

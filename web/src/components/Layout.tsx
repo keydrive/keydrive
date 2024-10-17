@@ -60,13 +60,19 @@ export const Layout: React.FC<Props> = ({ children, className }) => {
           )}
         </div>
         <div>
-          <NavLink to="/settings" className="entry" onClick={() => setSidebarActive(false)}>
+          <NavLink
+            to="/settings"
+            className="entry"
+            onClick={() => setSidebarActive(false)}
+          >
             <Icon icon="cog" />
             Settings
           </NavLink>
         </div>
       </div>
-      <div className="content-wrapper">{children({ activateSidebar: () => setSidebarActive(true) })}</div>
+      <div className="content-wrapper">
+        {children({ activateSidebar: () => setSidebarActive(true) })}
+      </div>
     </div>
   );
 };

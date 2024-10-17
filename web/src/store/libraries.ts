@@ -18,16 +18,17 @@ interface ThunkApiConfig {
 export const librariesStore = (injector: Injector) => {
   const librariesService = injector.resolve(LibrariesService);
 
-  const getLibrariesAsync = createAsyncThunk<State['libraries'], undefined, ThunkApiConfig>(
-    'libraries/getLibraries',
-    async (_arg, { rejectWithValue }) => {
-      try {
-        return await librariesService.listLibraries();
-      } catch (e) {
-        return rejectWithValue(e as ApiError);
-      }
-    },
-  );
+  const getLibrariesAsync = createAsyncThunk<
+    State['libraries'],
+    undefined,
+    ThunkApiConfig
+  >('libraries/getLibraries', async (_arg, { rejectWithValue }) => {
+    try {
+      return await librariesService.listLibraries();
+    } catch (e) {
+      return rejectWithValue(e as ApiError);
+    }
+  });
 
   const librariesSlice = createSlice({
     name: 'libraries',
@@ -48,7 +49,8 @@ export const librariesStore = (injector: Injector) => {
     reducer: librariesSlice.reducer,
     selectors: {
       libraries: (state: RootState) => state.libraries.libraries,
-      libraryById: (id: number) => (state: RootState) => state.libraries.libraries?.find((lib) => lib.id === id),
+      libraryById: (id: number) => (state: RootState) =>
+        state.libraries.libraries?.find((lib) => lib.id === id),
     },
   };
 };

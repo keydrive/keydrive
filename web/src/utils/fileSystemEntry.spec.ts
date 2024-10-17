@@ -8,7 +8,9 @@ describe('getAllEntriesRecursive', () => {
       },
     ];
 
-    const result = await getAllEntriesRecursive(dataTransferItems as unknown as DataTransferItemList);
+    const result = await getAllEntriesRecursive(
+      dataTransferItems as unknown as DataTransferItemList,
+    );
     expect(result).toStrictEqual([]);
   });
 
@@ -19,15 +21,21 @@ describe('getAllEntriesRecursive', () => {
       mockDirectoryEntry('/dir', [
         mockFileEntry('/dir/img.jpg'),
         mockFileEntry('/dir/yes.ico'),
-        mockDirectoryEntry('/dir/deeper', [mockFileEntry('/dir/deeper/gold.txt')]),
+        mockDirectoryEntry('/dir/deeper', [
+          mockFileEntry('/dir/deeper/gold.txt'),
+        ]),
       ]),
     ];
     const dataTransferItems = entries.map((e) => ({
       webkitGetAsEntry: () => e,
     }));
 
-    const result = await getAllEntriesRecursive(dataTransferItems as unknown as DataTransferItemList);
-    const check = result.map((e) => `${e.isFile ? 'file:' : 'dir:'}${e.fullPath}`);
+    const result = await getAllEntriesRecursive(
+      dataTransferItems as unknown as DataTransferItemList,
+    );
+    const check = result.map(
+      (e) => `${e.isFile ? 'file:' : 'dir:'}${e.fullPath}`,
+    );
     expect(check).toStrictEqual([
       'file:/readme.txt',
       'dir:/empty',
@@ -52,7 +60,10 @@ function mockFileEntry(fullPath: string): FileSystemFileEntry {
   } as unknown as FileSystemFileEntry;
 }
 
-function mockDirectoryEntry(fullPath: string, children: FileSystemEntry[]): FileSystemDirectoryEntry {
+function mockDirectoryEntry(
+  fullPath: string,
+  children: FileSystemEntry[],
+): FileSystemDirectoryEntry {
   return {
     fullPath,
     name: fullPath.substring(fullPath.lastIndexOf('/') + 1),

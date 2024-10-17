@@ -28,10 +28,15 @@ export const MoveModal = ({ onClose, libraryId, startPath, onMove }: Props) => {
       // If the path is falsy or '/' we're at the library root, so no need for an extra call.
       const pathIsRoot = !path || path === '/';
       // noinspection ES6MissingAwait It is awaited later to run in parallel
-      const getCurrentEntity = pathIsRoot ? Promise.resolve(undefined) : libraries.getEntry(libraryId, path);
+      const getCurrentEntity = pathIsRoot
+        ? Promise.resolve(undefined)
+        : libraries.getEntry(libraryId, path);
       const getCurrentChildren = libraries.getEntries(libraryId, path);
 
-      const [newCurrentDir, newEntries] = await Promise.all([getCurrentEntity, getCurrentChildren]);
+      const [newCurrentDir, newEntries] = await Promise.all([
+        getCurrentEntity,
+        getCurrentChildren,
+      ]);
       setCurrentDir(newCurrentDir);
       setEntries(newEntries);
       return newEntries;
@@ -67,7 +72,8 @@ export const MoveModal = ({ onClose, libraryId, startPath, onMove }: Props) => {
           }}
         />
         <h3>
-          {currentDir ? resolvePath(currentDir) : '/'} {loadingEntries && <Icon icon="spinner" pulse />}
+          {currentDir ? resolvePath(currentDir) : '/'}{' '}
+          {loadingEntries && <Icon icon="spinner" pulse />}
         </h3>
       </div>
       <div className="table-wrapper">

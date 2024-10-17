@@ -9,7 +9,13 @@ export interface Props {
   iconStyle?: 'solid' | 'regular' | 'brands';
 }
 
-export const Icon: React.FC<Props> = ({ icon, className, pulse, size, iconStyle = 's' }) => (
+export const Icon: React.FC<Props> = ({
+  icon,
+  className,
+  pulse,
+  size,
+  iconStyle = 's',
+}) => (
   <i
     className={classNames(
       `icon fa${iconStyle?.substring(0, 1)} fa-${icon}`,

@@ -53,7 +53,12 @@ export const EditProfileModal = ({ onClose }: Props) => {
         }}
         submitLabel="Save"
       >
-        <TextInput label="Username:" value={username} onChange={setUsername} id="username" />
+        <TextInput
+          label="Username:"
+          value={username}
+          onChange={setUsername}
+          id="username"
+        />
         <TextInput label="Name:" value={name} onChange={setName} id="name" />
       </Form>
     </Modal>

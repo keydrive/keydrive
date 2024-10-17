@@ -1,4 +1,10 @@
-import { ReactElement, ReactNode, useCallback, useEffect, useState } from 'react';
+import {
+  ReactElement,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import { classNames } from '../utils/classNames';
 import { Button } from './Button';
 import { Icon } from './Icon';
@@ -13,7 +19,13 @@ export interface Props {
   children?: ReactNode;
 }
 
-export const Modal = ({ children, title, panelled, onClose, shouldClose }: Props) => {
+export const Modal = ({
+  children,
+  title,
+  panelled,
+  onClose,
+  shouldClose,
+}: Props) => {
   const [closing, setClosing] = useState(false);
   const mounted = useMountedState();
 
@@ -50,7 +62,11 @@ export const Modal = ({ children, title, panelled, onClose, shouldClose }: Props
 
   return (
     <>
-      <div aria-label="Close" className={classNames('modal-overlay', closing && 'closing')} onClick={close} />
+      <div
+        aria-label="Close"
+        className={classNames('modal-overlay', closing && 'closing')}
+        onClick={close}
+      />
       <div
         className={classNames(
           'modal',

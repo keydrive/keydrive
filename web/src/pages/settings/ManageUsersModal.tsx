@@ -72,9 +72,28 @@ const CreateOrEditUserForm: React.FC<{
         }}
         submitLabel={user ? 'Save' : 'Add'}
       >
-        <TextInput autoFocus required label="Username:" value={username} onChange={setUsername} id="username" />
-        <TextInput required label="Name:" value={name} onChange={setName} id="name" />
-        <PasswordInput required={!user} label="Password:" value={password} onChange={setPassword} id="password" />
+        <TextInput
+          autoFocus
+          required
+          label="Username:"
+          value={username}
+          onChange={setUsername}
+          id="username"
+        />
+        <TextInput
+          required
+          label="Name:"
+          value={name}
+          onChange={setName}
+          id="name"
+        />
+        <PasswordInput
+          required={!user}
+          label="Password:"
+          value={password}
+          onChange={setPassword}
+          id="password"
+        />
         <PasswordInput
           required={!user || !!password}
           label="Confirm:"
