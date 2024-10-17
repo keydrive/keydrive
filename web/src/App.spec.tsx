@@ -28,8 +28,6 @@ describe('App', () => {
         },
       ],
     });
-    // the root lib will be fetched
-    fetchMock.get('end:/api/libraries/4/entries?parent=', []);
     const { store } = await render(<App />, {
       loggedIn: true,
       path: '/',

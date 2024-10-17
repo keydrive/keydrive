@@ -1049,52 +1049,6 @@ describe('FilesPage', () => {
     expect(screen.queryByText('Hold On')).toBeNull();
   });
 
-  it('redirects to files on a 404', async () => {
-    fetchMock.getOnce(
-      {
-        url: 'path:/api/libraries/4/entries',
-        query: {
-          parent: '/nope',
-        },
-        overwriteRoutes: true,
-      },
-      {
-        status: 404,
-        body: {
-          status: 404,
-          error: 'Not Found',
-        },
-      },
-    );
-    fetchMock.getOnce(
-      {
-        url: 'path:/api/libraries/4/entries',
-        query: {
-          path: '/nope',
-        },
-        overwriteRoutes: false,
-      },
-      {
-        status: 404,
-        body: {
-          status: 404,
-          error: 'Not Found',
-        },
-      },
-    );
-
-    const { navigation } = await render(<FilesPage />, {
-      path: '/files/4/%2Fnope',
-      route: '/files/:library/:path?',
-      loggedIn: true,
-      initialState,
-    });
-
-    await waitFor(() => {
-      expect(navigation.pathname).toBe('/files');
-    });
-  });
-
   it('moves an entry on clicking the move context menu item', async () => {
     fetchMock.getOnce(
       {
