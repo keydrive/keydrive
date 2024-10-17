@@ -7,7 +7,7 @@ import (
 	glog "gorm.io/gorm/logger"
 	"keydrive/internal/model"
 	"keydrive/internal/service"
-	"keydrive/web/build"
+	"keydrive/web/dist"
 	"net/http"
 	"os"
 	"time"
@@ -141,7 +141,7 @@ func NewApp(dbDiag gorm.Dialector) (app App, err error) {
 			system.POST("/browse", RequireAdmin(), SystemBrowse(app.FileSystem))
 		}
 	}
-	app.Router.NoRoute(Static(http.FS(build.App)))
+	app.Router.NoRoute(Static(http.FS(dist.App)))
 
 	app.Close = func() {
 		// Nothing to do by default
