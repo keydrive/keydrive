@@ -39,14 +39,8 @@ export class ApiService {
 
   public constructor(private readonly injector: Injector) {}
 
-  private static async handleResponse<T>(resPromise: Promise<Response>, method: string, path: string): Promise<T> {
-    let response: Response;
-    try {
-      response = await resPromise;
-    } catch (e) {
-      throw new Error(`Unexpected error while handling ${method} response for ${path}\n${e}`);
-    }
-
+  private static async handleResponse<T>(resPromise: Promise<Response>): Promise<T> {
+    const response = await resPromise;
     const responseBody = response.status === 204 ? undefined : await response.json();
 
     if (response.status >= 400) {
@@ -110,8 +104,6 @@ export class ApiService {
         headers: this.getHeaders(),
         body: formBody,
       }),
-      'formPost',
-      path,
     );
   }
 
@@ -132,8 +124,6 @@ export class ApiService {
         headers,
         body: body ? JSON.stringify(body) : undefined,
       }),
-      method,
-      ApiService.getUrl(path, params),
     );
   }
 
