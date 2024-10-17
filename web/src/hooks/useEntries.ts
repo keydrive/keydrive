@@ -4,6 +4,7 @@ import { useRequiredParam } from './useRequiredParam.ts';
 import { useService } from './useService.ts';
 import { useNavigate, useParams } from 'react-router-dom';
 import { resolvePath } from '../utils/path.ts';
+import { useHash } from './useHash.ts';
 
 export interface EntryData {
   loadingEntries: boolean;
@@ -23,7 +24,9 @@ export function useEntries(): EntryData {
   const libraryId = useRequiredParam('library');
   const { path: encodedPath } = useParams<{ path: string }>();
   const path = decodeURIComponent(encodedPath ?? '');
+
   const navigate = useNavigate();
+  const [encodedHash, setHash] = useHash();
 
   const [currentDir, setCurrentDir] = useState<Entry>();
   const [entries, setEntries] = useState<Entry[]>([]);
@@ -31,6 +34,12 @@ export function useEntries(): EntryData {
 
   // TODO: Allow multiple selected entries.
   const [selectedEntry, setSelectedEntry] = useState<Entry>();
+
+  // Set the selected entry from the hash.
+  const hash = decodeURIComponent(encodedHash);
+  useEffect(() => {
+    setSelectedEntry(entries?.find((e) => e.name === hash));
+  }, [entries, hash]);
 
   // Whenever the path or library changes, clear the selected entry.
   useEffect(
@@ -89,11 +98,11 @@ export function useEntries(): EntryData {
           `/files/${libraryId}/${encodeURIComponent(resolvePath(target))}`,
         );
       } else {
-        navigate(`#${encodeURIComponent(target.name)}`);
+        setHash(encodeURIComponent(target.name));
         setSelectedEntry(target);
       }
     },
-    [libraryId, navigate],
+    [libraryId, navigate, setHash],
   );
 
   // Download an entry. This only works for files.
